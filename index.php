@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2 class="w3-center">CCS Sit Monitoring System</h2>
         <form method="POST">
             <label>Username</label>
-            <input class="w3-input w3-border" type="text" name="username" required>
+            <input class="w3-input w3-border" type="text" name="username"  placeholder="Enter username" required>
             <label>Password</label>
-            <input class="w3-input w3-border" type="password" name="password" required>
+            <input class="w3-input w3-border" type="password" name="password"  placeholder="Enter password" required>
             <p><button class="w3-button w3-cyan w3-round-xlarge">Login</button></p>
 
             <div class="container signin">
@@ -69,3 +69,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 </body>
 </html>
+
