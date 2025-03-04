@@ -87,9 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="#" class="w3-bar-item w3-button w3-right">Reservation</a>
     <a href="edit.php" class="w3-bar-item w3-button w3-right">Edit Profile</a>
     <a href="#" class="w3-bar-item w3-button w3-right">History</a>
-    <a href="#" class="w3-bar-item w3-button w3-right">
-    Home <i class="fa-regular fa-circle-user"></i>
-   </a>
+    <a href="home.php" class="w3-bar-item w3-button w3-right"><i class="fa-regular fa-circle-user fa-lg text-primary"></i> Home</a>
 
 </div>
 
@@ -113,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p><b>Year/Level:</b> <?php echo htmlspecialchars($user_data['level']); ?></p>
             <p><b>Email:</b> <?php echo htmlspecialchars($user_data['email']); ?></p>
             <p><b>Address:</b> <?php echo htmlspecialchars($user_data['address']); ?></p>
-            <p>Session : 30</p>
         </div>
     </div>
 
