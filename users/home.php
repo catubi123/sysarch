@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="w3.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="bootsrap.css">
 
 </head>
 <body class="w3-light-grey w3-animate-top">
@@ -85,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <span class="w3-bar-item w3-large">Dashboard</span>
     <a href="index.php" class="w3-bar-item w3-button w3-right w3-red w3-round-xlarge">Log out</a>
     <a href="#" class="w3-bar-item w3-button w3-right">Reservation</a>
-    <a href="edit.php" class="w3-bar-item w3-button w3-right">Edit Profile</a>
+    <a href="edit.php" class="w3-bar-item w3-button w3-right"><i class="fa-solid fa-pen-to-square"></i>Edit Profile</a>
     <a href="#" class="w3-bar-item w3-button w3-right">History</a>
-    <a href="home.php" class="w3-bar-item w3-button w3-right"><i class="fa-regular fa-circle-user fa-lg text-primary"></i> Home</a>
-
+    <a href="home.php" class=" w3-blue w w3-bar-item w3-button w3-right">
+    Home <i class="w3-margin-left glyphicon glyphicon-home"></i>
 </div>
 
 <!-- Main Content -->
