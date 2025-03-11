@@ -25,26 +25,22 @@ if ($result->num_rows > 0) {
 
 // Handle form submission to update user data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
     $lname = $_POST['lname'];
     $fname = $_POST['fname'];
     $MName = $_POST['MName'];
-    $course = $_POST['Course']; // Ensure proper casing
-    $level = $_POST['Level'];   // Ensure proper casing
+    $course = $_POST['Course'];
+    $level = $_POST['Level'];
     $email = $_POST['email'];
     $address = $_POST['address'];
     $user_id = $_POST['id'];
 
     // Handle image upload (optional)
-    $image_path = $user_data['image']; // Default to current image if no new image uploaded
+    $image_path = $user_data['image'];
     if (!empty($_FILES['image']['name'])) {
         $target_dir = "uploads/";
-        
-        // Ensure upload directory exists
         if (!is_dir($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
-
         $target_file = $target_dir . basename($_FILES["image"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         $allowed_extensions = ["jpg", "jpeg", "png", "gif"];
@@ -63,10 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $update_query = "UPDATE user SET lname = ?, fname = ?, MName = ?, email = ?, course = ?, level = ?, image = ?, address = ? WHERE id = ?";
     $update_stmt = $con->prepare($update_query);
     $update_stmt->bind_param("ssssssssi", $lname, $fname, $MName, $email, $course, $level, $image_path, $address, $user_id);
-    
+
     if ($update_stmt->execute()) {
-        echo "<script>alert('Profile updated successfully!'); window.location.href = 'home.php';</script>";
-    } else {
+        $_SESSION['profile_updated'] = true;
+header('Location: home.php');
+exit();
+
+        } else {
         echo "<script>alert('Error updating profile!');</script>";
     }
 }
@@ -79,51 +78,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <link rel="stylesheet" href="w3.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
-<body class="w3-light-grey">
+<body class="bg-light">
 
 <!-- Navbar -->
-<div class="w3-bar w3-blue">
-    <span class="w3-bar-item w3-large">Dashboard</span>
-    <a href="index.php" class="w3-bar-item w3-button w3-right w3-red w3-round-xlarge">Log out</a>
-    <a href="edit.php" class="w3-bar-item w3-button w3-right">
-    Edit Profile <i class="fa-solid fa-pencil"></i>
-    </a>
-    <a href="home.php" class=" w3-blue w w3-bar-item w3-button w3-right">
-    Home <i class="w3-margin-left glyphicon glyphicon-home"></i>
-</a>
+<nav class="navbar navbar-expand-lg navbar-primary bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="home.php">Dashboard</a>
+        <div class="navbar-nav ms-auto">
+            <a href="home.php" class="nav-link text-white"><i class="fas fa-home"></i> Home</a>
+            <a href="edit.php" class="nav-link text-white"><i class="fas fa-user-edit"></i> Edit Profile</a>
+            <a href="index.php" class="nav-link text-white bg-danger rounded-pill px-3">Log out</a>
+        </div>
+    </div>
+</nav>
 
-</div>
 
 <!-- Profile Edit Form -->
-<div class="w3-card-4 w3-white w3-padding w3-round-xxlarge" style="max-width:420px;margin:auto;margin-top:30px;">
-    <h2 class="w3-center">Edit Profile</h2>
+<div class="card shadow-lg rounded-4 p-4 mx-auto mt-4" style="max-width: 420px;">
+    <h2 class="text-center">Edit Profile</h2>
     <form method="POST" enctype="multipart/form-data">
-        
-        <label>Profile Image</label>
-        <input class="w3-input w3-border" type="file" name="image" accept="image/*">
-        
+        <label class="form-label">Profile Image</label>
+        <input class="form-control" type="file" name="image" accept="image/*">
+
         <input type="hidden" name="id" value="<?php echo $user_data['id']; ?>">
 
-        <label>Lastname</label>
-        <input class="w3-input w3-border" type="text" name="lname" value="<?php echo $user_data['lname']; ?>" required>
-        
-        <label>Firstname</label>
-        <input class="w3-input w3-border" type="text" name="fname" value="<?php echo $user_data['fname']; ?>" required>
-        
-        <label>MiddleName</label>
-        <input class="w3-input w3-border" type="text" name="MName" value="<?php echo $user_data['MName']; ?>">
-        
-        <label>Email</label>
-        <input class="w3-input w3-border" type="email" name="email" value="<?php echo $user_data['email']; ?>" required>
+        <label class="form-label">Lastname</label>
+        <input class="form-control" type="text" name="lname" value="<?php echo $user_data['lname']; ?>" required>
 
-        <label>Address</label>
-        <input class="w3-input w3-border" type="text" name="address" value="<?php echo $user_data['address']; ?>">
+        <label class="form-label">Firstname</label>
+        <input class="form-control" type="text" name="fname" value="<?php echo $user_data['fname']; ?>" required>
 
-        <label>Course</label>
-        <select class="w3-input w3-border" name="Course" required>
+        <label class="form-label">MiddleName</label>
+        <input class="form-control" type="text" name="MName" value="<?php echo $user_data['MName']; ?>">
+
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" name="email" value="<?php echo $user_data['email']; ?>" required>
+
+        <label class="form-label">Address</label>
+        <input class="form-control" type="text" name="address" value="<?php echo $user_data['address']; ?>">
+
+        <label class="form-label">Course</label>
+        <select class="form-select" name="Course" required>
             <?php 
             $courses = ['BSED', 'BSIT', 'BSCPE', 'BSCRIM', 'BSCA', 'BSCS', 'BPED'];
             foreach ($courses as $course) {
@@ -133,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?>
         </select>
 
-        <label>Yr/Level</label>
-        <select class="w3-input w3-border" name="Level" required>
+        <label class="form-label">Yr/Level</label>
+        <select class="form-select" name="Level" required>
             <?php 
             for ($i = 1; $i <= 4; $i++) {
                 $selected = ($user_data['level'] == $i) ? 'selected' : '';
@@ -143,9 +142,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?>
         </select>
 
-        <p><button type="submit" class="w3-button w3-cyan w3-round-xlarge">Save Changes</button></p>
+        <p><button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button></p>
     </form>
 </div>
+<script>
+function showAlert(title, text, icon) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon
+    });
+}
+
+// Trigger success alert after profile update
+<?php if (isset($_SESSION['profile_updated']) && $_SESSION['profile_updated']) { ?>
+    showAlert('Success!', 'Your profile has been successfully updated.', 'success');
+    <?php unset($_SESSION['profile_updated']); ?>
+<?php } ?>
+</script>
 
 </body>
 </html>
