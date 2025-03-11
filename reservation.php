@@ -4,22 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservation Form</title>
+    <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></head>
 <body>
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Dashboard</a>
-            <div class="d-flex">
-                <a class="nav-link text-white" href="#">Notification</a>
-                <a class="nav-link text-white" href="#">Home</a>
-                <a class="nav-link text-white" href="#">Edit Profile</a>
-                <a class="nav-link text-white" href="#">History</a>
-                <a class="nav-link text-white" href="#">Reservation</a>
-                <button class="btn btn-warning">Log out</button>
-            </div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <div class="navbar-nav ms-auto">
+            <a href="home.php" class="nav-link text-white">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="#" class="nav-link text-white">
+                <i class="fas fa-history"></i> History
+            </a>
+            <a href="edit.php" class="nav-link text-white">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+            </a>
+            <a href="reservation.php" class="nav-link text-white">
+                <i class="fas fa-calendar-check"></i> Reservation
+            </a>
+            <a href="index.php" class="nav-link text-white bg-danger rounded-pill px-3">Log out</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="container mt-4" style="max-width: 500px;">
         <div class="card p-3">
