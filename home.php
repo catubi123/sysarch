@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $target_file = $target_dir . basename($_FILES["image"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $allowed_extensions = ["jpg", "jpeg", "png", "gif,"];
+        $allowed_extensions = ["jpg", "jpeg", "png", "gif"];
 
         if (in_array($imageFileType, $allowed_extensions)) {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
@@ -122,8 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-
-   <!-- Announcements -->
+<!-- Announcements -->
 <div class="w3-third w3-animate-top" style="animation-duration: 0.5s;">
     <div class="w3-card w3-white w3-padding">
         <h3 class="w3-blue w3-padding w3-card-header">
@@ -135,10 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-
-
-
-
 
 <div class="w3-third">
     <div class="w3-card w3-white w3-padding" style="max-height: 400px; overflow-y: auto;">
