@@ -12,35 +12,46 @@
             <label class="form-label">IDNO</label>
             <input class="form-control" type="number" name="id" required>
 
-            <label class="form-label">Lastname</label>
-            <input class="form-control" type="text" name="lname" required>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Lastname</label>
+                    <input class="form-control" type="text" name="lname" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Firstname</label>
+                    <input class="form-control" type="text" name="fname" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Middlename</label>
+                    <input class="form-control" type="text" name="MName">
+                </div>
+            </div>
 
-            <label class="form-label">Firstname</label>
-            <input class="form-control" type="text" name="fname" required>
-
-            <label class="form-label">MiddleName</label>
-            <input class="form-control" type="text" name="MName">
-
-            <label class="form-label">Course</label>
-            <select class="form-select" name="Course" required>
-                <option value=""></option>
-                <option value="BSED">BSED</option>
-                <option value="BSIT">BSIT</option>
-                <option value="BSCPE">BSCPE</option>
-                <option value="BSCRIM">BSCRIM</option>
-                <option value="BSCA">BSCA</option>
-                <option value="BSCS">BSCS</option>
-                <option value="BPED">BPED</option>
-            </select>
-
-            <label class="form-label">Yr/Level</label>
-            <select class="form-select" name="Level" required>
-                <option value=""></option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Course</label>
+                    <select class="form-select" name="Course" required>
+                        <option value=""></option>
+                        <option value="BSED">BSED</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BSCPE">BSCPE</option>
+                        <option value="BSCRIM">BSCRIM</option>
+                        <option value="BSCA">BSCA</option>
+                        <option value="BSCS">BSCS</option>
+                        <option value="BPED">BPED</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Yr/Level</label>
+                    <select class="form-select" name="Level" required>
+                        <option value=""></option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+            </div>
 
             <label class="form-label">Username</label>
             <input class="form-control" type="text" name="username" required>
