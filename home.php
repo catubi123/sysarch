@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $target_file = $target_dir . basename($_FILES["image"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $allowed_extensions = ["jpg", "jpeg", "png", "gif,"];
+        $allowed_extensions = ["jpg", "jpeg", "png", "gif"];
 
         if (in_array($imageFileType, $allowed_extensions)) {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
@@ -66,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Error updating profile!');</script>";
     }
 }
+
+// Fetch announcements from the database
+$announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
+$announcement_result = $con->query($announcement_query);
 ?>
 
 <!DOCTYPE html>
@@ -122,23 +126,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-
-   <!-- Announcements -->
+<!-- Announcements Section -->
 <div class="w3-third w3-animate-top" style="animation-duration: 0.5s;">
     <div class="w3-card w3-white w3-padding">
         <h3 class="w3-blue w3-padding w3-card-header">
             <i class="fas fa-bullhorn"></i> Announcement
         </h3>
         <div class="w3-container w3-light-grey w3-padding">
-            <p><i class="fas fa-calendar-alt"></i> <b>CCS Feb 09 2025</b></p>
-            <p><i class="fas fa-rocket"></i> Soon To Be Announced 🚀</p>
+            <?php
+            if ($announcement_result->num_rows > 0) {
+                while ($announcement = $announcement_result->fetch_assoc()) {
+                    echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
+                    echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
+                    echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
+                    echo '<hr>'; // Visual separator for announcements
+                }
+            } else {
+                echo '<p>No announcements available.</p>';
+            }
+            ?>
         </div>
     </div>
 </div>
-
-
-
-
 
 <div class="w3-third">
     <div class="w3-card w3-white w3-padding" style="max-height: 400px; overflow-y: auto;">

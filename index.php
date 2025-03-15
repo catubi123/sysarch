@@ -1,13 +1,15 @@
 <?php
 session_start();
-include('db.php');
+include('db.php');  // Ensure this is correctly included
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($con, $_POST['username']);
+    $conn = openConnection();
+
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    $query = "SELECT * FROM user WHERE username = ?";
-    $stmt = mysqli_prepare($con, $query);
+    $query = "SELECT * FROM ADMIN WHERE USER_NAME = ?";
+    $stmt = mysqli_prepare($conn, $query);
 
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "s", $username);
@@ -17,26 +19,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result && mysqli_num_rows($result) > 0) {
             $user_data = mysqli_fetch_assoc($result);
 
-            if (password_verify($password, $user_data["password"])) {
+            if (password_verify($password, $user_data["PASSWORD_HASH"])) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_id'] = $user_data['ADMIN_ID'];
                 $_SESSION['username'] = $username;
                 $_SESSION['alert'] = [
                     'type' => 'success',
                     'title' => 'Success!',
-                    'message' => ' Login Successful!',
-                    'redirect' => 'home.php'
+                    'message' => 'Login Successful!',
+                    'redirect' => 'admin_Dashboard.php'
                 ];
             } else {
                 $_SESSION['alert'] = [
                     'type' => 'error',
                     'title' => 'Oops...',
-                    'message' => ' Invalid Username or Password'
+                    'message' => 'Invalid Username or Password'
                 ];
             }
         } else {
             $_SESSION['alert'] = [
                 'type' => 'error',
                 'title' => 'Oops...',
-                'message' => ' Invalid Username or Password'
+                'message' => 'Invalid Username or Password'
             ];
         }
 
@@ -48,6 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'message' => '❗ Database error! Please try again later.'
         ];
     }
+
+    closeConnection($conn);
 }
 ?>
 
