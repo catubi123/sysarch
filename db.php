@@ -8,10 +8,6 @@ if (!$con) {
 
 
 
-// Your existing code here
-
-
-
 function openConnection() {
 
     $servername = "localhost";
