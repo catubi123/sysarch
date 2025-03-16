@@ -27,7 +27,7 @@
                     <li class="nav-item"><a class="nav-link text-white" href="#">Generate Reports</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
                 </ul>
-                <button class="btn btn-danger ms-lg-3">Log Out</button>
+                <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>
             </div>
         </div>
     </div>

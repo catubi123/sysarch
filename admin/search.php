@@ -48,6 +48,7 @@
                 <li class="nav-item"><a class="nav-link text-white" href="#">Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Sit-in</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">View Sit-in Records</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="student_information.php">View List of Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
             </ul>

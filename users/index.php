@@ -1,16 +1,50 @@
 <?php
 session_start();
+ob_start(); // Start output buffering
 include('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $conn = openConnection();
-
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $username = mysqli_real_escape_string($con, $_POST['username']);
     $password = $_POST['password'];
+
+    // Check if the user is a regular user
+    $user_query = "SELECT * FROM user WHERE username = ?";
+    $user_stmt = mysqli_prepare($con, $user_query);
+
+    if ($user_stmt) {
+        mysqli_stmt_bind_param($user_stmt, "s", $username);
+        mysqli_stmt_execute($user_stmt);
+        $user_result = mysqli_stmt_get_result($user_stmt);
+
+        if ($user_result && mysqli_num_rows($user_result) > 0) {
+            $user_data = mysqli_fetch_assoc($user_result);
+
+            if (password_verify($password, $user_data["password"])) {
+                $_SESSION['username'] = $username;
+
+                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Login Successful!',
+                            text: 'Welcome, " . htmlspecialchars($username) . "!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = 'home.php';
+                        });
+                    });
+                </script>";
+                exit();
+            }
+        }
+        mysqli_stmt_close($user_stmt);
+    }
 
     // Check if the user is an admin
     $admin_query = "SELECT * FROM admin WHERE USER_NAME = ?";
-    $admin_stmt = mysqli_prepare($conn, $admin_query);
+    $admin_stmt = mysqli_prepare($con, $admin_query);
 
     if ($admin_stmt) {
         mysqli_stmt_bind_param($admin_stmt, "s", $username);
@@ -20,43 +54,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($admin_result && mysqli_num_rows($admin_result) > 0) {
             $admin_data = mysqli_fetch_assoc($admin_result);
 
-            // Corrected password verification logic
             if (password_verify($password, $admin_data["PASSWORD_HASH"])) {
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['ADMIN_ID'] = $admin_data['ADMIN_ID'];
-                $_SESSION['USER_NAME'] = $admin_data['USER_NAME'];
-                $_SESSION['alert'] = [
-                    'type' => 'success',
-                    'title' => 'Success!',
-                    'message' => 'Login Successful!',
-                    'redirect' => 'admin_Dashboard.php'
-                ];
-            } else {
-                $_SESSION['alert'] = [
-                    'type' => 'error',
-                    'title' => 'Oops...',
-                    'message' => 'Invalid Username or Password'
-                ];
-            }
-        } else {
-            $_SESSION['alert'] = [
-                'type' => 'error',
-                'title' => 'Oops...',
-                'message' => 'Invalid Username or Password'
-            ];
-        }
+                $_SESSION['username'] = $username;
+                
+                $_SESSION['role'] = 'admin';
 
+                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Admin Login Successful!',
+                            text: 'Welcome, Admin " . htmlspecialchars($username) . "!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = 'admin_Dashboard.php';
+                        });
+                    });
+                </script>";
+                exit();
+            }
+        }
         mysqli_stmt_close($admin_stmt);
-    } else {
-        $_SESSION['alert'] = [
-            'type' => 'error',
-            'title' => 'Error!',
-            'message' => '❗ Database error! Please try again later.'
-        ];
     }
 
-    closeConnection($conn);
+    // If login fails
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Invalid username or password!',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        });
+    </script>";
 }
+ob_end_flush(); // Flush the output buffer
 ?>
 
 <!DOCTYPE html>
@@ -70,8 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body class="bg-primary d-flex align-items-center min-vh-100">
     <div class="card shadow-lg p-4 rounded-4 mx-auto" style="max-width: 400px;">
         <div class="text-center mb-4">
-            <img src="ccs.png" alt="Image 1" class="rounded-circle" style="width:80px;height:80px;">
-            <img src="ucmain.jpg" alt="Image 2" class="rounded-circle ms-2" style="width:80px;height:80px;">
+            <img src="images/ccs.png" alt="Image 1" class="rounded-circle" style="width:80px;height:80px;">
+            <img src="images/ucmain.jpg" alt="Image 2" class="rounded-circle ms-2" style="width:80px;height:80px;">
         </div>
         <h2 class="text-center text-primary">CCS Sit Monitoring System</h2>
         <form method="POST">
@@ -102,13 +139,11 @@ window.onload = function () {
             icon: '<?php echo $_SESSION['alert']['type']; ?>',
             title: '<?php echo $_SESSION['alert']['title']; ?>',
             text: '<?php echo $_SESSION['alert']['message']; ?>',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            <?php if (!empty($_SESSION['alert']['redirect'])): ?>
-                window.location.href = '<?php echo $_SESSION['alert']['redirect']; ?>';
-            <?php endif; ?>
+            timer: '<?php echo $_SESSION['alert']['type'] === 'success' ? 2000 : 4000; ?>',
+            showConfirmButton: false
         });
 
+        // Remove alert from session after displaying
         <?php unset($_SESSION['alert']); ?>
     <?php endif; ?>
 };

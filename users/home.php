@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $target_file = $target_dir . basename($_FILES["image"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $allowed_extensions = ["jpg", "jpeg", "png", "gif"];
+        $allowed_extensions = ["jpg", "jpeg", "png", "gif,"];
 
         if (in_array($imageFileType, $allowed_extensions)) {
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
@@ -66,10 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Error updating profile!');</script>";
     }
 }
-
-// Fetch announcements from the database
-$announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
-$announcement_result = $con->query($announcement_query);
 ?>
 
 <!DOCTYPE html>
@@ -82,14 +78,14 @@ $announcement_result = $con->query($announcement_query);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="w3-light-grey w3-animate-top">
+<body class="w3-light-grey">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
     <div class="container-fluid">
         <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <div class="navbar-nav ms-auto">
-            <a href="home.php" class="nav-link text-white">
+            <a href="home.php" class="nav-link text-white active">
                 <i class="fas fa-home"></i> Home
             </a>
             <a href="#" class="nav-link text-white">
@@ -106,84 +102,81 @@ $announcement_result = $con->query($announcement_query);
     </div>
 </nav>
 
-<div class="w3-third w3-animate-top" style="animation-duration: 0.5s;">
-    <div class="w3-card w3-white w3-padding">
-        <h3 class="w3-blue w3-padding">
-            <i class="fas fa-user-circle"></i> Student Information
-        </h3>
-        <div class="w3-center">
-            <?php 
-            $image_path = !empty($user_data['image']) ? htmlspecialchars($user_data['image']) : 'PERSON.png';
-            ?>
-            <img src="<?php echo $image_path; ?>" class="w3-circle" style="width:100px;height:100px;">
+<div class="container mt-4">
+    <div class="row g-4">
+
+        <!-- Profile Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <i class="fas fa-user-circle"></i> Student Information
+                </div>
+                <div class="card-body text-center">
+                    <img src="<?php echo !empty($user_data['image']) ? htmlspecialchars($user_data['image']) : 'PERSON.png'; ?>" 
+                         class="rounded-circle border border-3 border-primary mb-3" 
+                         style="width: 120px; height: 120px;">
+                    <table class="table table-striped">
+                        <tr><th>ID:</th><td><?php echo htmlspecialchars($user_data['id']); ?></td></tr>
+                        <tr><th>Name:</th><td><?php echo htmlspecialchars($user_data['lname']) . ', ' . htmlspecialchars($user_data['fname']) . ' ' . htmlspecialchars($user_data['MName']); ?></td></tr>
+                        <tr><th>Course:</th><td><?php echo htmlspecialchars($user_data['course']); ?></td></tr>
+                        <tr><th>Year/Level:</th><td><?php echo htmlspecialchars($user_data['level']); ?></td></tr>
+                        <tr><th>Email:</th><td><?php echo htmlspecialchars($user_data['email']); ?></td></tr>
+                        <tr><th>Address:</th><td><?php echo htmlspecialchars($user_data['address']); ?></td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
-        <p><i class="fas fa-id-card"></i> <b>ID:</b> <?php echo htmlspecialchars($user_data['id']); ?></p>
-        <p><i class="fas fa-user"></i> <b>Name:</b> <?php echo htmlspecialchars($user_data['lname']) . ', ' . htmlspecialchars($user_data['fname']) . ' ' . htmlspecialchars($user_data['MName']); ?></p>
-        <p><i class="fas fa-graduation-cap"></i> <b>Course:</b> <?php echo htmlspecialchars($user_data['course']); ?></p>
-        <p><i class="fas fa-layer-group"></i> <b>Year/Level:</b> <?php echo htmlspecialchars($user_data['level']); ?></p>
-        <p><i class="fas fa-envelope"></i> <b>Email:</b> <?php echo htmlspecialchars($user_data['email']); ?></p>
-        <p><i class="fas fa-map-marker-alt"></i> <b>Address:</b> <?php echo htmlspecialchars($user_data['address']); ?></p>
-    </div>
+
+        <!-- Announcements Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <i class="fas fa-bullhorn"></i> Announcements
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+    <?php
+    $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
+    $announcement_result = $con->query($announcement_query);
+
+    if ($announcement_result->num_rows > 0) {
+        $count = 0;
+        while ($announcement = $announcement_result->fetch_assoc()) {
+            $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
+            echo "<div class='$bgColor p-3 rounded mb-2'>"; // Adds padding and background
+            echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
+            echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
+            echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
+            echo '</div>';
+            $count++;
+        }
+    } else {
+        echo '<p class="text-center">No announcements available.</p>';
+    }
+    ?>
 </div>
 
-<!-- Announcements Section -->
-<div class="w3-third w3-animate-top" style="animation-duration: 0.5s;">
-    <div class="w3-card w3-white w3-padding">
-        <h3 class="w3-blue w3-padding w3-card-header">
-            <i class="fas fa-bullhorn"></i> Announcement
-        </h3>
-        <div class="w3-container w3-light-grey w3-padding">
-            <?php
-            if ($announcement_result->num_rows > 0) {
-                while ($announcement = $announcement_result->fetch_assoc()) {
-                    echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
-                    echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
-                    echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
-                    echo '<hr>'; // Visual separator for announcements
-                }
-            } else {
-                echo '<p>No announcements available.</p>';
-            }
-            ?>
+            </div>
         </div>
-    </div>
-</div>
 
-<div class="w3-third">
-    <div class="w3-card w3-white w3-padding" style="max-height: 400px; overflow-y: auto;">
-        <h3 class="w3-blue w3-padding">
-            <i class="fas fa-gavel"></i> Rules and Regulations
-        </h3>
-        <div class="w3-card-header">
-            <p><i class="fas fa-university"></i> <b>University of Cebu</b></p>
-            <p><i class="fas fa-book"></i> <b>COLLEGE OF INFORMATION & COMPUTER STUDIES</b></p>
-            <p><i class="fas fa-chalkboard-teacher"></i> <b>LABORATORY RULES AND REGULATIONS</b></p>
-            <p><i class="fas fa-info-circle"></i> To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
-            <ol>
-                <li><i class="fas fa-check-circle"></i> Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans, and other personal equipment must be switched off.</li>
-                <li><i class="fas fa-ban"></i> Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</li>
-                <li><i class="fas fa-wifi"></i> Surfing the Internet is allowed only with the permission of the instructor. Downloading and installing software is strictly prohibited.</li>
-                <li><i class="fas fa-lock"></i> Getting access to other websites not related to the course (especially pornographic and illicit sites) is strictly prohibited.</li>
-                <li><i class="fas fa-trash"></i> Deleting computer files and changing the set-up of the computer is a major offense.</li>
-                <li><i class="fas fa-clock"></i> Observe computer time usage carefully. A fifteen-minute allowance is given for each use; otherwise, the unit will be given to those who wish to "sit-in".</li>
-                <li><i class="fas fa-users"></i> Observe proper decorum while inside the laboratory.</li>
-                <li><i class="fas fa-user-shield"></i> Do not get inside the lab unless the instructor is present.</li>
-                <li><i class="fas fa-briefcase"></i> All bags, knapsacks, and the likes must be deposited at the counter.</li>
-                <li><i class="fas fa-map-marker-alt"></i> Follow the seating arrangement of your instructor.</li>
-                <li><i class="fas fa-times-circle"></i> At the end of class, all software programs must be closed.</li>
-                <li><i class="fas fa-chair"></i> Return all chairs to their proper places after using.</li>
-                <li><i class="fas fa-ban-smoking"></i> Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited inside the lab.</li>
-                <li><i class="fas fa-exclamation-circle"></i> Anyone causing a continual disturbance will be asked to leave the lab. Acts or gestures offensive to the members of the community, including public display of physical intimacy, are not tolerated.</li>
-                <li><i class="fas fa-shield-alt"></i> Persons exhibiting hostile or threatening behavior such as yelling, swearing, or disregarding requests made by lab personnel will be asked to leave the lab.</li>
-                <li><i class="fas fa-phone-alt"></i> For serious offenses, the lab personnel may call the Civil Security Office (CSU) for assistance.</li>
-                <li><i class="fas fa-tools"></i> Any technical problem or difficulty must be addressed to the laboratory supervisor, student assistant, or instructor immediately.</li>
-            </ol>
+        <!-- Rules Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark text-center">
+                    <i class="fas fa-gavel"></i> Rules and Regulations
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <p><i class="fas fa-check-circle text-success"></i> Maintain silence, proper decorum, and discipline inside the laboratory.</p>
+                    <p><i class="fas fa-ban text-danger"></i> Games are not allowed inside the lab.</p>
+                    <p><i class="fas fa-wifi text-primary"></i> Internet use is only allowed with instructor permission.</p>
+                    <p><i class="fas fa-lock text-secondary"></i> Avoid accessing inappropriate websites.</p>
+                    <p><i class="fas fa-trash text-danger"></i> Do not delete computer files or change settings.</p>
+                    <p><i class="fas fa-clock text-info"></i> Observe computer usage time limits.</p>
+                    <p><i class="fas fa-chair text-dark"></i> Return chairs to their proper place after class.</p>
+                    <p><i class="fas fa-exclamation-triangle text-warning"></i> For serious offenses, disciplinary action may be taken.</p>
+                </div>
+            </div>
         </div>
-        <div class="w3-card w3-padding">
-            <h3><i class="fas fa-exclamation-triangle"></i> Disciplinary Action</h3>
-            <p><i class="fas fa-flag"></i> <b>First Offense</b> - The Head or the Dean or OIC recommends to the Guidance Center for a suspension from classes for each offender.</p>
-            <p><i class="fas fa-flag-checkered"></i> <b>Second and Subsequent Offenses</b> - A recommendation for a heavier sanction will be endorsed to the Guidance Center.</p>
-        </div>
+
     </div>
 </div>
 

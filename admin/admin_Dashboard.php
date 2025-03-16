@@ -4,7 +4,7 @@ include 'db.php'; // Include your database connection file
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $admin_name = 'Admin'; // Replace with actual admin name if available
+    $admin_name = 'Mark'; // Replace with actual admin name if available
     $date = date('Y-m-d');
     $message = $_POST['message'];
 
@@ -86,7 +86,9 @@ $total_sit_in = 32;
                 <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
             </ul>
             <!-- Log Out Button -->
-            <a href="index.php" class="btn btn-danger ms-lg-3">Log Out</a>
+                <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>
+
+
         </div>
     </div>
 </div>
