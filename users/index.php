@@ -3,44 +3,50 @@ session_start();
 include('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($con, $_POST['username']);
+    $conn = openConnection();
+
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    $query = "SELECT * FROM user WHERE username = ?";
-    $stmt = mysqli_prepare($con, $query);
+    // Check if the user is an admin
+    $admin_query = "SELECT * FROM admin WHERE USER_NAME = ?";
+    $admin_stmt = mysqli_prepare($conn, $admin_query);
 
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "s", $username);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+    if ($admin_stmt) {
+        mysqli_stmt_bind_param($admin_stmt, "s", $username);
+        mysqli_stmt_execute($admin_stmt);
+        $admin_result = mysqli_stmt_get_result($admin_stmt);
 
-        if ($result && mysqli_num_rows($result) > 0) {
-            $user_data = mysqli_fetch_assoc($result);
+        if ($admin_result && mysqli_num_rows($admin_result) > 0) {
+            $admin_data = mysqli_fetch_assoc($admin_result);
 
-            if (password_verify($password, $user_data["password"])) {
-                $_SESSION['username'] = $username;
+            // Corrected password verification logic
+            if (password_verify($password, $admin_data["PASSWORD_HASH"])) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['ADMIN_ID'] = $admin_data['ADMIN_ID'];
+                $_SESSION['USER_NAME'] = $admin_data['USER_NAME'];
                 $_SESSION['alert'] = [
                     'type' => 'success',
                     'title' => 'Success!',
-                    'message' => '✅ Login Successful!',
-                    'redirect' => 'home.php'
+                    'message' => 'Login Successful!',
+                    'redirect' => 'admin_Dashboard.php'
                 ];
             } else {
                 $_SESSION['alert'] = [
                     'type' => 'error',
                     'title' => 'Oops...',
-                    'message' => '❌ Invalid Username or Password'
+                    'message' => 'Invalid Username or Password'
                 ];
             }
         } else {
             $_SESSION['alert'] = [
                 'type' => 'error',
                 'title' => 'Oops...',
-                'message' => '❌ Invalid Username or Password'
+                'message' => 'Invalid Username or Password'
             ];
         }
 
-        mysqli_stmt_close($stmt);
+        mysqli_stmt_close($admin_stmt);
     } else {
         $_SESSION['alert'] = [
             'type' => 'error',
@@ -48,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'message' => '❗ Database error! Please try again later.'
         ];
     }
+
+    closeConnection($conn);
 }
 ?>
 
@@ -55,25 +63,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="en">
 <head>
     <title>CCS Sit In Monitoring System</title>
-    <link rel="stylesheet" href="w3.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="w3-blue">
-    <div class="w3-card-4 w3-white w3-padding w3-round-xxlarge w3-animate-top" style="max-width:400px;margin:auto;margin-top:50px;">
-        <div class="w3-center">
-            <img src="ccs.png" alt="Image 1" class="w3-circle" style="width:80px;height:80px;margin:10px;">
-            <img src="ucmain.jpg" alt="Image 2" class="w3-circle" style="width:80px;height:80px;margin:10px;">
+<body class="bg-primary d-flex align-items-center min-vh-100">
+    <div class="card shadow-lg p-4 rounded-4 mx-auto" style="max-width: 400px;">
+        <div class="text-center mb-4">
+            <img src="ccs.png" alt="Image 1" class="rounded-circle" style="width:80px;height:80px;">
+            <img src="ucmain.jpg" alt="Image 2" class="rounded-circle ms-2" style="width:80px;height:80px;">
         </div>
-        <h2 class="w3-center">CCS Sit Monitoring System</h2>
+        <h2 class="text-center text-primary">CCS Sit Monitoring System</h2>
         <form method="POST">
-            <label>Username</label>
-            <input class="w3-input w3-border" type="text" name="username" placeholder="Enter username" required autocomplete="off">
-            <label>Password</label>
-            <input class="w3-input w3-border" type="password" name="password" placeholder="Enter password" required autocomplete="off">
-            <p><button class="w3-button w3-cyan w3-round-xlarge">Login</button></p>
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input class="form-control" type="text" name="username" placeholder="Enter username" required autocomplete="off">
+            </div>
 
-            <div class="container signin">
-                <p>Don't have an account? <a href="signup.php">Register</a>.</p>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" type="password" name="password" placeholder="Enter password" required autocomplete="off">
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-primary">Login</button>
+            </div>
+
+            <div class="text-center mt-3">
+                <p>Don't have an account? <a href="signup.php" class="text-decoration-none">Register</a>.</p>
             </div>
         </form>
     </div>
@@ -85,9 +102,7 @@ window.onload = function () {
             icon: '<?php echo $_SESSION['alert']['type']; ?>',
             title: '<?php echo $_SESSION['alert']['title']; ?>',
             text: '<?php echo $_SESSION['alert']['message']; ?>',
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false
+            confirmButtonText: 'OK'
         }).then(() => {
             <?php if (!empty($_SESSION['alert']['redirect'])): ?>
                 window.location.href = '<?php echo $_SESSION['alert']['redirect']; ?>';

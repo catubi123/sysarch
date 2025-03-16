@@ -1,14 +1,40 @@
 <?php
 session_start();
+include 'db.php'; // Include your database connection file
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $admin_name = 'Admin'; // Replace with actual admin name if available
+    $date = date('Y-m-d');
+    $message = $_POST['message'];
+
+    $conn = openConnection();
+    $stmt = $conn->prepare("INSERT INTO announce (admin_name, date, message) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $admin_name, $date, $message);
+    $stmt->execute();
+    $stmt->close();
+    closeConnection($conn);
+
+    // Redirect to avoid form resubmission
+    header("Location: admin_Dashboard.php");
+    exit();
+}
+
+// Fetch announcements from the database
+$announcements = [];
+$conn = openConnection();
+$sql = "SELECT * FROM announce ORDER BY announce_id DESC";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+}
+closeConnection($conn);
 
 $students_registered = 7;
 $current_sit_in = 0;
 $total_sit_in = 32;
-
-$announcements = [
-    ["date" => "2024-May-08", "content" => "We are thrilled to announce the launch of our new CCS system!"],
-    ["date" => "2024-May-08", "content" => "We are excited to announce the launch of our new website!"]
-];
 ?>
 
 <!DOCTYPE html>
@@ -28,6 +54,14 @@ $announcements = [
         .card {
             height: 100%; /* Ensures both cards are the same height */
         }
+        .announcement-item {
+            padding: 15px; /* Adds space around each announcement */
+            margin-bottom: 10px; /* Separates announcements for better readability */
+            border: 1px solid #ddd; /* Adds a light border for definition */
+            border-radius: 5px; /* Softens the edges */
+            background-color: #f9f9f9; /* Light background for contrast */
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for a modern look */
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -42,7 +76,7 @@ $announcements = [
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="admin_Dashboard.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Sit-in</a></li>
@@ -51,7 +85,8 @@ $announcements = [
                 <li class="nav-item"><a class="nav-link text-white" href="#">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
             </ul>
-            <button class="btn btn-danger ms-lg-3">Log Out</button>
+            <!-- Log Out Button -->
+            <a href="index.php" class="btn btn-danger ms-lg-3">Log Out</a>
         </div>
     </div>
 </div>
@@ -72,11 +107,15 @@ $announcements = [
     <div class="col-md-6">
         <div class="card p-3 mb-3">
             <h4 class="highlight-text">Announcement</h4>
-            <textarea class="form-control mb-2" placeholder="Type your new announcement here..." rows="4"></textarea>
-            <button class="btn btn-success">Submit</button>
+            <form method="POST" action="">
+                <textarea class="form-control mb-2" name="message" placeholder="Type your new announcement here..." rows="4" required></textarea>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
             <ul class="list-unstyled mt-3">
                 <?php foreach ($announcements as $announcement) { ?>
-                    <li><strong><?php echo $announcement['date']; ?>:</strong> <?php echo $announcement['content']; ?></li>
+                    <li class="announcement-item">
+                        <strong><?php echo $announcement['date']; ?>:</strong> <?php echo $announcement['message']; ?>
+                    </li>
                 <?php } ?>
             </ul>
         </div>
