@@ -32,9 +32,9 @@ if ($result->num_rows > 0) {
 }
 closeConnection($conn);
 
-$students_registered = 7;
+$students_registered = 0;
 $current_sit_in = 0;
-$total_sit_in = 32;
+$total_sit_in = 0;
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +45,7 @@ $total_sit_in = 32;
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .highlight-text {
-            background-color: #0D47A1;
+            background-color: #0d6efd;
             color: #FFFFFF;
             padding: 8px 12px;
             border-top-left-radius: 10px;
@@ -111,7 +111,7 @@ $total_sit_in = 32;
             <h4 class="highlight-text">Announcement</h4>
             <form method="POST" action="">
                 <textarea class="form-control mb-2" name="message" placeholder="Type your new announcement here..." rows="4" required></textarea>
-                <button type="submit" class="btn btn-success">Submit</button>
+                <button type="submit" class="btn btn-success">Create</button>
             </form>
             <ul class="list-unstyled mt-3">
                 <?php foreach ($announcements as $announcement) { ?>

@@ -4,12 +4,13 @@ ob_start(); // Start output buffering
 include('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($con, $_POST['username']);
+    $conn = openConnection(); // Ensure this function is defined in `db.php`
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    // Check if the user is a regular user
+    // Check if the user is a regular user or admin
     $user_query = "SELECT * FROM user WHERE username = ?";
-    $user_stmt = mysqli_prepare($con, $user_query);
+    $user_stmt = mysqli_prepare($conn, $user_query);
 
     if ($user_stmt) {
         mysqli_stmt_bind_param($user_stmt, "s", $username);
@@ -19,7 +20,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($user_result && mysqli_num_rows($user_result) > 0) {
             $user_data = mysqli_fetch_assoc($user_result);
 
-            if (password_verify($password, $user_data["password"])) {
+            // Check for admin role
+            if ($user_data['role'] === 'admin' && $password === $user_data['password']) {
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = 'admin';
+
+                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Admin Login Successful!',
+                            text: 'Welcome, Admin " . htmlspecialchars($username) . "!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '../admin/admin_Dashboard.php';
+                        });
+                    });
+                </script>";
+                exit();
+            }
+
+            // Regular user check
+            if ($user_data['role'] === 'user' && password_verify($password, $user_data['password'])) {
                 $_SESSION['username'] = $username;
 
                 echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
@@ -39,44 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
         }
+
         mysqli_stmt_close($user_stmt);
-    }
-
-    // Check if the user is an admin
-    $admin_query = "SELECT * FROM admin WHERE USER_NAME = ?";
-    $admin_stmt = mysqli_prepare($con, $admin_query);
-
-    if ($admin_stmt) {
-        mysqli_stmt_bind_param($admin_stmt, "s", $username);
-        mysqli_stmt_execute($admin_stmt);
-        $admin_result = mysqli_stmt_get_result($admin_stmt);
-
-        if ($admin_result && mysqli_num_rows($admin_result) > 0) {
-            $admin_data = mysqli_fetch_assoc($admin_result);
-
-            if (password_verify($password, $admin_data["PASSWORD_HASH"])) {
-                $_SESSION['username'] = $username;
-                
-                $_SESSION['role'] = 'admin';
-
-                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-                echo "<script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Admin Login Successful!',
-                            text: 'Welcome, Admin " . htmlspecialchars($username) . "!',
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.href = 'admin_Dashboard.php';
-                        });
-                    });
-                </script>";
-                exit();
-            }
-        }
-        mysqli_stmt_close($admin_stmt);
     }
 
     // If login fails
@@ -92,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         });
     </script>";
+    closeConnection($conn); // Close the database connection
 }
 ob_end_flush(); // Flush the output buffer
 ?>
