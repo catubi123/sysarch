@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 17, 2025 at 09:45 AM
+-- Generation Time: Mar 17, 2025 at 10:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,8 +59,8 @@ CREATE TABLE `student_sit_in` (
   `id_number` int(11) NOT NULL,
   `sit_purpose` varchar(50) NOT NULL,
   `sit_lab` varchar(20) NOT NULL,
-  `sit_login` varchar(15) NOT NULL,
-  `sit_logout` varchar(15) NOT NULL,
+  `time_in` varchar(15) NOT NULL,
+  `time_out` varchar(15) NOT NULL,
   `sit_date` varchar(10) NOT NULL,
   `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -80,6 +80,7 @@ CREATE TABLE `user` (
   `Level` varchar(10) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
+  `remaining_sesssion` int(11) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
@@ -90,14 +91,14 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `image`, `email`, `address`, `role`) VALUES
-(1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin'),
-(1000, 'Catubig', 'Mark', 'Dave', 'BSCPE', '3', 'hello', '$2y$10$cpdo7hVxeDc1mcrTrHnKdeO0dA0WOm8.Nge/afoXAdJJwGwzH/e4S', NULL, '', NULL, 'user'),
-(4568, 'Catubig', 'MarkARA', 'Dave', 'BSIT', '3', 'DAVE', '$2y$10$bCbRkgfhDYkX4TFRaGuf8OQPWns32/Ky5kSV/piZtdIhviR7b2BN2', 'uploads/download.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user'),
-(46541, 'Catubig', 'Mark', '', 'BPED', '3', 'taya', '$2y$10$L9TOdiuQ/m7tS7PBStqxiOQAEn6WLm7I.hI2LN0qMmQ5UR8ySKZni', 'uploads/67bd41154a538_19740.png', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user'),
-(55564, 'Catubig', 'Mark', 'Dave', 'BSCRIM', '1', 'alpha', '$2y$10$akwk3ZtdoBvwPunPU5cCYeEJBijsmqTzL9UdbalI/XQdWpsEoevrW', NULL, '', NULL, 'user'),
-(56432, 'Catubig', 'Mark', 'Dave', 'BSCPE', '4', 'USER1232', '$2y$10$.kjgnub5o4uPJyJ6.ikT.eAjw1ne.LlxFLcGpsihZwRzd6UQsWpKm', NULL, '', NULL, 'user'),
-(5555546, 'cabingatan', 'Mark', 'Dave', 'BSIT', '3', 'user1', '$2y$10$WlahTUxBMjmjjz6hhJICQ.STaFvD3iuJ4P4rHl9bHEC7qmFOd0.JW', NULL, '', NULL, 'user');
+INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `remaining_sesssion`, `image`, `email`, `address`, `role`) VALUES
+(1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', 0, NULL, 'admin@example.com', 'HQ Address', 'admin'),
+(1000, 'Catubig', 'Mark', 'Dave', 'BSCPE', '3', 'hello', '$2y$10$cpdo7hVxeDc1mcrTrHnKdeO0dA0WOm8.Nge/afoXAdJJwGwzH/e4S', 0, NULL, '', NULL, 'user'),
+(4568, 'Catubig', 'MarkARA', 'Dave', 'BSIT', '3', 'DAVE', '$2y$10$bCbRkgfhDYkX4TFRaGuf8OQPWns32/Ky5kSV/piZtdIhviR7b2BN2', 0, 'uploads/download.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user'),
+(46541, 'Catubig', 'Mark', '', 'BPED', '3', 'taya', '$2y$10$L9TOdiuQ/m7tS7PBStqxiOQAEn6WLm7I.hI2LN0qMmQ5UR8ySKZni', 0, 'uploads/67bd41154a538_19740.png', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user'),
+(55564, 'Catubig', 'Mark', 'Dave', 'BSCRIM', '1', 'alpha', '$2y$10$akwk3ZtdoBvwPunPU5cCYeEJBijsmqTzL9UdbalI/XQdWpsEoevrW', 0, NULL, '', NULL, 'user'),
+(56432, 'Catubig', 'Mark', 'Dave', 'BSCPE', '4', 'USER1232', '$2y$10$.kjgnub5o4uPJyJ6.ikT.eAjw1ne.LlxFLcGpsihZwRzd6UQsWpKm', 0, NULL, '', NULL, 'user'),
+(5555546, 'cabingatan', 'Mark', 'Dave', 'BSIT', '3', 'user1', '$2y$10$WlahTUxBMjmjjz6hhJICQ.STaFvD3iuJ4P4rHl9bHEC7qmFOd0.JW', 0, NULL, '', NULL, 'user');
 
 --
 -- Indexes for dumped tables

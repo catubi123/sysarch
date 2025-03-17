@@ -34,7 +34,7 @@ if (isset($_GET['search'])) {
     } else {
         $error = "Please enter a valid ID.";
     }
-}
+} 
 
 closeConnection($conn);
 ?>
@@ -48,21 +48,8 @@ closeConnection($conn);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-white">
-
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Admin</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="admin_Dashboard.php">Home</a></li>
-                <li class="nav-item"><a class="nav-link active" href="search.php">Search</a></li>
-            </ul>
-            <a href="../users/index.php" class="btn btn-danger">Log Out</a>
-        </div>
-    </div>
-</nav>
-
+<?php include 'admin_navbar.php' ?>
 <!-- Search Bar -->
 <div class="container mt-4">
     <form method="GET" class="input-group mb-4">
@@ -92,6 +79,39 @@ closeConnection($conn);
                 <p class="p-2"><strong>Course:</strong> <?php echo htmlspecialchars($userData['course']); ?></p>
                 <p class="p-2"><strong>Year Level:</strong> <?php echo htmlspecialchars($userData['level']); ?></p>
                 <p class="p-2"><strong>Email:</strong> <?php echo htmlspecialchars($userData['email']); ?></p>
+                
+                <!-- Add Sit-in Form -->
+                <form action="process_sitin.php" method="POST" class="mt-3">
+                    <input type="hidden" name="id_number" value="<?php echo htmlspecialchars($userData['id']); ?>">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <select name="sit_purpose" class="form-select" required>
+                                <option value="">Select Purpose</option>
+                                <option value="Java">Java</option>
+                                <option value="C#">C#</option>
+                                <option value="PHP">PHP</option>
+                                <option value="ASP.net">ASP.net</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <select name="sit_lab" class="form-select" required>
+                                <option value="">Select Laboratory</option>
+                                <option value="524">524</option>
+                                <option value="526">526</option>
+                                <option value="528">528</option>
+                                <option value="530">530</option>
+                                <option value="542">542</option>
+                                <option value="544">544</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary">Record Sit-in</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
