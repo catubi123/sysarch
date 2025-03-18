@@ -4,6 +4,7 @@ include('db.php');
 $conn = openConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
     $id_number = $_POST['id_number'];
     $sit_purpose = $_POST['sit_purpose'];
     $sit_lab = $_POST['sit_lab'];
