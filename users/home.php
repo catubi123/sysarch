@@ -10,7 +10,7 @@ if (!isset($_SESSION['username'])) {
 
 // Fetch user data using username
 $username = $_SESSION['username'];
-$query = "SELECT id, lname, fname, MName, email, course, level, image, address FROM user WHERE username = ?";
+$query = "SELECT id, lname, fname, MName, email, course, level, image, address, remaining_sesssion FROM user WHERE username = ?";
 $stmt = $con->prepare($query);
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -122,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr><th>Year/Level:</th><td><?php echo htmlspecialchars($user_data['level']); ?></td></tr>
                         <tr><th>Email:</th><td><?php echo htmlspecialchars($user_data['email']); ?></td></tr>
                         <tr><th>Address:</th><td><?php echo htmlspecialchars($user_data['address']); ?></td></tr>
+                        <tr><th>Remaining Sessions:</th><td><?php echo htmlspecialchars($user_data['remaining_sesssion']); ?></td></tr>
                     </table>
                 </div>
             </div>

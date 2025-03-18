@@ -19,8 +19,8 @@ if (isset($_GET['search'])) {
     $searchID = trim($_GET['search']); // Remove unnecessary spaces
 
     if (!empty($searchID)) {
-        // Use a prepared statement to prevent SQL injection
-        $stmt = $conn->prepare("SELECT id, lname, fname, MName, course, level, email, image FROM user WHERE id = ?");
+        // Updated query to include remaining_sesssion
+        $stmt = $conn->prepare("SELECT id, lname, fname, MName, course, level, email, image, remaining_sesssion FROM user WHERE id = ?");
         $stmt->bind_param("s", $searchID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -73,14 +73,16 @@ closeConnection($conn);
                      alt="Profile Image" class="img-fluid rounded-circle" width="100" />
             </div>
             <div class="col-md-10">
-                <!-- Data with Padding -->
+                <!-- Updated Data Display -->
                 <p class="p-2"><strong>Name:</strong> <?php echo htmlspecialchars($userData['fname'] . ' ' . $userData['MName'] . ' ' . $userData['lname']); ?></p>
                 <p class="p-2"><strong>ID:</strong> <?php echo htmlspecialchars($userData['id']); ?></p>
                 <p class="p-2"><strong>Course:</strong> <?php echo htmlspecialchars($userData['course']); ?></p>
                 <p class="p-2"><strong>Year Level:</strong> <?php echo htmlspecialchars($userData['level']); ?></p>
                 <p class="p-2"><strong>Email:</strong> <?php echo htmlspecialchars($userData['email']); ?></p>
+                <p class="p-2"><strong>Remaining Sessions:</strong> <?php echo htmlspecialchars($userData['remaining_sesssion']); ?></p>
                 
                 <!-- Add Sit-in Form -->
+                <?php if ($userData['remaining_sesssion'] > 0): ?>
                 <form action="process_sitin.php" method="POST" class="mt-3">
                     <input type="hidden" name="id_number" value="<?php echo htmlspecialchars($userData['id']); ?>">
                     
@@ -92,6 +94,9 @@ closeConnection($conn);
                                 <option value="C#">C#</option>
                                 <option value="PHP">PHP</option>
                                 <option value="ASP.net">ASP.net</option>
+                                <option value="Python">Phyton</option>
+                                <option value="Others">Others</option>
+
                             </select>
                         </div>
                         
@@ -112,6 +117,11 @@ closeConnection($conn);
                         </div>
                     </div>
                 </form>
+                <?php else: ?>
+                <div class="alert alert-warning mt-3">
+                    No remaining sessions available. Cannot record new sit-in.
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

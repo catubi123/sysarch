@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 17, 2025 at 10:37 AM
+-- Generation Time: Mar 18, 2025 at 10:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,6 +65,19 @@ CREATE TABLE `student_sit_in` (
   `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `student_sit_in`
+--
+
+INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `time_in`, `time_out`, `sit_date`, `status`) VALUES
+(0, 46541, 'PHP', '544', '10:51:32', '10:54:10', '2025-03-17', 'Completed'),
+(0, 55564, 'ASP.net', '542', '10:56:03', '10:54:10', '2025-03-17', 'Completed'),
+(0, 55564, 'C#', '526', '10:56:43', '10:54:10', '2025-03-17', 'Completed'),
+(0, 46541, 'C#', '530', '11:07:35', '10:54:10', '2025-03-17', 'Completed'),
+(0, 46541, 'PHP', '530', '10:29:53', '10:54:10', '2025-03-18', 'Completed'),
+(0, 46541, 'Java', '544', '10:41:01', '10:54:10', '2025-03-18', 'Completed'),
+(0, 789946, 'C#', '542', '10:54:08', '10:54:10', '2025-03-18', 'Completed');
+
 -- --------------------------------------------------------
 
 --
@@ -80,7 +93,7 @@ CREATE TABLE `user` (
   `Level` varchar(10) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
-  `remaining_sesssion` int(11) NOT NULL,
+  `remaining_sesssion` int(11) NOT NULL DEFAULT 30,
   `image` varchar(255) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
@@ -98,6 +111,7 @@ INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `usernam
 (46541, 'Catubig', 'Mark', '', 'BPED', '3', 'taya', '$2y$10$L9TOdiuQ/m7tS7PBStqxiOQAEn6WLm7I.hI2LN0qMmQ5UR8ySKZni', 0, 'uploads/67bd41154a538_19740.png', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user'),
 (55564, 'Catubig', 'Mark', 'Dave', 'BSCRIM', '1', 'alpha', '$2y$10$akwk3ZtdoBvwPunPU5cCYeEJBijsmqTzL9UdbalI/XQdWpsEoevrW', 0, NULL, '', NULL, 'user'),
 (56432, 'Catubig', 'Mark', 'Dave', 'BSCPE', '4', 'USER1232', '$2y$10$.kjgnub5o4uPJyJ6.ikT.eAjw1ne.LlxFLcGpsihZwRzd6UQsWpKm', 0, NULL, '', NULL, 'user'),
+(789946, 'hahah', 'ahaka', 'agaga', 'BSIT', '3', 'rj', '$2y$10$Br8ZIrJIfgn6hZpY.SMILeBGMASJh5Mv9II8K8Xt6eaxUgwdNdbgu', 29, NULL, '', NULL, 'user'),
 (5555546, 'cabingatan', 'Mark', 'Dave', 'BSIT', '3', 'user1', '$2y$10$WlahTUxBMjmjjz6hhJICQ.STaFvD3iuJ4P4rHl9bHEC7qmFOd0.JW', 0, NULL, '', NULL, 'user');
 
 --
