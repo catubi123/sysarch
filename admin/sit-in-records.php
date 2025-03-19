@@ -3,6 +3,11 @@ session_start();
 include('db.php');
 $conn = openConnection();
 
+// Pagination settings
+$records_per_page = 5;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $records_per_page;
+
 // Get filter parameters
 $date_filter = isset($_GET['date']) ? $_GET['date'] : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
@@ -20,7 +25,13 @@ if ($status_filter) {
     $sql .= " AND s.status = '$status_filter'";
 }
 
-$sql .= " ORDER BY s.sit_date DESC, s.time_in DESC";
+// Get total records for pagination
+$total_records_query = $conn->query($sql);
+$total_records = $total_records_query->num_rows;
+$total_pages = ceil($total_records / $records_per_page);
+
+// Add pagination to main query
+$sql .= " ORDER BY s.sit_date DESC, s.time_in DESC LIMIT $offset, $records_per_page";
 $result = $conn->query($sql);
 
 // Get purpose statistics
@@ -66,7 +77,7 @@ while($row = $lab_result->fetch_assoc()) {
         <div class="col-md-4 mx-auto">
                 <div class="card">
                     <div class="card-body" style="height: 300px;">
-                        <h5 class="card-title text-center">Purpose Distribution</h5>
+                        <h5 class="card-title text-center">Purpose </h5>
                         <canvas id="purposeChart"></canvas>
                     </div>
                 </div>
@@ -74,7 +85,7 @@ while($row = $lab_result->fetch_assoc()) {
             <div class="col-md-4 mx-auto">
                 <div class="card">
                     <div class="card-body" style="height: 300px;">
-                        <h5 class="card-title text-center">Laboratory Distribution</h5>
+                        <h5 class="card-title text-center">Laboratory </h5>
                         <canvas id="labChart"></canvas>
                     </div>
                 </div>
@@ -104,7 +115,7 @@ while($row = $lab_result->fetch_assoc()) {
         </div>
         
         <div class="table-responsive">
-            <table id="recordsTable" class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>ID Number</th>
@@ -140,21 +151,33 @@ while($row = $lab_result->fetch_assoc()) {
                     <?php endwhile; ?>
                 </tbody>
             </table>
+
+            <!-- Add pagination controls -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $page-1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Previous</a>
+                        </li>
+                        
+                        <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                            <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+                        
+                        <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $page+1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#recordsTable').DataTable({
-                "order": [[8, "desc"], [6, "desc"]], // Sort by date and time
-                "pageLength": 25
-            });
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
             const chartOptions = {
                 responsive: true,

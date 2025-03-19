@@ -4,6 +4,7 @@ session_start();
 
 // Database connection
 include('db.php');
+require_once '../check_active_sitin.php';
 $conn = openConnection();
 
 if ($conn->connect_error) {
@@ -19,8 +20,8 @@ if (isset($_GET['search'])) {
     $searchID = trim($_GET['search']); // Remove unnecessary spaces
 
     if (!empty($searchID)) {
-        // Updated query to include remaining_sesssion
-        $stmt = $conn->prepare("SELECT id, lname, fname, MName, course, level, email, image, remaining_sesssion FROM user WHERE id = ?");
+        // Updated query to include remaining_session
+        $stmt = $conn->prepare("SELECT id, lname, fname, MName, course, level, email, image, remaining_session FROM user WHERE id = ?");
         $stmt->bind_param("s", $searchID);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -79,10 +80,13 @@ closeConnection($conn);
                 <p class="p-2"><strong>Course:</strong> <?php echo htmlspecialchars($userData['course']); ?></p>
                 <p class="p-2"><strong>Year Level:</strong> <?php echo htmlspecialchars($userData['level']); ?></p>
                 <p class="p-2"><strong>Email:</strong> <?php echo htmlspecialchars($userData['email']); ?></p>
-                <p class="p-2"><strong>Remaining Sessions:</strong> <?php echo htmlspecialchars($userData['remaining_sesssion']); ?></p>
+                <p class="p-2"><strong>Remaining Sessions:</strong> <?php echo htmlspecialchars($userData['remaining_session']); ?></p>
                 
-                <!-- Add Sit-in Form -->
-                <?php if ($userData['remaining_sesssion'] > 0): ?>
+                <?php 
+                if ($userData['remaining_session'] > 0): 
+                    if (!hasActiveSitIn($userData['id'])):
+                ?>
+                <!-- Existing sit-in form -->
                 <form action="process_sitin.php" method="POST" class="mt-3">
                     <input type="hidden" name="id_number" value="<?php echo htmlspecialchars($userData['id']); ?>">
                     
@@ -99,6 +103,7 @@ closeConnection($conn);
 
                             </select>
                         </div>
+                        
                         
                         <div class="col-md-4">
                             <select name="sit_lab" class="form-select" required>
@@ -118,6 +123,13 @@ closeConnection($conn);
                     </div>
                 </form>
                 <?php else: ?>
+                <div class="alert alert-warning mt-3">
+                    User already has an active sit-in. Please end the current sit-in before starting a new one.
+                </div>
+                <?php 
+                    endif;
+                else: 
+                ?>
                 <div class="alert alert-warning mt-3">
                     No remaining sessions available. Cannot record new sit-in.
                 </div>

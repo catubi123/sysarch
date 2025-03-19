@@ -42,13 +42,9 @@ include('admin_navbar.php');
                         </thead>
                         <tbody>
                             <?php
-                            $query = "SELECT u.id, u.lname, u.fname, u.MName, u.Level, u.Course, 
-                                    IFNULL(u.remaining_session, 
-                                        (SELECT value FROM settings WHERE setting_name = 'default_sessions')
-                                    ) as remaining_session 
-                                    FROM user u 
-                                    WHERE u.role = 'user'
-                                    ORDER BY u.lname ASC";
+                               // This query is correct, using remaining_session
+                               $query = "SELECT id, lname, fname, MName, Level, Course, remaining_session 
+                                      FROM user WHERE role = 'user' ORDER BY lname ASC";
                             
                             $result = mysqli_query($con, $query);
                             if (!$result) {
@@ -56,6 +52,7 @@ include('admin_navbar.php');
                             } else if (mysqli_num_rows($result) > 0) {
                                 while ($row = mysqli_fetch_assoc($result)) {
                                     $sessionClass = '';
+                                    // Make sure we're using the correct column name
                                     $remaining = intval($row['remaining_session']);
                                     
                                     if ($remaining <= 5) {

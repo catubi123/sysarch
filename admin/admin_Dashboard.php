@@ -107,6 +107,10 @@ closeConnection($conn);
             background: #555;
         }
     </style>
+    <!-- Add SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
 <?php include 'admin_navbar.php' ?>
@@ -133,8 +137,25 @@ closeConnection($conn);
             <div class="announcement-container">
                 <ul class="list-unstyled">
                     <?php foreach ($announcements as $announcement) { ?>
-                        <li class="announcement-item">
-                            <strong><?php echo $announcement['date']; ?>:</strong> <?php echo $announcement['message']; ?>
+                        <li class="announcement-item" id="announcement-<?php echo $announcement['announce_id']; ?>">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <strong><?php echo htmlspecialchars($announcement['date']); ?>:</strong> 
+                                    <span class="announcement-text-<?php echo $announcement['announce_id']; ?>">
+                                        <?php echo htmlspecialchars($announcement['message']); ?>
+                                    </span>
+                                </div>
+                                <div class="btn-group ms-2">
+                                    <button class="btn btn-sm btn-warning me-1" 
+                                            onclick="editAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" 
+                                            onclick="deleteAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         </li>
                     <?php } ?>
                 </ul>
@@ -142,6 +163,137 @@ closeConnection($conn);
         </div>
     </div>
 </div>
+
+<!-- Add Edit Modal -->
+<div class="modal fade" id="editAnnouncementModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Announcement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editAnnouncementForm">
+                    <input type="hidden" id="edit_announcement_id">
+                    <textarea class="form-control" id="edit_announcement_message" rows="4" required></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateAnnouncement()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editAnnouncement(id, button) {
+    // Get the announcement text from the current announcement item
+    const announcementText = document.querySelector(`.announcement-text-${id}`).innerText;
+    
+    // Set values in modal
+    document.getElementById('edit_announcement_id').value = id;
+    document.getElementById('edit_announcement_message').value = announcementText;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editAnnouncementModal'));
+    modal.show();
+}
+
+function updateAnnouncement() {
+    const id = document.getElementById('edit_announcement_id').value;
+    const message = document.getElementById('edit_announcement_message').value;
+    
+    if (!message.trim()) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Announcement cannot be empty!'
+        });
+        return;
+    }
+
+    fetch('process_announcement.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=update&id=${encodeURIComponent(id)}&message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'success') {
+            // Update only the specific announcement text
+            const announcementText = document.querySelector(`.announcement-text-${id}`);
+            if (announcementText) {
+                announcementText.textContent = message;
+            }
+            
+            // Close modal and show success message
+            bootstrap.Modal.getInstance(document.getElementById('editAnnouncementModal')).hide();
+            Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: 'Announcement has been updated successfully.'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update announcement'
+            });
+        }
+    });
+}
+
+function deleteAnnouncement(id, button) {
+    // Get the announcement text for confirmation
+    const announcementText = document.querySelector(`.announcement-text-${id}`).innerText;
+    const preview = announcementText.length > 50 ? announcementText.substring(0, 50) + '...' : announcementText;
+
+    Swal.fire({
+        title: 'Delete Announcement?',
+        text: `Are you sure you want to delete: "${preview}"`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('process_announcement.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=delete&id=${encodeURIComponent(id)}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    // Remove only the specific announcement element
+                    const announcementItem = document.getElementById(`announcement-${id}`);
+                    if (announcementItem) {
+                        announcementItem.remove();
+                    }
+                    
+                    Swal.fire(
+                        'Deleted!',
+                        'The announcement has been deleted.',
+                        'success'
+                    );
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to delete announcement.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+}
+</script>
 
 <script>
     const ctx2 = document.getElementById('statisticsChart').getContext('2d');

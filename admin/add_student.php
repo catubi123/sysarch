@@ -74,12 +74,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">Year Level</label>
-                                    <input type="text" name="level" class="form-control" required>
+                                    <label for="level" class="form-label">Year Level</label>
+                                    <select class="form-select" id="level" name="level" required>
+                                        <option value="" disabled selected>Select Year Level</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label">Course</label>
-                                    <input type="text" name="course" class="form-control" required>
+                                    <label for="course" class="form-label">Course</label>
+                                    <select class="form-select" id="course" name="course" required>
+                                        <option value="" disabled selected>Select Course</option>
+                                        <option value="BSIT">BSIT</option>
+                                        <option value="BSCS">BSCS</option>
+                                        <option value="BSBS">BSBS</option>
+                                        <option value="BSCJ">BSCJ</option>
+                                        <option value="BSCA">BSCA</option>
+                                        <option value="BSHM">BSHM</option>
+                                        <option value="BSCPE">BSCPE</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Password</label>

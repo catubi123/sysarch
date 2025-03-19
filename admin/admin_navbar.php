@@ -11,7 +11,6 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link text-white" href="admin_Dashboard.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in.php">Sit-in</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in-records.php">View Sit-in Records</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="student_information.php">View List of Students</a></li>
