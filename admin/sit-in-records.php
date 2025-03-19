@@ -64,113 +64,133 @@ while($row = $lab_result->fetch_assoc()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .content-wrapper {
+            height: calc(100vh - 56px); /* Adjust 56px according to your navbar height */
+            overflow-y: auto;
+            padding: 20px;
+            margin-top: 56px; /* Should match navbar height */
+        }
+        body {
+            overflow: hidden; /* Prevent double scrollbar */
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body class="bg-white">
     <?php include 'admin_navbar.php' ?>
     
-    <div class="container mt-4">
-        <h2>Sit-in Records</h2>
+    <div class="content-wrapper">
+        <div class="container">
+            <h2>Sit-in Records</h2>
 
-        <!-- Add charts container before filters -->
-        <div class="row mb-4 justify-content-center">
+            <!-- Add charts container before filters -->
+            <div class="row mb-4 justify-content-center">
 
-        <div class="col-md-4 mx-auto">
-                <div class="card">
-                    <div class="card-body" style="height: 300px;">
-                        <h5 class="card-title text-center">Purpose </h5>
-                        <canvas id="purposeChart"></canvas>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-4 mx-auto">
-                <div class="card">
-                    <div class="card-body" style="height: 300px;">
-                        <h5 class="card-title text-center">Laboratory </h5>
-                        <canvas id="labChart"></canvas>
+                    <div class="card">
+                        <div class="card-body" style="height: 300px;">
+                            <h5 class="card-title text-center">Purpose </h5>
+                            <canvas id="purposeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mx-auto">
+                    <div class="card">
+                        <div class="card-body" style="height: 300px;">
+                            <h5 class="card-title text-center">Laboratory </h5>
+                            <canvas id="labChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Centered Filters -->
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-8">
-                <form method="GET" class="row g-3">
-                    <div class="col-md-5">
-                        <input type="date" name="date" class="form-control" value="<?php echo $date_filter; ?>">
-                    </div>
-                    <div class="col-md-4">
-                        <select name="status" class="form-select">
-                            <option value="">All Status</option>
-                            <option value="Active" <?php echo $status_filter == 'Active' ? 'selected' : ''; ?>>Active</option>
-                            <option value="Completed" <?php echo $status_filter == 'Completed' ? 'selected' : ''; ?>>Completed</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <button type="submit" class="btn btn-primary me-2">Filter</button>
-                        <a href="sit-in-records.php" class="btn btn-secondary">Reset</a>
-                    </div>
-                </form>
+            
+            <!-- Centered Filters -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-5">
+                            <input type="date" name="date" class="form-control" value="<?php echo $date_filter; ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <select name="status" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="Active" <?php echo $status_filter == 'Active' ? 'selected' : ''; ?>>Active</option>
+                                <option value="Completed" <?php echo $status_filter == 'Completed' ? 'selected' : ''; ?>>Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <button type="submit" class="btn btn-primary me-2">Filter</button>
+                            <a href="sit-in-records.php" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID Number</th>
-                        <th>Name</th>
-                        <th>Course</th>
-                        <th>Year Level</th>
-                        <th>Purpose</th>
-                        <th>Laboratory</th>
-                        <th>Time In</th>
-                        <th>Time Out</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['id_number']); ?></td>
-                        <td><?php echo htmlspecialchars($row['fname'] . ' ' . $row['lname']); ?></td>
-                        <td><?php echo htmlspecialchars($row['course']); ?></td>
-                        <td><?php echo htmlspecialchars($row['level']); ?></td>
-                        <td><?php echo htmlspecialchars($row['sit_purpose']); ?></td>
-                        <td><?php echo htmlspecialchars($row['sit_lab']); ?></td>
-                        <td><?php echo htmlspecialchars($row['time_in']); ?></td>
-                        <td><?php echo $row['time_out'] ? htmlspecialchars($row['time_out']) : '-'; ?></td>
-                        <td><?php echo htmlspecialchars($row['sit_date']); ?></td>
-                        <td>
-                            <span class="badge <?php echo $row['status'] == 'Active' ? 'bg-success' : 'bg-secondary'; ?>">
-                                <?php echo htmlspecialchars($row['status']); ?>
-                            </span>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+            
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID Number</th>
+                            <th>Name</th>
+                            <th>Course</th>
+                            <th>Year Level</th>
+                            <th>Purpose</th>
+                            <th>Laboratory</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['id_number']); ?></td>
+                            <td><?php echo htmlspecialchars($row['fname'] . ' ' . $row['lname']); ?></td>
+                            <td><?php echo htmlspecialchars($row['course']); ?></td>
+                            <td><?php echo htmlspecialchars($row['level']); ?></td>
+                            <td><?php echo htmlspecialchars($row['sit_purpose']); ?></td>
+                            <td><?php echo htmlspecialchars($row['sit_lab']); ?></td>
+                            <td><?php echo htmlspecialchars($row['time_in']); ?></td>
+                            <td><?php echo $row['time_out'] ? htmlspecialchars($row['time_out']) : '-'; ?></td>
+                            <td><?php echo htmlspecialchars($row['sit_date']); ?></td>
+                            <td>
+                                <span class="badge <?php echo $row['status'] == 'Active' ? 'bg-success' : 'bg-secondary'; ?>">
+                                    <?php echo htmlspecialchars($row['status']); ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
 
-            <!-- Add pagination controls -->
-            <div class="d-flex justify-content-center mt-4">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $page-1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Previous</a>
-                        </li>
-                        
-                        <?php for($i = 1; $i <= $total_pages; $i++): ?>
-                            <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>"><?php echo $i; ?></a>
+                <!-- Add pagination controls -->
+                <div class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $page-1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Previous</a>
                             </li>
-                        <?php endfor; ?>
-                        
-                        <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $page+1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Next</a>
-                        </li>
-                    </ul>
-                </nav>
+                            
+                            <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $i; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
+                            
+                            <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $page+1; ?>&date=<?php echo $date_filter; ?>&status=<?php echo $status_filter; ?>">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>

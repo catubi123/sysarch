@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 19, 2025 at 04:41 AM
+-- Generation Time: Mar 19, 2025 at 02:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,15 +39,10 @@ CREATE TABLE `announce` (
 --
 
 INSERT INTO `announce` (`announce_id`, `admin_name`, `date`, `message`) VALUES
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Mark', '2025-03-19', 'haha'),
-(0, 'Admin', '2025-03-19 11:41:14', 'Reset all student sessions to 30');
+(0, 'Mark', 'March 19, 2025 09:20', 'amawa nimo\r\n'),
+(0, 'Mark', 'March 19, 2025 09:21', 'lage'),
+(0, 'Mark', 'March 19, 2025 09:21', 'c chds'),
+(0, 'Admin', '2025-03-19 21:34:34', 'Reset all student sessions to 30');
 
 -- --------------------------------------------------------
 
@@ -90,35 +85,42 @@ CREATE TABLE `student_sit_in` (
 --
 
 INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `time_in`, `time_out`, `sit_date`, `status`) VALUES
-(0, 46541, 'PHP', '544', '10:51:32', '04:38:40', '2025-03-17', 'Completed'),
-(0, 55564, 'ASP.net', '542', '10:56:03', '04:38:40', '2025-03-17', 'Completed'),
-(0, 55564, 'C#', '526', '10:56:43', '04:38:40', '2025-03-17', 'Completed'),
-(0, 46541, 'C#', '530', '11:07:35', '04:38:40', '2025-03-17', 'Completed'),
-(0, 46541, 'PHP', '530', '10:29:53', '04:38:40', '2025-03-18', 'Completed'),
-(0, 46541, 'Java', '544', '10:41:01', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'C#', '542', '10:54:08', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'PHP', '542', '11:13:04', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'PHP', '524', '11:25:00', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'PHP', '530', '11:29:26', '04:38:40', '2025-03-18', 'Completed'),
-(0, 22222, 'PHP', '544', '11:32:08', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'Python', '530', '11:59:49', '04:38:40', '2025-03-18', 'Completed'),
-(0, 22222, 'Others', '542', '12:12:34', '04:38:40', '2025-03-18', 'Completed'),
-(0, 22222, 'ASP.net', '544', '14:20:02', '04:38:40', '2025-03-18', 'Completed'),
-(0, 123456, 'PHP', '528', '14:24:05', '04:38:40', '2025-03-18', 'Completed'),
-(0, 789946, 'ASP.net', '542', '03:01:47', '04:38:40', '2025-03-19', 'Completed'),
-(0, 123456, 'Python', '544', '03:31:42', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Others', '542', '03:32:51', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Others', '530', '04:26:00', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Python', '530', '04:26:10', '04:38:40', '2025-03-19', 'Completed'),
-(0, 22222, 'Python', '530', '04:29:20', '04:38:40', '2025-03-19', 'Completed'),
-(0, 22222, 'Python', '542', '04:29:32', '04:38:40', '2025-03-19', 'Completed'),
-(0, 22222, 'Python', '528', '04:29:54', '04:38:40', '2025-03-19', 'Completed'),
-(0, 22222, 'Python', '542', '04:30:06', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Python', '530', '04:31:07', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Python', '528', '04:33:51', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'Python', '528', '04:34:03', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'ASP.net', '530', '04:37:45', '04:38:40', '2025-03-19', 'Completed'),
-(0, 789946, 'ASP.net', '528', '04:38:22', '04:38:40', '2025-03-19', 'Completed');
+(0, 46541, 'PHP', '544', '10:51:32', '14:03:17', '2025-03-17', 'Completed'),
+(0, 55564, 'ASP.net', '542', '10:56:03', '14:03:17', '2025-03-17', 'Completed'),
+(0, 55564, 'C#', '526', '10:56:43', '14:03:17', '2025-03-17', 'Completed'),
+(0, 46541, 'C#', '530', '11:07:35', '14:03:17', '2025-03-17', 'Completed'),
+(0, 46541, 'PHP', '530', '10:29:53', '14:03:17', '2025-03-18', 'Completed'),
+(0, 46541, 'Java', '544', '10:41:01', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'C#', '542', '10:54:08', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'PHP', '542', '11:13:04', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'PHP', '524', '11:25:00', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'PHP', '530', '11:29:26', '14:03:17', '2025-03-18', 'Completed'),
+(0, 22222, 'PHP', '544', '11:32:08', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'Python', '530', '11:59:49', '14:03:17', '2025-03-18', 'Completed'),
+(0, 22222, 'Others', '542', '12:12:34', '14:03:17', '2025-03-18', 'Completed'),
+(0, 22222, 'ASP.net', '544', '14:20:02', '14:03:17', '2025-03-18', 'Completed'),
+(0, 123456, 'PHP', '528', '14:24:05', '14:03:17', '2025-03-18', 'Completed'),
+(0, 789946, 'ASP.net', '542', '03:01:47', '14:03:17', '2025-03-19', 'Completed'),
+(0, 123456, 'Python', '544', '03:31:42', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Others', '542', '03:32:51', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Others', '530', '04:26:00', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '530', '04:26:10', '14:03:17', '2025-03-19', 'Completed'),
+(0, 22222, 'Python', '530', '04:29:20', '14:03:17', '2025-03-19', 'Completed'),
+(0, 22222, 'Python', '542', '04:29:32', '14:03:17', '2025-03-19', 'Completed'),
+(0, 22222, 'Python', '528', '04:29:54', '14:03:17', '2025-03-19', 'Completed'),
+(0, 22222, 'Python', '542', '04:30:06', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '530', '04:31:07', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '528', '04:33:51', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '528', '04:34:03', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '530', '04:37:45', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '528', '04:38:22', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '526', '04:47:46', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '542', '09:20:36', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '544', '09:24:50', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '526', '11:16:58', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '526', '13:46:50', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'Python', '542', '13:47:20', '14:03:17', '2025-03-19', 'Completed'),
+(0, 789946, 'ASP.net', '524', '14:02:06', '14:03:17', '2025-03-19', 'Completed');
 
 -- --------------------------------------------------------
 
@@ -148,10 +150,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `image`, `email`, `address`, `role`, `remaining_session`) VALUES
 (1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin', 0),
-(22222, 'Mejeliano', 'Shein Michell', 'Cabingatan', 'BSCPE', '4', NULL, '$2y$10$adjXh/zuWKumMCwudjFIteoUUjjthnUHg.AWQCWveRE1nZsBj8hUS', NULL, '', NULL, 'user', 30),
-(55564, 'Catubig', 'Mark', 'Dave', 'BSBS', '2', 'amaw', '$2y$10$jfWcbnwqqQt/9TtYQl/BOOWlBQeIbf8zZPjSJMdpydu1T3pnIPxje', NULL, '', NULL, 'user', 30),
-(123456, 'Catubig', 'Mark', 'Dave', 'BSCPE', '2', 'user1 ', '$2y$10$ly85IuNmJDNsgwDjeA7e2eC2V6V3SmgkOGn8AbiPhcwGKveoZpGPy', NULL, '', NULL, 'user', 30),
-(789946, 'hahah', 'ahaka', 'agaga', 'BSIT', '3', 'rj', '$2y$10$Br8ZIrJIfgn6hZpY.SMILeBGMASJh5Mv9II8K8Xt6eaxUgwdNdbgu', 'uploads/b84dd6df-78f6-488d-b950-9bd095f1b261.jpg', 'rj@gmail.com', 'Dam View Deck, Buhisan', 'user', 30);
+(123456, 'Catubig', 'Mark', 'Dave', 'BSCPE', '2', 'user1 ', '$2y$10$ly85IuNmJDNsgwDjeA7e2eC2V6V3SmgkOGn8AbiPhcwGKveoZpGPy', 'uploads/320738403_1115980445778336_3190117843245493251_n.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user', 30),
+(789946, 'hahah', 'ahaka', 'agaga', 'BSIT', '1', 'rj', '$2y$10$Br8ZIrJIfgn6hZpY.SMILeBGMASJh5Mv9II8K8Xt6eaxUgwdNdbgu', 'uploads/b84dd6df-78f6-488d-b950-9bd095f1b261.jpg', 'rj@gmail.com', 'Dam View Deck, Buhisan', 'user', 30);
 
 --
 -- Indexes for dumped tables

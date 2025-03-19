@@ -1,11 +1,12 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila'); // Add this line for Philippine timezone
 include 'db.php'; // Include your database connection file
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $admin_name = 'Mark'; // Replace with actual admin name if available
-    $date = date('Y-m-d');
+    $date = date('F d, Y h:i:s A'); // Format: Month Day, Year Hours:Minutes:Seconds AM/PM
     $message = $_POST['message'];
 
     $conn = openConnection();
@@ -48,9 +49,25 @@ while($row = $purpose_result->fetch_assoc()) {
     $purpose_counts[] = $row['count'];
 }
 
+// Get total registered users by role
+$users_query = "SELECT role, COUNT(*) as count FROM user GROUP BY role";
+$users_result = $conn->query($users_query);
+$user_stats = array();
+while($row = $users_result->fetch_assoc()) {
+    $user_stats[$row['role']] = $row['count'];
+}
+
+// Get total users count (excluding admin)
+$total_users_query = "SELECT COUNT(*) as total FROM user WHERE role != 'admin'";
+$total_users_result = $conn->query($total_users_query);
+$total_users = $total_users_result->fetch_assoc()['total'];
+
 // Fetch announcements from the database
 $announcements = [];
-$sql = "SELECT * FROM announce ORDER BY announce_id DESC";
+
+// Update the announcement fetch query with better ordering
+$sql = "SELECT * FROM announce ORDER BY date DESC, announce_id DESC";  // This ensures newest first by date and ID
+
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -67,6 +84,23 @@ closeConnection($conn);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            padding-top: 60px; /* Add space for fixed navbar */
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent double scrollbars */
+        }
+        .main-content {
+            height: calc(100vh - 60px); /* Subtract navbar height */
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
         .highlight-text {
             background-color: #0d6efd;
             color: #FFFFFF;
@@ -114,51 +148,72 @@ closeConnection($conn);
 </head>
 <body class="bg-light">
 <?php include 'admin_navbar.php' ?>
-<div class="row">
-    <div class="col-md-6">
-        <div class="card p-3 mb-3">
-            <h4 class="highlight-text">Statistics</h4>
-            <p>Students Registered: <?php echo $students_registered; ?></p>
-            <p>Currently Sit-in: <?php echo $current_sit_in; ?></p>
-            <p>Total Sit-in: <?php echo $total_sit_in; ?></p>
-            <div class="d-flex justify-content-center">
-                <canvas id="statisticsChart" style="max-width: 400px; max-height: 400px;"></canvas>
+<div class="main-content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card p-3 mb-3">
+                <h4 class="highlight-text">Statistics</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center bg-primary text-white">
+                            <h3><?php echo $total_users; ?></h3>
+                            <p class="mb-0">Students Registered</p>   <!-- Changed from "Total Users" to "Students Registered" -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center bg-info text-white">
+                            <h3><?php echo $current_sit_in; ?></h3>
+                            <p class="mb-0">Currently Sit-in</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center bg-warning text-dark">
+                            <h3><?php echo $total_sit_in; ?></h3>
+                            <p class="mb-0">Total Sit-in</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <canvas id="statisticsChart" style="max-width: 400px; max-height: 400px;"></canvas>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-6">
-        <div class="card p-3 mb-3">
-            <h4 class="highlight-text">Announcement</h4>
-            <form method="POST" action="">
-                <textarea class="form-control mb-2" name="message" placeholder="Type your new announcement here..." rows="4" required></textarea>
-                <button type="submit" class="btn btn-success">Create</button>
-            </form>
-            <div class="announcement-container">
-                <ul class="list-unstyled">
-                    <?php foreach ($announcements as $announcement) { ?>
-                        <li class="announcement-item" id="announcement-<?php echo $announcement['announce_id']; ?>">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <strong><?php echo htmlspecialchars($announcement['date']); ?>:</strong> 
-                                    <span class="announcement-text-<?php echo $announcement['announce_id']; ?>">
-                                        <?php echo htmlspecialchars($announcement['message']); ?>
-                                    </span>
+        <div class="col-md-6">
+            <div class="card p-3 mb-3">
+                <h4 class="highlight-text">Announcement</h4>
+                <form method="POST" action="">
+                    <textarea class="form-control mb-2" name="message" placeholder="Type your new announcement here..." rows="4" required></textarea>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+                <div class="announcement-container">
+                    <ul class="list-unstyled">
+                        <?php foreach ($announcements as $announcement) { ?>
+                            <li class="announcement-item" id="announcement-<?php echo $announcement['announce_id']; ?>">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <strong><i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($announcement['date']); ?></strong>
+                                        <br>
+                                        <span class="text-muted"><i class="fas fa-user"></i> Admin: <?php echo htmlspecialchars($announcement['admin_name']); ?></span>
+                                        <p class="mt-2 announcement-text-<?php echo $announcement['announce_id']; ?>">
+                                            <?php echo htmlspecialchars($announcement['message']); ?>
+                                        </p>
+                                    </div>
+                                    <div class="btn-group ms-2">
+                                        <button class="btn btn-sm btn-warning me-1" 
+                                                onclick="editAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
+                                            Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                                onclick="deleteAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="btn-group ms-2">
-                                    <button class="btn btn-sm btn-warning me-1" 
-                                            onclick="editAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
-                                        Edit
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" 
-                                            onclick="deleteAnnouncement(<?php echo $announcement['announce_id']; ?>, this)">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    <?php } ?>
-                </ul>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -247,8 +302,14 @@ function updateAnnouncement() {
 }
 
 function deleteAnnouncement(id, button) {
-    // Get the announcement text for confirmation
-    const announcementText = document.querySelector(`.announcement-text-${id}`).innerText;
+    // Get the specific announcement element
+    const announcementItem = document.getElementById(`announcement-${id}`);
+    if (!announcementItem) {
+        console.error('Announcement element not found');
+        return;
+    }
+
+    const announcementText = announcementItem.querySelector(`.announcement-text-${id}`).innerText;
     const preview = announcementText.length > 50 ? announcementText.substring(0, 50) + '...' : announcementText;
 
     Swal.fire({
@@ -272,23 +333,28 @@ function deleteAnnouncement(id, button) {
             .then(data => {
                 if (data === 'success') {
                     // Remove only the specific announcement element
-                    const announcementItem = document.getElementById(`announcement-${id}`);
-                    if (announcementItem) {
-                        announcementItem.remove();
-                    }
+                    announcementItem.remove();
                     
-                    Swal.fire(
-                        'Deleted!',
-                        'The announcement has been deleted.',
-                        'success'
-                    );
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'The announcement has been deleted.'
+                    });
                 } else {
-                    Swal.fire(
-                        'Error!',
-                        'Failed to delete announcement.',
-                        'error'
-                    );
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete announcement: ' + data
+                    });
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to delete announcement'
+                });
             });
         }
     });

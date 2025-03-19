@@ -96,7 +96,39 @@ include('admin_navbar.php');
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `delete_student.php?id=${id}`;
+                // Send delete request
+                fetch('delete_student.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id=${id}&delete=true`
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.includes('success')) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Student record has been deleted.',
+                            icon: 'success'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to delete student record: ' + data,
+                            icon: 'error'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong with the request.',
+                        icon: 'error'
+                    });
+                });
             }
         });
     }
