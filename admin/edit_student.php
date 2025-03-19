@@ -16,16 +16,15 @@ $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $mname = $_POST['mname'];
     $level = $_POST['level'];
     $course = $_POST['course'];
     
-    $query = "UPDATE user SET username=?, fname=?, lname=?, MName=?, Level=?, Course=? WHERE id=?";
+    $query = "UPDATE user SET fname=?, lname=?, MName=?, Level=?, Course=? WHERE id=?";
     $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_bind_param($stmt, "sssssss", $username, $fname, $lname, $mname, $level, $course, $id);
+    mysqli_stmt_bind_param($stmt, "ssssss", $fname, $lname, $mname, $level, $course, $id);
     
     if (mysqli_stmt_execute($stmt)) {
         header("Location: student_information.php");
@@ -55,19 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Username</label>
-                            <input type="text" name="username" value="<?= htmlspecialchars($user['username']) ?>" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">First Name</label>
-                            <input type="text" name="fname" value="<?= htmlspecialchars($user['fname']) ?>" class="form-control">
+                            <input type="text" value="<?= htmlspecialchars($user['username']) ?>" class="form-control" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Last Name</label>
-                            <input type="text" name="lname" value="<?= htmlspecialchars($user['lname']) ?>" class="form-control">
+                            <input type="text" name="lname" value="<?= htmlspecialchars($user['lname']) ?>" class="form-control" placeholder="Enter your last name">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="fname" value="<?= htmlspecialchars($user['fname']) ?>" class="form-control" placeholder="Enter your first name">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Middle Name</label>
-                            <input type="text" name="mname" value="<?= htmlspecialchars($user['MName']) ?>" class="form-control">
+                            <input type="text" name="mname" value="<?= htmlspecialchars($user['MName']) ?>" class="form-control" placeholder="Enter your middle name">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Year Level</label>

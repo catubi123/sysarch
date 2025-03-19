@@ -2,6 +2,8 @@
 session_start();
 include('db.php');
 
+$registration_status = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $lname = mysqli_real_escape_string($con, $_POST['lname']);
@@ -20,14 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $result = mysqli_stmt_execute($stmt);
         
         if ($result) {
-            echo "<script>alert('Registration successful!');</script>";
+            $registration_status = 'success';
         } else {
-            echo "<script>alert('An error occurred!');</script>";
+            $registration_status = 'error';
         }
         
         mysqli_stmt_close($stmt);
     } else {
-        echo "Database error!";
+        $registration_status = 'error';
     }
 }
 ?>
@@ -40,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Register</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Add SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-primary d-flex align-items-center min-vh-100">
     <div class="card shadow-lg p-4 rounded-4 mx-auto" style="max-width: 400px;">
@@ -104,5 +109,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </form>
     </div>
+
+    <?php if ($registration_status): ?>
+    <script>
+        <?php if ($registration_status === 'success'): ?>
+            Swal.fire({
+                title: 'Success!',
+                text: 'Registration successful!',
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'index.php';
+                }
+            });
+        <?php else: ?>
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred during registration.',
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
+        <?php endif; ?>
+    </script>
+    <?php endif; ?>
+
 </body>
 </html>

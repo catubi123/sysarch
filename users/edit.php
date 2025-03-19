@@ -106,14 +106,14 @@ exit();
 
         <input type="hidden" name="id" value="<?php echo $user_data['id']; ?>">
 
-        <label class="form-label">Lastname</label>
-        <input class="form-control" type="text" name="lname" value="<?php echo $user_data['lname']; ?>" required>
+        <label class="form-label">Last Name</label>
+        <input class="form-control" type="text" name="lname" value="<?php echo $user_data['lname']; ?>" required placeholder="Enter your last name">
 
-        <label class="form-label">Firstname</label>
-        <input class="form-control" type="text" name="fname" value="<?php echo $user_data['fname']; ?>" required>
+        <label class="form-label">First Name</label>
+        <input class="form-control" type="text" name="fname" value="<?php echo $user_data['fname']; ?>" required placeholder="Enter your first name">
 
-        <label class="form-label">MiddleName</label>
-        <input class="form-control" type="text" name="MName" value="<?php echo $user_data['MName']; ?>">
+        <label class="form-label">Middle Name</label>
+        <input class="form-control" type="text" name="MName" value="<?php echo $user_data['MName']; ?>" placeholder="Enter your middle name">
 
         <label class="form-label">Email</label>
         <input class="form-control" type="email" name="email" value="<?php echo $user_data['email']; ?>" required>

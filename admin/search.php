@@ -2,6 +2,10 @@
 // Start the session
 session_start();
 
+// Add at the top of the file after session_start():
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Database connection
 include('db.php');
 require_once '../check_active_sitin.php';
@@ -64,14 +68,27 @@ closeConnection($conn);
         <div class="row align-items-center">
             <div class="col-md-2">
                 <?php
-                // Check if the image file exists
-                $imagePath = !empty($userData['image']) ? 'uploads/' . htmlspecialchars($userData['image']) : '../assets/PERSON.png';
-                if (!file_exists($imagePath)) {
-                    $imagePath = '../assets/PERSON.png'; // Fallback to placeholder image
+                if (!empty($userData['image'])) {
+                    // Get just the filename from the stored path
+                    $fileName = basename($userData['image']);
+                    
+                    // Construct path to uploads directory
+                    $imageUrl = '/sysarch/uploads/' . $fileName;
+                    
+                    // Verify file exists and is valid image type
+                    $fullPath = $_SERVER['DOCUMENT_ROOT'] . $imageUrl;
+                    if (!file_exists($fullPath) || !in_array(strtolower(pathinfo($fullPath, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif'])) {
+                        $imageUrl = '/sysarch/assets/PERSON.png';
+                    }
+                } else {
+                    $imageUrl = '/sysarch/assets/PERSON.png';
                 }
                 ?>
-                <img src="<?php echo $imagePath; ?>" 
-                     alt="Profile Image" class="img-fluid rounded-circle" width="100" />
+                <img src="<?php echo htmlspecialchars($imageUrl); ?>" 
+                     alt="Profile Image" 
+                     class="img-fluid rounded-circle" 
+                     style="width: 150px; height: 150px; object-fit: cover;" 
+                     onerror="this.src='/sysarch/assets/PERSON.png';" />
             </div>
             <div class="col-md-10">
                 <!-- Updated Data Display -->
@@ -94,11 +111,11 @@ closeConnection($conn);
                         <div class="col-md-4">
                             <select name="sit_purpose" class="form-select" required>
                                 <option value="">Select Purpose</option>
-                                <option value="Java Programming">Java Programming</option>
-                                <option value="C# Programming">C# Programming</option>
-                                <option value="PHP Programming">PHP Programming</option>
-                                <option value="ASP.net Programming">ASP.net Programming</option>
-                                <option value="Python Programming">Phyton Programming</option>
+                                <option value="Java ">Java Programming</option>
+                                <option value="C# ">C# Programming</option>
+                                <option value="PHP ">PHP Programming</option>
+                                <option value="ASP.net ">ASP.net Programming</option>
+                                <option value="Python ">Phyton Programming</option>
                                 <option value="Others">Others</option>
 
                             </select>
