@@ -6,6 +6,7 @@ require_once '../check_active_sitin.php';
 $conn = openConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
     $id_number = $_POST['id_number'];
     
     // Check for active sit-in
