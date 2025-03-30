@@ -78,6 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Add SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="w3-light-grey">
 
@@ -129,34 +131,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Announcements Section -->
+        <!-- Middle Column with Announcements and Feedback -->
         <div class="col-md-4">
-            <div class="card shadow-sm">
+            <!-- Announcements Card -->
+            <div class="card shadow-sm mb-3">
                 <div class="card-header bg-success text-white text-center">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-    <?php
-    $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
-    $announcement_result = $con->query($announcement_query);
+                <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
+                    <?php
+                    $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
+                    $announcement_result = $con->query($announcement_query);
 
-    if ($announcement_result->num_rows > 0) {
-        $count = 0;
-        while ($announcement = $announcement_result->fetch_assoc()) {
-            $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
-            echo "<div class='$bgColor p-3 rounded mb-2'>"; // Adds padding and background
-            echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
-            echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
-            echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
-            echo '</div>';
-            $count++;
-        }
-    } else {
-        echo '<p class="text-center">No announcements available.</p>';
-    }
-    ?>
-</div>
+                    if ($announcement_result->num_rows > 0) {
+                        $count = 0;
+                        while ($announcement = $announcement_result->fetch_assoc()) {
+                            $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
+                            echo "<div class='$bgColor p-3 rounded mb-2'>"; // Adds padding and background
+                            echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
+                            echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
+                            echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
+                            echo '</div>';
+                            $count++;
+                        }
+                    } else {
+                        echo '<p class="text-center">No announcements available.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
 
+            <!-- Feedback Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white text-center">
+                    <i class="fas fa-comment-dots"></i> Report Feedback
+                </div>
+                <div class="card-body py-2">
+                    <form id="feedbackForm" method="POST">
+                        <div class="mb-2">
+                            <textarea class="form-control" name="feedback" 
+                                style="height: 60px; resize: none;"
+                                placeholder="Share your thoughts, suggestions, or concerns..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane"></i> Submit 
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -179,24 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Add this new section after the Rules Section -->
-        <div class="col-md-12 mt-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white text-center">
-                    <i class="fas fa-comment-dots"></i> Submit Feedback
-                </div>
-                <div class="card-body">
-                    <form id="feedbackForm" method="POST" action="process_feedback.php">
-                        <div class="mb-3">
-                            <textarea class="form-control" name="feedback" rows="3" placeholder="Share your thoughts, suggestions, or concerns..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Submit Feedback
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -204,6 +207,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
+    const form = this;
+    
+    Swal.fire({
+        title: 'Submitting Feedback',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
     
     fetch('process_feedback.php', {
         method: 'POST',
@@ -212,11 +226,32 @@ document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     .then(response => response.text())
     .then(data => {
         if(data === 'success') {
-            alert('Thank you for your feedback!');
-            this.reset();
+            Swal.fire({
+                title: 'Thank You!',
+                text: 'Your feedback has been submitted successfully',
+                icon: 'success',
+                confirmButtonColor: '#28a745',
+                timer: 2000,
+                timerProgressBar: true
+            }).then(() => {
+                form.reset();
+            });
         } else {
-            alert('Error submitting feedback. Please try again.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to submit feedback. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#dc3545'
+            });
         }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Connection failed. Please check your internet connection.',
+            icon: 'error',
+            confirmButtonColor: '#dc3545'
+        });
     });
 });
 </script>

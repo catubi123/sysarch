@@ -74,7 +74,6 @@ if ($result->num_rows > 0) {
         $announcements[] = $row;
     }
 }
-closeConnection($conn);
 ?>
 
 <!DOCTYPE html>
@@ -125,19 +124,37 @@ closeConnection($conn);
             background-color: #f9f9f9; /* Light background for contrast */
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for a modern look */
         }
+        .feedback-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 5px;
+        }
+        .feedback-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
         /* Custom scrollbar styling */
-        .announcement-container::-webkit-scrollbar {
+        .announcement-container::-webkit-scrollbar,
+        .feedback-container::-webkit-scrollbar {
             width: 8px;
         }
-        .announcement-container::-webkit-scrollbar-track {
+        .announcement-container::-webkit-scrollbar-track,
+        .feedback-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 4px;
         }
-        .announcement-container::-webkit-scrollbar-thumb {
+        .announcement-container::-webkit-scrollbar-thumb,
+        .feedback-container::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 4px;
         }
-        .announcement-container::-webkit-scrollbar-thumb:hover {
+        .announcement-container::-webkit-scrollbar-thumb:hover,
+        .feedback-container::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
     </style>
@@ -217,7 +234,8 @@ closeConnection($conn);
             </div>
         </div>
     </div>
-</div>
+
+    
 
 <!-- Add Edit Modal -->
 <div class="modal fade" id="editAnnouncementModal" tabindex="-1">

@@ -82,20 +82,29 @@ exit();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-light">
+<body class="w3-light-grey" style="padding-top: 60px;">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-primary bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand text-white" href="home.php">Dashboard</a>
+        <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <div class="navbar-nav ms-auto">
-            <a href="home.php" class="nav-link text-white"><i class="fas fa-home"></i> Home</a>
-            <a href="edit.php" class="nav-link text-white"><i class="fas fa-user-edit"></i> Edit Profile</a>
+            <a href="home.php" class="nav-link text-white">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="#" class="nav-link text-white">
+                <i class="fas fa-history"></i> History
+            </a>
+            <a href="edit.php" class="nav-link text-white active">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+            </a>
+            <a href="reservation.php" class="nav-link text-white">
+                <i class="fas fa-calendar-check"></i> Reservation
+            </a>
             <a href="index.php" class="nav-link text-white bg-danger rounded-pill px-3">Log out</a>
         </div>
     </div>
 </nav>
-
 
 <!-- Profile Edit Form -->
 <div class="card shadow-lg rounded-4 p-4 mx-auto mt-4" style="max-width: 420px;">
