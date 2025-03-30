@@ -1,25 +1,19 @@
 <?php
 include('db.php');
 
-// Get default session value from settings table
-$settings_query = "SELECT value FROM settings WHERE setting_name = 'default_sessions'";
-$settings_result = mysqli_query($con, $settings_query);
-$default_sessions = 30; // default fallback value
-
-if($settings_result && mysqli_num_rows($settings_result) > 0) {
-    $settings_row = mysqli_fetch_assoc($settings_result);
-    $default_sessions = (int)$settings_row['value'];
+if (isset($_POST['single']) && isset($_POST['id'])) {
+    // Reset single student
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $query = "UPDATE user SET remaining_session = 30 WHERE id = '$id' AND role = 'user'";
+} else {
+    // Reset all students
+    $query = "UPDATE user SET remaining_session = 30 WHERE role = 'user'";
 }
 
-$query = "UPDATE user SET remaining_session = $default_sessions WHERE role = 'user'";
-
-if(mysqli_query($con, $query)) {
-    // Log the reset for tracking
-    $log_query = "INSERT INTO announce (admin_name, date, message) VALUES ('Admin', NOW(), 'Reset all student sessions to $default_sessions')";
-    mysqli_query($con, $log_query);
+if (mysqli_query($con, $query)) {
     echo "success";
 } else {
-    echo "error";
+    echo "error: " . mysqli_error($con);
 }
 
 mysqli_close($con);

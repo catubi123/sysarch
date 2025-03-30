@@ -179,8 +179,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
+        <!-- Add this new section after the Rules Section -->
+        <div class="col-md-12 mt-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white text-center">
+                    <i class="fas fa-comment-dots"></i> Submit Feedback
+                </div>
+                <div class="card-body">
+                    <form id="feedbackForm" method="POST" action="process_feedback.php">
+                        <div class="mb-3">
+                            <textarea class="form-control" name="feedback" rows="3" placeholder="Share your thoughts, suggestions, or concerns..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('process_feedback.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if(data === 'success') {
+            alert('Thank you for your feedback!');
+            this.reset();
+        } else {
+            alert('Error submitting feedback. Please try again.');
+        }
+    });
+});
+</script>
 
 </body>
 </html>
