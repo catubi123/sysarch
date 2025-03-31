@@ -16,7 +16,7 @@
                 <li class="nav-item"><a class="nav-link text-white" href="student_information.php">View List of Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php"><i class="fas fa-comments"></i> feedbacks</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php"><i class="fas fa-comments"></i> View feedbacks</a></li>
             </ul>
             <!-- Log Out Button -->
                 <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>
