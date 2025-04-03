@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="home.php" class="nav-link text-white active">
                 <i class="fas fa-home"></i> Home
             </a>
-            <a href="#" class="nav-link text-white">
+            <a href="history.php" class="nav-link text-white">
                 <i class="fas fa-history"></i> History
             </a>
             <a href="edit.php" class="nav-link text-white">
@@ -131,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Middle Column with Announcements and Feedback -->
+        <!-- Middle Column with Announcements -->
         <div class="col-md-4">
             <!-- Announcements Card -->
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm">
                 <div class="card-header bg-success text-white text-center">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </div>
-                <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
+                <div class="card-body py-2" style="height: 400px; overflow-y: auto;">
                     <?php
                     $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
                     $announcement_result = $con->query($announcement_query);
@@ -158,25 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo '<p class="text-center">No announcements available.</p>';
                     }
                     ?>
-                </div>
-            </div>
-
-            <!-- Feedback Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white text-center">
-                    <i class="fas fa-comment-dots"></i> Report Feedback
-                </div>
-                <div class="card-body py-2">
-                    <form id="feedbackForm" method="POST">
-                        <div class="mb-2">
-                            <textarea class="form-control" name="feedback" 
-                                style="height: 60px; resize: none;"
-                                placeholder="Share your thoughts, suggestions, or concerns..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-paper-plane"></i> Submit 
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -202,59 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 </div>
-
-<script>
-document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const form = this;
-    
-    Swal.fire({
-        title: 'Submitting Feedback',
-        text: 'Please wait...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    fetch('process_feedback.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        if(data === 'success') {
-            Swal.fire({
-                title: 'Thank You!',
-                text: 'Your feedback has been submitted successfully',
-                icon: 'success',
-                confirmButtonColor: '#28a745',
-                timer: 2000,
-                timerProgressBar: true
-            }).then(() => {
-                form.reset();
-            });
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Failed to submit feedback. Please try again.',
-                icon: 'error',
-                confirmButtonColor: '#dc3545'
-            });
-        }
-    })
-    .catch(error => {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Connection failed. Please check your internet connection.',
-            icon: 'error',
-            confirmButtonColor: '#dc3545'
-        });
-    });
-});
-</script>
 
 </body>
 </html>
