@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="reservation.php" class="nav-link text-white">
                 <i class="fas fa-calendar-check"></i> Reservation
             </a>
-            <a href="index.php" class="nav-link text-white bg-danger rounded-pill px-3">Log out</a>
+            <a href="index.php"class="btn btn-danger ms-lg-3">Log out</a>
         </div>
     </div>
 </nav>
@@ -131,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Middle Column - Announcements Only -->
+        <!-- Middle Column with Announcements and Feedback -->
         <div class="col-md-4">
             <!-- Announcements Card -->
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white text-center">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
                     <?php
                     $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
                     $announcement_result = $con->query($announcement_query);
@@ -183,59 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 </div>
-
-<script>
-document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const form = this;
-    
-    Swal.fire({
-        title: 'Submitting Feedback',
-        text: 'Please wait...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    fetch('process_feedback.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        if(data === 'success') {
-            Swal.fire({
-                title: 'Thank You!',
-                text: 'Your feedback has been submitted successfully',
-                icon: 'success',
-                confirmButtonColor: '#28a745',
-                timer: 2000,
-                timerProgressBar: true
-            }).then(() => {
-                form.reset();
-            });
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Failed to submit feedback. Please try again.',
-                icon: 'error',
-                confirmButtonColor: '#dc3545'
-            });
-        }
-    })
-    .catch(error => {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Connection failed. Please check your internet connection.',
-            icon: 'error',
-            confirmButtonColor: '#dc3545'
-        });
-    });
-});
-</script>
 
 </body>
 </html>

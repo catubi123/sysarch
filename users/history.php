@@ -37,6 +37,38 @@ $username = $_SESSION['username'];
         input[type="radio"]:checked ~ .star-label {
             color: #ffc107;
         }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Make table header sticky */
+        thead tr th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+        }
     </style>
 </head>
 <body class="w3-light-grey">
@@ -69,9 +101,9 @@ $username = $_SESSION['username'];
             <h4><i class="fas fa-history"></i> My Lab History</h4>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-container">
                 <table class="table table-hover">
-                    <thead>
+                    <thead class="table-primary">
                         <tr>
                             <th>Date</th>
                             <th>Purpose</th>
