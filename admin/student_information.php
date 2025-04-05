@@ -10,6 +10,7 @@ include('admin_navbar.php');
     <title>Student Information</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="container mt-4">
@@ -68,9 +69,15 @@ include('admin_navbar.php');
                                             <td>{$row['Course']}</td>
                                             <td class='{$sessionClass}'>{$remaining}</td>
                                             <td>
-                                                <a href='edit_student.php?id={$row['id']}' class='btn btn-warning btn-sm'>Edit</a>
-                                                <button class='btn btn-danger btn-sm' onclick='confirmDelete({$row['id']})'>Delete</button>
-                                                <button class='btn btn-info btn-sm' onclick='confirmResetSingleStudent({$row['id']})'>Reset Session</button>
+                                                <button class='btn btn-link text-warning p-0 me-2' onclick='location.href=\"edit_student.php?id={$row['id']}\"'>
+                                                    <i class='fas fa-edit fa-lg' title='Edit Student'></i>
+                                                </button>
+                                                <button class='btn btn-link text-danger p-0 me-2' onclick='confirmDelete({$row['id']})'>
+                                                    <i class='fas fa-trash-alt fa-lg' title='Delete Student'></i>
+                                                </button>
+                                                <button class='btn btn-link text-info p-0' onclick='confirmResetSingleStudent({$row['id']})'>
+                                                    <i class='fas fa-sync-alt fa-lg' title='Reset Session'></i>
+                                                </button>
                                             </td>
                                         </tr>";
                                 }

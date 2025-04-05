@@ -6,30 +6,43 @@ $registration_status = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = mysqli_real_escape_string($con, $_POST['id']);
-    $lname = mysqli_real_escape_string($con, $_POST['lname']);
-    $fname = mysqli_real_escape_string($con, $_POST['fname']);
-    $MName = mysqli_real_escape_string($con, $_POST['MName']);
-    $Course = mysqli_real_escape_string($con, $_POST['Course']);
-    $Level = mysqli_real_escape_string($con, $_POST['Level']);
-    $username = mysqli_real_escape_string($con, $_POST['username']);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure password hashing
-
-    $query = "INSERT INTO user (id, lname, fname, MName, Course, Level, username, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = mysqli_prepare($con, $query);
     
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "ssssssss", $id, $lname, $fname, $MName, $Course, $Level, $username, $password);
-        $result = mysqli_stmt_execute($stmt);
+    // Check if ID already exists
+    $check_query = "SELECT id FROM user WHERE id = ?";
+    $check_stmt = mysqli_prepare($con, $check_query);
+    mysqli_stmt_bind_param($check_stmt, "s", $id);
+    mysqli_stmt_execute($check_stmt);
+    $check_result = mysqli_stmt_get_result($check_stmt);
+    
+    if (mysqli_num_rows($check_result) > 0) {
+        $registration_status = 'id_exists';
+    } else {
+        // Continue with registration if ID is unique
+        $lname = mysqli_real_escape_string($con, $_POST['lname']);
+        $fname = mysqli_real_escape_string($con, $_POST['fname']);
+        $MName = mysqli_real_escape_string($con, $_POST['MName']);
+        $Course = mysqli_real_escape_string($con, $_POST['Course']);
+        $Level = mysqli_real_escape_string($con, $_POST['Level']);
+        $username = mysqli_real_escape_string($con, $_POST['username']);
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure password hashing
+
+        $query = "INSERT INTO user (id, lname, fname, MName, Course, Level, username, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($con, $query);
         
-        if ($result) {
-            $registration_status = 'success';
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "ssssssss", $id, $lname, $fname, $MName, $Course, $Level, $username, $password);
+            $result = mysqli_stmt_execute($stmt);
+            
+            if ($result) {
+                $registration_status = 'success';
+            } else {
+                $registration_status = 'error';
+            }
+            
+            mysqli_stmt_close($stmt);
         } else {
             $registration_status = 'error';
         }
-        
-        mysqli_stmt_close($stmt);
-    } else {
-        $registration_status = 'error';
     }
 }
 ?>
@@ -124,6 +137,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     window.location.href = 'index.php';
                 }
             });
+        <?php elseif ($registration_status === 'id_exists'): ?>
+            Swal.fire({
+                title: 'Registration Failed',
+                text: 'This ID number is already registered in the system.',
+                icon: 'error',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
         <?php else: ?>
             Swal.fire({
                 title: 'Error!',
@@ -136,5 +157,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
     <?php endif; ?>
 
+    <!-- Add real-time ID check -->
+    <script>
+    document.querySelector('input[name="id"]').addEventListener('blur', function() {
+        const id = this.value;
+        if (id) {
+            fetch('check_id.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'id=' + id
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'exists') {
+                    Swal.fire({
+                        title: 'ID Already Exists',
+                        text: 'This ID number is already registered.',
+                        icon: 'warning',
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        this.value = '';
+                        this.focus();
+                    });
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

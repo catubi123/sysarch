@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="home.php" class="nav-link text-white active">
                 <i class="fas fa-home"></i> Home
             </a>
-            <a href="#" class="nav-link text-white">
+            <a href="history.php" class="nav-link text-white">
                 <i class="fas fa-history"></i> History
             </a>
             <a href="edit.php" class="nav-link text-white">
@@ -131,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Middle Column with Announcements and Feedback -->
+        <!-- Middle Column - Announcements Only -->
         <div class="col-md-4">
             <!-- Announcements Card -->
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm">
                 <div class="card-header bg-success text-white text-center">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </div>
-                <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                     <?php
                     $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
                     $announcement_result = $con->query($announcement_query);
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $count = 0;
                         while ($announcement = $announcement_result->fetch_assoc()) {
                             $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
-                            echo "<div class='$bgColor p-3 rounded mb-2'>"; // Adds padding and background
+                            echo "<div class='$bgColor p-3 rounded mb-2'>";
                             echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
                             echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
                             echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
@@ -158,25 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo '<p class="text-center">No announcements available.</p>';
                     }
                     ?>
-                </div>
-            </div>
-
-            <!-- Feedback Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white text-center">
-                    <i class="fas fa-comment-dots"></i> Report Feedback
-                </div>
-                <div class="card-body py-2">
-                    <form id="feedbackForm" method="POST">
-                        <div class="mb-2">
-                            <textarea class="form-control" name="feedback" 
-                                style="height: 60px; resize: none;"
-                                placeholder="Share your thoughts, suggestions, or concerns..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-paper-plane"></i> Submit 
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

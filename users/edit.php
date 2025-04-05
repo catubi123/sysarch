@@ -92,7 +92,7 @@ exit();
             <a href="home.php" class="nav-link text-white">
                 <i class="fas fa-home"></i> Home
             </a>
-            <a href="#" class="nav-link text-white">
+            <a href="history.php" class="nav-link text-white">
                 <i class="fas fa-history"></i> History
             </a>
             <a href="edit.php" class="nav-link text-white active">
