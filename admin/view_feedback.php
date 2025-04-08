@@ -44,7 +44,9 @@ include('admin_navbar.php');
                             
                             if ($result && $result->num_rows > 0) {
                                 while($row = mysqli_fetch_assoc($result)) {
-                                    $rating_stars = str_repeat('★', $row['rating']) . str_repeat('☆', 5 - $row['rating']);
+                                    // Update how stars are displayed
+                                    $rating = intval($row['rating']); // Ensure rating is a number
+                                    $rating_stars = str_repeat('★', $rating) . str_repeat('☆', 5 - $rating);
                                     echo "<tr>
                                             <td>{$row['formatted_date']}</td>
                                             <td>{$row['student_id']}</td>

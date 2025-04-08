@@ -164,10 +164,10 @@ $username = $_SESSION['username'];
                             
                             if ($is_newest && !$has_feedback) {
                                 echo "<button class='btn btn-warning btn-sm' onclick='showFeedbackModal({$row['sit_id']})'>
-                                        <i class='fas fa-star'></i> Rate Now!
+                                        <i class='fas fa-heart'></i> Feedback
                                     </button>";
                             } else if ($has_feedback) {
-                                echo "<span class='badge bg-success'>Rated</span>";
+                                echo "<span class='badge bg-success'>Done</span>";
                             } else {
                                 echo "<span class='badge bg-secondary'>Not Available</span>";
                             }
