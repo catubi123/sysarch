@@ -1,16 +1,19 @@
 <?php
-include('../users/db.php');
+include('db.php');
 
 if(isset($_POST['id'])) {
-    $feedback_id = (int)$_POST['id'];
-    
+    $id = $_POST['id'];
     $query = "DELETE FROM feedback WHERE id = ?";
     $stmt = $con->prepare($query);
-    $stmt->bind_param("i", $feedback_id);
+    $stmt->bind_param("i", $id);
     
-    echo $stmt->execute() ? 'success' : 'error';
+    if($stmt->execute()) {
+        echo "success";
+    } else {
+        echo "error: " . $stmt->error;
+    }
 } else {
-    echo 'invalid_request';
+    echo "error: No ID provided";
 }
 ?>
 

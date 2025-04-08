@@ -94,13 +94,15 @@ include('admin_navbar.php');
 
     function deleteFeedback(feedbackId) {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: 'Delete Feedback',
+            text: "Are you sure you want to delete this feedback?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Yes, delete it',
+            cancelButtonText: 'No, cancel',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch('delete_feedback.php', {
@@ -112,28 +114,28 @@ include('admin_navbar.php');
                 })
                 .then(response => response.text())
                 .then(data => {
-                    if(data === 'success') {
-                        Swal.fire(
-                            'Deleted!',
-                            'Feedback has been deleted.',
-                            'success'
-                        ).then(() => {
+                    if(data.trim() === 'success') {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Feedback has been deleted successfully.',
+                            icon: 'success'
+                        }).then(() => {
                             location.reload();
                         });
                     } else {
-                        Swal.fire(
-                            'Error!',
-                            'Failed to delete feedback.',
-                            'error'
-                        );
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.includes('error:') ? data.split('error:')[1].trim() : 'Failed to delete feedback.',
+                            icon: 'error'
+                        });
                     }
                 })
                 .catch(error => {
-                    Swal.fire(
-                        'Error!',
-                        'Something went wrong!',
-                        'error'
-                    );
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to connect to the server.',
+                        icon: 'error'
+                    });
                 });
             }
         });
