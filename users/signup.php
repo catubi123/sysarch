@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2 class="text-center mb-3 text-primary">Registration</h2>
         <form method="post">
             <label class="form-label">IDNO</label>
-            <input class="form-control" type="number" name="id" required>
+            <input class="form-control" type="number" name="id" required pattern="[0-9]*" minlength="5" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
 
             <div class="row mb-3">
                 <div class="col-md-4">
