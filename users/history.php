@@ -24,7 +24,7 @@ $username = $_SESSION['username'];
         .stars {
             display: flex;
             justify-content: center;
-            flex-direction: row; /* Changed from row-reverse */
+            flex-direction: row;
         }
         .star-label {
             cursor: pointer;
@@ -33,9 +33,13 @@ $username = $_SESSION['username'];
             padding: 0 2px;
         }
         .star-label:hover,
-        .star-label ~ label:hover,
-        input[type="radio"]:checked ~ label {
+        .star-label:hover ~ .star-label,
+        input[type="radio"]:checked ~ .star-label,
+        input[type="radio"]:hover ~ .star-label {
             color: #ffc107;
+        }
+        input[type="radio"] {
+            display: none;
         }
 
         .table-container {
@@ -188,13 +192,14 @@ function showFeedbackModal(sitInId) {
         html: `
             <div class="stars mb-3">
                 <div class="d-flex justify-content-center">
-                    <input type="radio" id="star1" name="rating" value="1"><label class="star-label" for="star1">★</label>
-                    <input type="radio" id="star2" name="rating" value="2"><label class="star-label" for="star2">★</label>
-                    <input type="radio" id="star3" name="rating" value="3"><label class="star-label" for="star3">★</label>
-                    <input type="radio" id="star4" name="rating" value="4"><label class="star-label" for="star4">★</label>
                     <input type="radio" id="star5" name="rating" value="5"><label class="star-label" for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4"><label class="star-label" for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3"><label class="star-label" for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2"><label class="star-label" for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1"><label class="star-label" for="star1">★</label>
                 </div>
             </div>
+            <textarea id="feedback" class="form-control" placeholder="Please share your feedback..." rows="3"></textarea>
         `,
         showCancelButton: true,
         confirmButtonText: 'Submit',
