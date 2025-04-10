@@ -17,7 +17,7 @@ include('admin_navbar.php');
     <div class="container mt-4">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Reports</h4>
+                <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Sit-in Reports</h4>
             </div>
             <div class="card-body">
                 <!-- Export toolbar -->
@@ -97,7 +97,7 @@ include('admin_navbar.php');
                         extend: 'pdf',
                         text: '<i class="fas fa-file-pdf"></i> PDF',
                         className: 'btn btn-danger',
-                        orientation: 'landscape',
+                        orientation: 'Potrait',
                         pageSize: 'LEGAL',
                         title: 'Laboratory Attendance Report',
                         exportOptions: { columns: ':visible' },
