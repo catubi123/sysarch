@@ -195,60 +195,82 @@ include('admin_navbar.php');
     }
 
     function confirmResetSingleStudent(id) {
-        Swal.fire({
-            title: 'Reset Student Session?',
-            text: 'This will reset the remaining sessions to 30 for this student. Continue?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, reset it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
+        // First check if student has maximum sessions
+        fetch('check_session.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasMaxSession) {
                 Swal.fire({
-                    title: 'Processing...',
-                    text: 'Resetting student session...',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    showConfirmButton: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
+                    title: 'Warning!',
+                    text: 'This student already has maximum sessions (30)!',
+                    icon: 'warning',
+                    confirmButtonColor: '#3085d6',
                 });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Reset Student Session?',
+                text: 'This will reset the remaining sessions to 30 for this student. Continue?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, reset it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Resetting student session...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
-                fetch('process_reset_session.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `id=${id}&single=true`
-                })
-                .then(response => response.text())
-                .then(data => {
-                    if (data === 'success') {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Student session has been reset successfully.',
-                            icon: 'success'
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
+                    fetch('process_reset_session.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `id=${id}&single=true`
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Student session has been reset successfully.',
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to reset session. Please try again.',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Failed to reset session. Please try again.',
+                            text: 'Something went wrong with the request.',
                             icon: 'error'
                         });
-                    }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Something went wrong with the request.',
-                        icon: 'error'
                     });
-                });
-            }
+                }
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to check session status.',
+                icon: 'error'
+            });
         });
     }
     </script>

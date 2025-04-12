@@ -111,11 +111,11 @@ closeConnection($conn);
                         <div class="col-md-4">
                             <select name="sit_purpose" class="form-select" required>
                                 <option value="">Select Purpose</option>
-                                <option value="Java ">Java Programming</option>
-                                <option value="C# ">C# Programming</option>
-                                <option value="PHP ">PHP Programming</option>
-                                <option value="ASP.net ">ASP.net Programming</option>
-                                <option value="Python ">Phyton Programming</option>
+                                <option value="Java Programming ">Java Programming</option>
+                                <option value="C# Programming">C# Programming</option>
+                                <option value="PHP Programming">PHP Programming</option>
+                                <option value="ASP.net Programming">ASP.net Programming</option>
+                                <option value="Python Programming">Phyton Programming</option>
                                 <option value="Others">Others</option>
 
                             </select>
