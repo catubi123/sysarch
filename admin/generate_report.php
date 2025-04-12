@@ -1,6 +1,26 @@
 <?php
 include('db.php');
 include('admin_navbar.php');
+
+// Process filter parameters
+$where_conditions = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($_POST['student_id'])) $where_conditions[] = "s.id_number LIKE '%". mysqli_real_escape_string($con, $_POST['student_id']) . "%'";
+    if (!empty($_POST['name'])) $where_conditions[] = "(u.fname LIKE '%". mysqli_real_escape_string($con, $_POST['name']) ."%' OR u.lname LIKE '%". mysqli_real_escape_string($con, $_POST['name']) ."%')";
+    if (!empty($_POST['course'])) $where_conditions[] = "u.Course LIKE '%". mysqli_real_escape_string($con, $_POST['course']) ."%'";
+    if (!empty($_POST['lab_room'])) $where_conditions[] = "s.sit_lab = '". mysqli_real_escape_string($con, $_POST['lab_room']) ."'";
+    if (!empty($_POST['date'])) $where_conditions[] = "s.sit_date = '". mysqli_real_escape_string($con, $_POST['date']) ."'";
+    if (!empty($_POST['purpose'])) $where_conditions[] = "s.sit_purpose LIKE '%". mysqli_real_escape_string($con, $_POST['purpose']) ."%'";
+    if (!empty($_POST['status'])) $where_conditions[] = "s.status = '". mysqli_real_escape_string($con, $_POST['status']) ."'";
+}
+
+// Get unique courses for dropdown
+$course_query = "SELECT DISTINCT Course FROM user WHERE Course IS NOT NULL ORDER BY Course";
+$course_result = mysqli_query($con, $course_query);
+$courses = [];
+while($row = mysqli_fetch_assoc($course_result)) {
+    $courses[] = $row['Course'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,6 +40,56 @@ include('admin_navbar.php');
                 <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Sit-in Reports</h4>
             </div>
             <div class="card-body">
+                <!-- Filter Form -->
+                <form method="POST" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="student_id" placeholder="Student ID" value="<?php echo $_POST['student_id'] ?? ''; ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="name" placeholder="Name" value="<?php echo $_POST['name'] ?? ''; ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="course">
+                                <option value="">Select Course</option>
+                                <?php foreach($courses as $course): ?>
+                                    <option value="<?php echo $course; ?>" <?php echo (isset($_POST['course']) && $_POST['course'] == $course) ? 'selected' : ''; ?>>
+                                        <?php echo $course; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="lab_room">
+                                <option value="">Select Lab Room</option>
+                                <option value="524" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab1') ? 'selected' : ''; ?>>524</option>
+                                <option value="526" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab2') ? 'selected' : ''; ?>>526</option>
+                                <option value="528" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab3') ? 'selected' : ''; ?>>528</option>
+                                <option value="530" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab3') ? 'selected' : ''; ?>>530</option>
+                                <option value="542" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab3') ? 'selected' : ''; ?>>542</option>
+                                <option value="544" <?php echo (isset($_POST['lab_room']) && $_POST['lab_room'] == 'Lab3') ? 'selected' : ''; ?>>544</option>                          
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" name="date" value="<?php echo $_POST['date'] ?? ''; ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="purpose" placeholder="Purpose" value="<?php echo $_POST['purpose'] ?? ''; ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="status">
+                                <option value="">Select Status</option>
+                                <option value="Present" <?php echo (isset($_POST['status']) && $_POST['status'] == 'Present') ? 'Completed' : ''; ?>>Completed</option>
+                                <option value="Absent" <?php echo (isset($_POST['status']) && $_POST['status'] == 'Absent') ? 'Pending' : ''; ?>>Pending</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="generate_report.php" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </div>
+                </form>
+
                 <!-- Export toolbar -->
                 <div id="exportToolbar"></div>
 
@@ -41,8 +111,13 @@ include('admin_navbar.php');
                         <?php
                         $query = "SELECT s.*, u.fname, u.lname, u.Course 
                                 FROM student_sit_in s 
-                                LEFT JOIN user u ON s.id_number = u.id 
-                                ORDER BY s.sit_date DESC, s.time_in DESC";
+                                LEFT JOIN user u ON s.id_number = u.id";
+
+                        if (!empty($where_conditions)) {
+                            $query .= " WHERE " . implode(" AND ", $where_conditions);
+                        }
+
+                        $query .= " ORDER BY s.sit_date DESC, s.time_in DESC";
                         $result = mysqli_query($con, $query);
                         
                         while($row = mysqli_fetch_assoc($result)) {
