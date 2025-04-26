@@ -14,7 +14,7 @@
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in-records.php">View Sit-in Records</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="student_information.php">View List of Students</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="generate_report.php">Generate Reports</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="#">Reservation</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="view_reservations.php">Reservation</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">   </i> feedbacks</a></li>
             </ul>
             <!-- Log Out Button -->
