@@ -11,8 +11,15 @@
                 <li class="nav-item"><a class="nav-link text-white" href="admin_Dashboard.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in.php">Sit-in</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="sit-in-records.php">View Sit-in Records</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="student_information.php">View List of Students</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="viewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Views
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="viewsDropdown">
+                        <li><a class="dropdown-item" href="sit-in-records.php">View Sit-in Records</a></li>
+                        <li><a class="dropdown-item" href="student_information.php">View List of Students</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link text-white" href="generate_report.php">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_reservations.php">Reservation</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">   </i> feedbacks</a></li>
