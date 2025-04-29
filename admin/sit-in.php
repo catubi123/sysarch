@@ -60,10 +60,19 @@ $result = $conn->query($sql);
                         <td><?php echo htmlspecialchars($row['time_in']); ?></td>
                         <td><?php echo htmlspecialchars($row['sit_date']); ?></td>
                         <td>
-                            <form action="timeout_sitin.php" method="POST" style="display: inline;">
-                                <input type="hidden" name="sit_id" value="<?php echo $row['sit_id']; ?>">
-                                <button type="submit" class="btn btn-warning btn-sm">Time Out</button>
-                            </form>
+                            <div class="btn-group">
+                                <form action="timeout_sitin.php" method="POST" class="me-1">
+                                    <input type="hidden" name="sit_id" value="<?php echo $row['sit_id']; ?>">
+                                    <button type="submit" class="btn btn-warning btn-sm">Time Out</button>
+                                </form>
+                                <form action="add_point.php" method="POST">
+                                    <input type="hidden" name="sit_id" value="<?php echo $row['sit_id']; ?>">
+                                    <input type="hidden" name="user_id" value="<?php echo $row['id_number']; ?>">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fas fa-plus"></i> Add Point
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <?php endwhile; ?>
