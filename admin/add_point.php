@@ -11,49 +11,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $con->begin_transaction();
         
         try {
-            // First, check if points column exists
-            $check_column = $con->query("SHOW COLUMNS FROM user LIKE 'points'");
-            if ($check_column->num_rows === 0) {
-                $con->query("ALTER TABLE user ADD points INT DEFAULT 0");
+            // Get current user points and sessions
+            $check_user = $con->prepare("SELECT points, remaining_session FROM user WHERE id = ?");
+            $check_user->bind_param("s", $user_id);
+            $check_user->execute();
+            $result = $check_user->get_result();
+            $user_data = $result->fetch_assoc();
+            
+            // Initialize variables with current values or defaults
+            $current_points = isset($user_data['points']) ? intval($user_data['points']) : 0;
+            $current_sessions = isset($user_data['remaining_session']) ? intval($user_data['remaining_session']) : 0;
+            
+            // Add new point
+            $new_points = $current_points + 1;
+            
+            // Check if points reached multiple of 3
+            if ($new_points % 3 === 0) {
+                $current_sessions += 1;
+                $_SESSION['success'] = "Point added and earned new session! Total points: $new_points, Sessions: $current_sessions";
+            } else {
+                $_SESSION['success'] = "Point added successfully! Total points: $new_points";
             }
 
-            // Update user points - using COALESCE to handle NULL values
-            $update_points = $con->prepare("UPDATE user SET points = COALESCE(points, 0) + 1 WHERE id = ?");
-            $update_points->bind_param("s", $user_id);
-            $points_result = $update_points->execute();
-
-            if (!$points_result) {
-                throw new Exception("Failed to update points: " . $con->error);
-            }
+            // Update user record
+            $update_user = $con->prepare("UPDATE user SET points = ?, remaining_session = ? WHERE id = ?");
+            $update_user->bind_param("iis", $new_points, $current_sessions, $user_id);
+            $update_user->execute();
 
             // Time out the sit-in session
             $timeout = $con->prepare("UPDATE student_sit_in SET status = 'Completed', time_out = NOW() WHERE sit_id = ?");
             $timeout->bind_param("i", $sit_id);
-            $timeout_result = $timeout->execute();
+            $timeout->execute();
 
-            if (!$timeout_result) {
-                throw new Exception("Failed to update sit-in status: " . $con->error);
-            }
-
-            // If both operations successful, commit transaction
             $con->commit();
-            $_SESSION['success'] = "Point added and session timed out successfully!";
-            
+
         } catch (Exception $e) {
-            // If any operation fails, rollback all changes
             $con->rollback();
-            $_SESSION['error'] = "Failed to process request: " . $e->getMessage();
+            $_SESSION['error'] = "Error processing request: " . $e->getMessage();
             error_log("Error in add_point.php: " . $e->getMessage());
         }
     } else {
         $_SESSION['error'] = "Missing required parameters";
     }
     
-    // Redirect back to sit-in page
-    header("Location: sit-in.php");
-    exit();
-} else {
-    $_SESSION['error'] = "Invalid request method";
     header("Location: sit-in.php");
     exit();
 }
