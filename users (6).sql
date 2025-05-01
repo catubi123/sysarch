@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2025 at 12:58 PM
+-- Generation Time: May 01, 2025 at 06:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,7 +40,8 @@ CREATE TABLE `announce` (
 
 INSERT INTO `announce` (`announce_id`, `admin_name`, `date`, `message`) VALUES
 (0, 'Mark', 'April 09, 2025 12:47', 'ok na gyud ang history ug feedback\r\nang genereate report nalang\r\n'),
-(0, 'Mark', 'April 09, 2025 03:20', 'HAPIT NA HOMAN\r\n');
+(0, 'Mark', 'April 09, 2025 03:20', 'HAPIT NA HOMAN\r\n'),
+(0, 'Mark', 'April 29, 2025 07:50', 'hapit na deadline guys HAHHAHA\r\n');
 
 -- --------------------------------------------------------
 
@@ -64,7 +65,52 @@ CREATE TABLE `feedback` (
 
 INSERT INTO `feedback` (`id`, `sit_id`, `user_id`, `rating`, `message`, `created_at`, `status`) VALUES
 (14, 92, 'user1', 5, 'may ta ok na\n', '2025-04-09 00:43:34', 'pending'),
-(16, 94, 'user1', 5, 'ok na siguro ni hahahah', '2025-04-09 16:07:48', 'pending');
+(16, 94, 'user1', 5, 'ok na siguro ni hahahah', '2025-04-09 16:07:48', 'pending'),
+(17, 104, 'user1', 5, 'sdcalcn', '2025-05-01 01:21:31', 'pending');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `notification_id` int(11) NOT NULL,
+  `id_number` int(11) NOT NULL,
+  `message` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`notification_id`, `id_number`, `message`) VALUES
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation`
+--
+
+CREATE TABLE `reservation` (
+  `reservation_id` int(11) NOT NULL,
+  `reservation_date` varchar(10) NOT NULL,
+  `reservation_time` varchar(10) NOT NULL,
+  `pc_number` int(11) NOT NULL,
+  `lab` varchar(11) NOT NULL,
+  `purpose` varchar(50) NOT NULL,
+  `id_number` int(11) NOT NULL,
+  `status` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`reservation_id`, `reservation_date`, `reservation_time`, `pc_number`, `lab`, `purpose`, `id_number`, `status`) VALUES
+(0, '2025-05-05', '10:00', 0, '526', 'Python', 22677116, 'approved'),
+(0, '', '', 0, '', '', 22677116, 'pending');
 
 -- --------------------------------------------------------
 
@@ -200,7 +246,20 @@ INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `
 (91, 226771156, 'PHP ', '528', '18:36:32', '18:36:34', '2025-04-08', 'Completed'),
 (92, 226771156, 'PHP ', '526', '18:43:09', '18:43:11', '2025-04-08', 'Completed'),
 (93, 226771156, 'ASP.net ', '528', '09:58:44', '09:58:45', '2025-04-09', 'Completed'),
-(94, 226771156, 'Python ', '542', '10:06:33', '10:06:34', '2025-04-09', 'Completed');
+(94, 226771156, 'Python ', '542', '10:06:33', '10:06:34', '2025-04-09', 'Completed'),
+(95, 226771156, 'PHP', '542', '13:04:45', '2025-04-29 19:0', '2025-04-29', 'Completed'),
+(96, 226771156, 'Embedded', '542', '13:15:10', '2025-04-29 19:1', '2025-04-29', 'Completed'),
+(97, 226771156, 'Python', '542', '13:22:51', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(98, 226771156, 'Python', '528', '13:23:13', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(99, 226771156, 'Others', '530', '13:25:08', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(100, 226771156, 'PHP', '542', '13:25:18', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(101, 226771156, 'PHP', '530', '13:25:28', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(102, 226771156, 'Python', '528', '13:26:31', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(103, 226771156, 'System', '530', '13:26:43', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(104, 226771156, 'Web', '544', '13:26:54', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(105, 2147483647, 'Others', '542', '13:27:25', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(106, 2147483647, 'Database', '524', '13:27:38', '2025-04-29 19:2', '2025-04-29', 'Completed'),
+(107, 2147483647, 'PHP', '542', '13:27:49', '2025-04-29 19:2', '2025-04-29', 'Completed');
 
 -- --------------------------------------------------------
 
@@ -232,8 +291,8 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `image`, `email`, `address`, `role`, `remaining_session`, `points`) VALUES
 (1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin', 0, 0),
 (22677116, 'Catubig', 'Mark Dave', 'Cabingatan', 'BSIT', '3', 'mark', '$2y$10$zchvWcHidQPT0Ac7k0B8jub.KnCFlWdbnDeIJnoG8zhLCaRvB5OKC', 'uploads/320738403_1115980445778336_3190117843245493251_n.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user', 30, 0),
-(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 30, 0),
-(2147483647, 'Racuma', 'Denise', 'Cabingatan', 'BSCA', '1', 'hahaha', '$2y$10$se1cwLGKhBJCmUE5OMCADOcnAY1TZnhJt46nf7kbeb9BPtlnSVdGi', NULL, '', NULL, 'user', 30, 0);
+(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 23, 3),
+(2147483647, 'Racuma', 'Denise', 'Cabingatan', 'BSCA', '1', 'hahaha', '$2y$10$se1cwLGKhBJCmUE5OMCADOcnAY1TZnhJt46nf7kbeb9BPtlnSVdGi', NULL, '', NULL, 'user', 28, 3);
 
 --
 -- Indexes for dumped tables
@@ -272,13 +331,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `student_sit_in`
 --
 ALTER TABLE `student_sit_in`
-  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT for table `user`

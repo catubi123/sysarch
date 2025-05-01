@@ -120,7 +120,77 @@ include('admin_navbar.php');
                         </thead>
                         <tbody>
                             <?php
-                        
+                            $where_conditions = [];
+                            $params = [];
+                            $types = "";
+
+                            if (!empty($_POST['student_id'])) {
+                                $where_conditions[] = "r.id_number = ?";
+                                $params[] = $_POST['student_id'];
+                                $types .= "s";
+                            }
+                            if (!empty($_POST['lab_room'])) {
+                                $where_conditions[] = "r.lab = ?";
+                                $params[] = $_POST['lab_room'];
+                                $types .= "s";
+                            }
+                            if (!empty($_POST['date'])) {
+                                $where_conditions[] = "r.reservation_date = ?";
+                                $params[] = $_POST['date'];
+                                $types .= "s";
+                            }
+                            if (!empty($_POST['status'])) {
+                                $where_conditions[] = "r.status = ?";
+                                $params[] = $_POST['status'];
+                                $types .= "s";
+                            }
+
+                            $query = "SELECT r.*, u.fname, u.lname 
+                                    FROM reservation r 
+                                    LEFT JOIN user u ON r.id_number = u.id";
+
+                            if (!empty($where_conditions)) {
+                                $query .= " WHERE " . implode(" AND ", $where_conditions);
+                            }
+
+                            $query .= " ORDER BY r.reservation_date DESC, r.reservation_time DESC";
+
+                            $stmt = $con->prepare($query);
+                            if (!empty($params)) {
+                                $stmt->bind_param($types, ...$params);
+                            }
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+
+                            while($row = $result->fetch_assoc()) {
+                                $status_class = match($row['status']) {
+                                    'pending' => 'status-pending',
+                                    'approved' => 'status-approved',
+                                    'rejected' => 'status-rejected',
+                                    default => ''
+                                };
+
+                                echo "<tr>
+                                        <td>{$row['id_number']}</td>
+                                        <td>{$row['fname']} {$row['lname']}</td>
+                                        <td>{$row['lab']}</td>
+                                        <td>{$row['purpose']}</td>
+                                        <td>{$row['reservation_date']}</td>
+                                        <td>{$row['reservation_time']}</td>
+                                        <td class='{$status_class}'>{$row['status']}</td>
+                                        <td class='action-buttons'>";
+                                
+                                if ($row['status'] === 'pending') {
+                                    echo "<button class='btn btn-success btn-sm approve-btn' data-id='{$row['reservation_id']}'>
+                                            <i class='fas fa-check'></i> Approve
+                                          </button>
+                                          <button class='btn btn-danger btn-sm reject-btn' data-id='{$row['reservation_id']}'>
+                                            <i class='fas fa-times'></i> Reject
+                                          </button>";
+                                }
+                                
+                                echo "</td></tr>";
+                            }
                             ?>
                         </tbody>
                     </table>
@@ -132,6 +202,7 @@ include('admin_navbar.php');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('#reservationsTable').DataTable({
@@ -149,15 +220,48 @@ include('admin_navbar.php');
             $('.approve-btn, .reject-btn').click(function() {
                 const id = $(this).data('id');
                 const status = $(this).hasClass('approve-btn') ? 'approved' : 'rejected';
+                const actionText = status === 'approved' ? 'approve' : 'reject';
                 
-                if(confirm('Are you sure you want to ' + status + ' this reservation?')) {
-                    $.post('update_reservation_status.php', {
-                        id: id,
-                        status: status
-                    }, function(response) {
-                        location.reload();
-                    });
-                }
+                Swal.fire({
+                    title: `Confirm ${actionText}?`,
+                    text: `Are you sure you want to ${actionText} this reservation?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: status === 'approved' ? '#28a745' : '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: `Yes, ${actionText} it!`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post('update_reservation_status.php', {
+                            id: id,
+                            status: status
+                        })
+                        .done(function(response) {
+                            if(response.includes('success')) {
+                                Swal.fire(
+                                    'Success!',
+                                    `Reservation has been ${status}!`,
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .fail(function() {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to connect to server.',
+                                'error'
+                            );
+                        });
+                    }
+                });
             });
         });
     </script>
