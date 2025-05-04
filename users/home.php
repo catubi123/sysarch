@@ -91,6 +91,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="home.php" class="nav-link text-white active">
                 <i class="fas fa-home"></i> Home
             </a>
+            <?php
+            // Fetch notifications count
+            $user_id = $user_data['id'];
+            $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
+            $notif_stmt = $con->prepare($notif_query);
+            $notif_stmt->bind_param("i", $user_id);
+            $notif_stmt->execute();
+            $notif_result = $notif_stmt->get_result();
+            $notif_count = $notif_result->fetch_assoc()['count'];
+            ?>
+            <a href="#" class="nav-link text-white position-relative" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                <i class="fas fa-bell"></i> Notifications
+                <?php if ($notif_count > 0): ?>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <?php echo $notif_count; ?>
+                    </span>
+                <?php endif; ?>
+            </a>
             <a href="history.php" class="nav-link text-white">
                 <i class="fas fa-history"></i> History
             </a>
@@ -170,19 +188,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                     <p><i class="fas fa-check-circle text-success"></i> Maintain silence, proper decorum, and discipline inside the laboratory.</p>
-                    <p><i class="fas fa-ban text-danger"></i> Games are not allowed inside the lab.</p>
-                    <p><i class="fas fa-wifi text-primary"></i> Internet use is only allowed with instructor permission.</p>
-                    <p><i class="fas fa-lock text-secondary"></i> Avoid accessing inappropriate websites.</p>
-                    <p><i class="fas fa-trash text-danger"></i> Do not delete computer files or change settings.</p>
-                    <p><i class="fas fa-clock text-info"></i> Observe computer usage time limits.</p>
-                    <p><i class="fas fa-chair text-dark"></i> Return chairs to their proper place after class.</p>
-                    <p><i class="fas fa-exclamation-triangle text-warning"></i> For serious offenses, disciplinary action may be taken.</p>
-                </div>
+                    <p><i class="fas fa-ban text-danger"></i> Games are not allowed inside the lab.</p>                    <p><i class="fas fa-wifi text-primary"></i> Internet use is only allowed with instructor permission.</p>                    <p><i class="fas fa-lock text-secondary"></i> Avoid accessing inappropriate websites.</p>                    <p><i class="fas fa-trash text-danger"></i> Do not delete computer files or change settings.</p>                    <p><i class="fas fa-clock text-info"></i> Observe computer usage time limits.</p>                    <p><i class="fas fa-chair text-dark"></i> Return chairs to their proper place after class.</p>                    <p><i class="fas fa-exclamation-triangle text-warning"></i> For serious offenses, disciplinary action may be taken.</p>                </div>            </div>        </div>    </div></div><!-- Notification Modal --><div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">    <div class="modal-dialog">        <div class="modal-content">            <div class="modal-header bg-primary text-white">                <h5 class="modal-title" id="notificationModalLabel">                    <i class="fas fa-bell"></i> Notifications                </h5>                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>            </div>            <div class="modal-body">
+                <?php
+                // Fix notification fetch query
+                try {
+                    $notifications_query = "SELECT notification_id, message FROM notification WHERE id_number = ? ORDER BY notification_id DESC";
+                    $notifications_stmt = $con->prepare($notifications_query);
+                    $notifications_stmt->bind_param("i", $user_id);
+                    $notifications_stmt->execute();
+                    $notifications = $notifications_stmt->get_result();
+
+                    if ($notifications && $notifications->num_rows > 0) {
+                        while ($row = $notifications->fetch_assoc()) {
+                            echo '<div class="alert alert-info mb-2">';
+                            echo '<div class="d-flex justify-content-between align-items-center">';
+                            echo '<div><i class="fas fa-info-circle me-2"></i>' . htmlspecialchars($row['message']) . '</div>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<div class="text-center text-muted">';
+                        echo '<i class="fas fa-bell-slash fa-2x mb-2"></i>';
+                        echo '<p>No notifications available</p>';
+                        echo '</div>';
+                    }
+                } catch (Exception $e) {
+                    echo '<div class="alert alert-danger">Error loading notifications</div>';
+                }
+                ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
-
     </div>
 </div>
+
+<!-- Add Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
 </body>
 </html>
