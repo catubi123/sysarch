@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST
     
     try {
         // Get reservation details first
-        $get_reservation = "SELECT r.id_number, r.reservation_date, r.reservation_time, r.lab 
+        $get_reservation = "SELECT r.id_number, r.reservation_date, r.reservation_time, r.lab, r.purpose 
                           FROM reservation r 
                           WHERE r.reservation_id = ?";
         $stmt = $con->prepare($get_reservation);
@@ -25,9 +25,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST
         $stmt->bind_param("si", $status, $id);
         $stmt->execute();
 
+        if ($status === 'approved') {
+            // Insert into student_sit_in
+            $time_in = date('H:i:s'); // Current time
+            $sit_query = "INSERT INTO student_sit_in (id_number, sit_purpose, sit_lab, time_in, sit_date, status) 
+                         VALUES (?, ?, ?, ?, ?, 'Active')";
+            $stmt = $con->prepare($sit_query);
+            $stmt->bind_param("issss", 
+                $reservation['id_number'],
+                $reservation['purpose'],
+                $reservation['lab'],
+                $reservation['reservation_time'],
+                $reservation['reservation_date']
+            );
+            $stmt->execute();
+        }
+
         // Create notification message
         $message = $status === 'approved' 
-            ? "Your reservation for Lab {$reservation['lab']} on {$reservation['reservation_date']} at {$reservation['reservation_time']} has been approved."
+            ? "Your reservation for Lab {$reservation['lab']} on {$reservation['reservation_date']} at {$reservation['reservation_time']} has been approved. Your sit-in has been automatically started."
             : "Your reservation for Lab {$reservation['lab']} on {$reservation['reservation_date']} at {$reservation['reservation_time']} has been rejected.";
 
         // Insert notification

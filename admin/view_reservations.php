@@ -216,15 +216,18 @@ include('admin_navbar.php');
                 }
             });
 
-            // Handle approve/reject buttons
+            // Update approve/reject button handler
             $('.approve-btn, .reject-btn').click(function() {
                 const id = $(this).data('id');
                 const status = $(this).hasClass('approve-btn') ? 'approved' : 'rejected';
                 const actionText = status === 'approved' ? 'approve' : 'reject';
+                const message = status === 'approved' 
+                    ? 'This will approve the reservation and automatically start the sit-in session.'
+                    : 'Are you sure you want to reject this reservation?';
                 
                 Swal.fire({
                     title: `Confirm ${actionText}?`,
-                    text: `Are you sure you want to ${actionText} this reservation?`,
+                    text: message,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: status === 'approved' ? '#28a745' : '#dc3545',
@@ -238,27 +241,21 @@ include('admin_navbar.php');
                         })
                         .done(function(response) {
                             if(response.includes('success')) {
-                                Swal.fire(
-                                    'Success!',
-                                    `Reservation has been ${status}!`,
-                                    'success'
-                                ).then(() => {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: status === 'approved' 
+                                        ? 'Reservation approved and sit-in session started!'
+                                        : 'Reservation has been rejected!',
+                                    icon: 'success'
+                                }).then(() => {
                                     location.reload();
                                 });
                             } else {
-                                Swal.fire(
-                                    'Error!',
-                                    'Something went wrong.',
-                                    'error'
-                                );
+                                Swal.fire('Error!', 'Something went wrong.', 'error');
                             }
                         })
                         .fail(function() {
-                            Swal.fire(
-                                'Error!',
-                                'Failed to connect to server.',
-                                'error'
-                            );
+                            Swal.fire('Error!', 'Failed to connect to server.', 'error');
                         });
                     }
                 });
