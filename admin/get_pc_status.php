@@ -1,47 +1,40 @@
 <?php
-include('../users/db.php');
+include('db.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lab'])) {
-    $lab = $_POST['lab'];
-    
-    // Get PC statuses
-    $query = "SELECT ps.pc_number, ps.is_available,
-              CASE 
-                WHEN EXISTS (
-                    SELECT 1 FROM student_sit_in 
-                    WHERE sit_lab = ? AND pc_number = ps.pc_number 
-                    AND status = 'Active'
-                ) THEN 'in-use'
-                WHEN ps.is_available = 1 THEN 'checked'
-                ELSE 'unchecked'
-              END as status
-              FROM pc_status ps
-              WHERE ps.lab_number = ?";
-              
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("ss", $lab, $lab);
+header('Content-Type: application/json');
+
+if (isset($_GET['lab']) && isset($_GET['pc_number'])) {
+    $lab = $_GET['lab'];
+    $pc_number = $_GET['pc_number'];
+
+    // Check if PC is working (from pc_status table)
+    $status_query = "SELECT status FROM pc_status WHERE lab = ? AND pc_number = ?";
+    $stmt = $con->prepare($status_query);
+    $stmt->bind_param("si", $lab, $pc_number);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    $pcs = [];
-    $stats = [
-        'checked' => 0,
-        'unchecked' => 0,
-        'inUse' => 0
+    $response = [
+        'checked' => false,
+        'unavailable' => false
     ];
-    
-    while ($row = $result->fetch_assoc()) {
-        $pcs[] = [
-            'number' => (int)$row['pc_number'],
-            'status' => $row['status']
-        ];
-        $stats[$row['status'] === 'in-use' ? 'inUse' : 
-              ($row['status'] === 'checked' ? 'checked' : 'unchecked')]++;
+
+    if ($row = $result->fetch_assoc()) {
+        $response['checked'] = $row['status'] == 1;
     }
-    
-    echo json_encode([
-        'pcs' => $pcs,
-        'stats' => $stats
-    ]);
+
+    // Check if PC is currently reserved
+    $reserved_query = "SELECT 1 FROM reservation 
+                      WHERE lab = ? AND pc_number = ? 
+                      AND status = 'approved' 
+                      AND reservation_date = CURDATE()";
+    $stmt = $con->prepare($reserved_query);
+    $stmt->bind_param("si", $lab, $pc_number);
+    $stmt->execute();
+    $response['unavailable'] = $stmt->get_result()->num_rows > 0;
+
+    echo json_encode($response);
+} else {
+    echo json_encode(['error' => 'Missing parameters']);
 }
 ?>

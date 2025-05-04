@@ -35,3 +35,42 @@ if ($result->num_rows > 0) {
     echo "</div>";
 }
 ?>
+```
+```php
+<?php
+include('db.php');
+
+$query = "SELECT r.*, u.fname, u.lname 
+          FROM reservation r 
+          LEFT JOIN user u ON r.id_number = u.id 
+          ORDER BY r.reservation_date DESC, r.reservation_time DESC";
+
+$result = $con->query($query);
+$data = array();
+
+while($row = $result->fetch_assoc()) {
+    $status_class = match($row['status']) {
+        'pending' => 'text-warning',
+        'approved' => 'text-success',
+        'rejected' => 'text-danger',
+        default => ''
+    };
+
+    $data['data'][] = array(
+        $row['reservation_date'],
+        $row['reservation_time'],
+        $row['id_number'],
+        'Lab ' . $row['lab'],
+        'PC-' . str_pad($row['pc_number'], 2, '0', STR_PAD_LEFT),
+        $row['purpose'],
+        "<span class='{$status_class}'>" . ucfirst($row['status']) . "</span>"
+    );
+}
+
+if (empty($data)) {
+    $data['data'] = array();
+}
+
+header('Content-Type: application/json');
+echo json_encode($data);
+?>

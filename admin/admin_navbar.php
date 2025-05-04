@@ -10,7 +10,7 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link text-white" href="admin_Dashboard.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="top_users.php">Top Performers</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="lab_management.php">Lab</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in.php">Sit-in</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="viewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
