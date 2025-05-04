@@ -1,67 +1,64 @@
 <?php
 session_start();
 include('db.php');
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function showAlert(icon, title, text, redirect = true) {
-            Swal.fire({
-                icon: icon,
-                title: title,
-                text: text,
-                confirmButtonColor: '#3085d6',
-                allowOutsideClick: false
-            }).then((result) => {
-                if (redirect) {
-                    window.location.href = 'reservation.php';
-                }
-            });
-        }
-    </script>
-</head>
-<body>
-<?php
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_number = $_POST['idNumber'];
-    $lab = $_POST['lab'];
-    $purpose = $_POST['purpose'];
     $date = $_POST['date'];
     $time = $_POST['timeIn'];
-    $pc_number = (int)$_POST['selectedPC']; // Get the selected PC number
+    $lab = $_POST['lab'];
+    $purpose = $_POST['purpose'];
+    $status = 'pending'; // Default status for new reservations
 
-    // Check for existing pending reservations
-    $check_query = "SELECT COUNT(*) as count FROM reservation WHERE id_number = ? AND status = 'pending'";
-    $check_stmt = $con->prepare($check_query);
-    $check_stmt->bind_param("i", $id_number);
-    $check_stmt->execute();
-    $result = $check_stmt->get_result();
-    $count = $result->fetch_assoc()['count'];
+    // Check if the user already has 3 reservations for the selected date
+    $check_limit_query = "SELECT COUNT(*) as reservation_count 
+                          FROM reservation 
+                          WHERE id_number = ? 
+                          AND reservation_date = ? 
+                          AND reservation_time BETWEEN '08:00:00' AND '17:00:00'";
+    
+    $stmt = $con->prepare($check_limit_query);
+    $stmt->bind_param("ss", $id_number, $date);
+    $stmt->execute();
+    $limit_result = $stmt->get_result()->fetch_assoc();
 
-    if ($count > 0) {
-        echo "<script>
-            showAlert('error', 'Cannot Create Reservation', 'You already have a pending reservation.');
-        </script>";
-    } else {
-        // Insert new reservation with PC number
-        $query = "INSERT INTO reservation (id_number, lab, pc_number, purpose, reservation_date, reservation_time, status) 
-                  VALUES (?, ?, ?, ?, ?, ?, 'pending')";
-        $stmt = $con->prepare($query);
-        $stmt->bind_param("isisss", $id_number, $lab, $pc_number, $purpose, $date, $time);
-
-        if ($stmt->execute()) {
-            echo "<script>
-                showAlert('success', 'Reservation Created', 'Your reservation has been submitted successfully!');
-            </script>";
-        } else {
-            echo "<script>
-                showAlert('error', 'Error', 'Failed to create reservation. Please try again.');
-            </script>";
-        }
+    if ($limit_result['reservation_count'] >= 3) {
+        $_SESSION['error'] = "You can only make up to 3 reservations between 8:00 AM and 5:00 PM on the same day.";
+        header("Location: reservation.php");
+        exit();
     }
+
+    // Check for existing reservation at the same time and lab
+    $check_query = "SELECT * FROM reservation 
+                    WHERE reservation_date = ? 
+                    AND lab = ? 
+                    AND reservation_time = ?";
+    
+    $stmt = $con->prepare($check_query);
+    $stmt->bind_param("sss", $date, $lab, $time);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $_SESSION['error'] = "This time slot is already reserved.";
+        header("Location: reservation.php");
+        exit();
+    }
+
+    // Insert new reservation
+    $query = "INSERT INTO reservation (reservation_date, reservation_time, lab, purpose, 
+              id_number, status) VALUES (?, ?, ?, ?, ?, ?)";
+    
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("ssssss", $date, $time, $lab, $purpose, $id_number, $status);
+
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Reservation submitted successfully!";
+    } else {
+        $_SESSION['error'] = "Error submitting reservation.";
+    }
+
+    header("Location: reservation.php");
+    exit();
 }
 ?>
-</body>
-</html>

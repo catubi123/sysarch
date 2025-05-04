@@ -1,38 +1,76 @@
 <?php
 session_start();
-include('db.php');
+require_once('db.php'); // Change include to require_once
 
-// Check if user is logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
-    exit();
-}
-
-// Get user data and check existing reservations
-$username = $_SESSION['username'];
-$query = "SELECT u.id, CONCAT(u.lname, ', ', u.fname, ' ', u.MName) as full_name,
-          (SELECT COUNT(*) FROM reservation r WHERE r.id_number = u.id AND r.status = 'pending') as pending_reservations
-          FROM user u WHERE u.username = ?";
-$stmt = $con->prepare($query);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user_data = $result->fetch_assoc();
-    $_SESSION['id'] = $user_data['id'];
-    $_SESSION['studentName'] = $user_data['full_name'];
-    $has_pending = $user_data['pending_reservations'] > 0;
+// Verify database connection
+if (!isset($con) || $con->connect_error) {
+    die("Database connection failed: " . ($con->connect_error ?? "Connection not established"));
 }
 
 $id = $_SESSION['id'] ?? '';
 $studentName = $_SESSION['studentName'] ?? '';
 
-// Add JavaScript variables for SweetAlert
-echo "<script>
-    const hasPendingReservation = " . ($has_pending ? 'true' : 'false') . ";
-    const studentName = '" . addslashes($studentName) . "';
-</script>";
+// Check for existing reservation first
+if ($id) {
+    $check_pending = "SELECT COUNT(*) as pending_count FROM reservation WHERE id_number = ? AND status = 'pending'";
+    $stmt = $con->prepare($check_pending);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $pending = $result->fetch_assoc();
+
+    if ($pending['pending_count'] > 0) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Active Reservation Found',
+                    text: 'You already have a pending reservation. Please wait for it to be processed before making a new one.',
+                    icon: 'warning',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Return to Dashboard',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'home.php';
+                    }
+                });
+            });
+        </script>";
+    }
+}
+
+// SweetAlert success/error handlers
+if (isset($_SESSION['swal_success'])) {
+    $swal = $_SESSION['swal_success'];
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '" . $swal['title'] . "',
+                text: '" . $swal['text'] . "',
+                icon: '" . $swal['icon'] . "',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+                timer: 3000
+            });
+        });
+    </script>";
+    unset($_SESSION['swal_success']);
+}
+
+if (isset($_SESSION['swal_error'])) {
+    $swal = $_SESSION['swal_error'];
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '" . $swal['title'] . "',
+                text: '" . $swal['text'] . "',
+                icon: '" . $swal['icon'] . "',
+                confirmButtonColor: '#d33'
+            });
+        });
+    </script>";
+    unset($_SESSION['swal_error']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,12 +81,11 @@ echo "<script>
   <link rel="stylesheet" href="w3.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  <!-- Add SweetAlert2 CSS and JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .card {
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-      border: none;
-      border-radius: 1rem;
     }
     .header-gradient {
       background: linear-gradient(45deg, #0d6efd, #0a58ca);
@@ -69,27 +106,31 @@ echo "<script>
       margin-left: 4px;
     }
     .computer-icon {
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 80px; /* Increased height to accommodate number */
       border: 2px solid transparent;
       border-radius: 10px;
       display: flex;
+      flex-direction: column; /* Stack items vertically */
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 28px;
       cursor: pointer;
       transition: all 0.3s ease;
       background-color: #f8f9fa;
       padding: 5px;
-      margin: 5px;
     }
     .computer-icon:hover {
       background-color: #e2e6ea;
-      transform: translateY(-2px);
     }
     .computer-icon.selected {
       border-color: #0d6efd;
       background-color: #cfe2ff;
+    }
+    .pc-number {
+      font-size: 12px;
+      margin-top: 5px;
+      color: #666;
     }
   </style>
 </head>
@@ -123,14 +164,12 @@ echo "<script>
             <!-- Left Column -->
             <div class="col-md-6">
               <div class="form-floating">
-                <input type="text" class="form-control" id="idNumber" name="idNumber" 
-                       value="<?php echo htmlspecialchars($id); ?>" readonly />
+                <input type="text" class="form-control" id="idNumber" name="idNumber" value="<?php echo isset($_SESSION['id']) ? htmlspecialchars($_SESSION['id']) : ''; ?>" readonly />
                 <label><i class="fas fa-id-card"></i> ID Number</label>
               </div>
 
               <div class="form-floating">
-                <input type="text" class="form-control" id="studentName" name="studentName" 
-                       value="<?php echo htmlspecialchars($studentName); ?>" readonly />
+                <input type="text" class="form-control" id="studentName" name="studentName" value="<?php echo isset($_SESSION['studentName']) ? htmlspecialchars($_SESSION['studentName']) : ''; ?>" readonly />
                 <label><i class="fas fa-user"></i> Student Name</label>
               </div>
 
@@ -181,7 +220,7 @@ echo "<script>
               <div class="form-floating">
                 <input type="time" class="form-control" id="timeIn" name="timeIn" required />
                 <label class="required"><i class="fas fa-clock"></i> Time In</label>
-                <div class="invalid-feedback">Please select a time between 8:00 AM and 5:00 PM</div>
+                <div class="invalid-feedback">Please select a time</div>
               </div>
             </div>
 
@@ -200,6 +239,7 @@ echo "<script>
                   <li>Laboratory is open 24/7</li>
                   <li>Fields marked with <span class="text-danger">*</span> are required</li>
                   <li>Please be responsible with laboratory equipment usage</li>
+                  <li>Reservations can be made for any time</li>
                 </ul>
               </div>
             </div>
@@ -208,7 +248,6 @@ echo "<script>
               <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-calendar-check"></i> Submit Reservation</button>
             </div>
           </div>
-          <input type="hidden" id="selectedPC" name="pc_number" value="">
         </form>
       </div>
     </div>
@@ -239,7 +278,6 @@ echo "<script>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
  const labComputers = {
   '524': generateComputers(50),
@@ -273,90 +311,73 @@ function updateComputerControl(lab) {
             const icon = document.createElement('div');
             icon.className = 'computer-icon';
             icon.innerHTML = `
-                <div class="text-center">
-                    <i class="fas fa-desktop"></i>
-                    <div style="font-size: 12px; margin-top: 5px;">${pc}</div>
-                </div>
+                <i class="fas fa-desktop"></i>
+                <span class="pc-number">PC-${String(index + 1).padStart(2, '0')}</span>
             `;
             icon.title = pc;
-            icon.onclick = function () {
+            icon.onclick = function() {
                 document.querySelectorAll('.computer-icon').forEach(el => el.classList.remove('selected'));
                 this.classList.add('selected');
-                // Store PC number (1-based index)
-                document.getElementById('selectedPC').value = index + 1;
-                console.log(`Selected PC: ${index + 1}`);
+                
+                // Add hidden input for selected PC number
+                const pcInput = document.getElementById('pcNumberInput') || document.createElement('input');
+                pcInput.type = 'hidden';
+                pcInput.id = 'pcNumberInput';
+                pcInput.name = 'pc_number';
+                pcInput.value = index + 1;
+                document.getElementById('reservationForm').appendChild(pcInput);
             };
             container.appendChild(icon);
         });
     }
 }
 
-function validateAndSubmit(event) {
+// Add form validation
+document.getElementById('reservationForm').addEventListener('submit', function(event) {
     event.preventDefault();
-
-    if (hasPendingReservation) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Cannot Create Reservation',
-            text: 'You already have a pending reservation. Please wait for it to be completed.',
-            confirmButtonColor: '#3085d6'
-        });
-        return false;
-    }
-
-    const selectedPC = document.getElementById('selectedPC').value;
-    if (!selectedPC) {
-        Swal.fire({
-            icon: 'error',
-            title: 'No PC Selected',
-            text: 'Please select a computer before submitting the reservation.',
-            confirmButtonColor: '#3085d6'
-        });
-        return false;
-    }
-
-    const form = event.target;
-    if (!form.checkValidity()) {
-        event.stopPropagation();
-        form.classList.add('was-validated');
-        return false;
-    }
-
-    // Get form values
+    
+    // Basic form validation
+    const purpose = document.getElementById('purpose').value;
     const lab = document.getElementById('lab').value;
     const date = document.getElementById('date').value;
-    const time = document.getElementById('timeIn').value;
-    const purpose = document.getElementById('purpose').value;
+    const timeIn = document.getElementById('timeIn').value;
+    const pcNumber = document.getElementById('pcNumberInput');
 
+    if (!purpose || !lab || !date || !timeIn) {
+        Swal.fire('Error', 'Please fill in all required fields', 'error');
+        return;
+    }
+
+    if (!pcNumber) {
+        Swal.fire('Error', 'Please select a computer', 'error');
+        return;
+    }
+
+    // Validate date
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+        Swal.fire('Error', 'Please select today or a future date', 'error');
+        return;
+    }
+
+    // Show confirmation dialog
     Swal.fire({
         title: 'Confirm Reservation',
-        html: `
-            <p>Please confirm your reservation details:</p>
-            <p><strong>Name:</strong> ${studentName}</p>
-            <p><strong>Laboratory:</strong> ${lab}</p>
-            <p><strong>Date:</strong> ${date}</p>
-            <p><strong>Time:</strong> ${time}</p>
-            <p><strong>Purpose:</strong> ${purpose}</p>
-            <p><strong>PC Number:</strong> ${selectedPC}</p>
-        `,
-        icon: 'question',
+        text: 'Once submitted, you cannot make another reservation until this one is processed. Continue?',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm Reservation',
-        cancelButtonText: 'Cancel',
-        allowOutsideClick: false
+        confirmButtonText: 'Yes, submit reservation'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.submit();
+            // Submit the form
+            this.submit();
         }
     });
-
-    return false;
-}
-
-// Ensure form submission is handled
-document.getElementById('reservationForm').onsubmit = validateAndSubmit;
+});
 </script>
 
 </body>

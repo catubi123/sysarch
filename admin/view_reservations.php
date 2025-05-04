@@ -218,9 +218,8 @@ include('admin_navbar.php');
 
             // Handle approve/reject buttons
             $('.approve-btn, .reject-btn').click(function() {
-                const button = $(this);
-                const id = button.data('id');
-                const status = button.hasClass('approve-btn') ? 'approved' : 'rejected';
+                const id = $(this).data('id');
+                const status = $(this).hasClass('approve-btn') ? 'approved' : 'rejected';
                 const actionText = status === 'approved' ? 'approve' : 'reject';
                 
                 Swal.fire({
@@ -230,36 +229,37 @@ include('admin_navbar.php');
                     showCancelButton: true,
                     confirmButtonColor: status === 'approved' ? '#28a745' : '#dc3545',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: `Yes, ${actionText} it!`,
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return $.post('update_reservation_status.php', {
-                            id: id,
-                            status: status
-                        }).catch(error => {
-                            Swal.showValidationMessage(`Request failed: ${error}`);
-                        });
-                    }
+                    confirmButtonText: `Yes, ${actionText} it!`
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        if (result.value.includes('success')) {
-                            Swal.fire({
-                                title: 'Success!',
-                                text: status === 'approved' ? 
-                                    'Reservation approved and sit-in entry created!' : 
-                                    'Reservation has been rejected',
-                                icon: 'success',
-                                timer: 2000
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: result.value || 'Something went wrong',
-                                icon: 'error'
-                            });
-                        }
+                        $.post('update_reservation_status.php', {
+                            id: id,
+                            status: status
+                        })
+                        .done(function(response) {
+                            if(response.includes('success')) {
+                                Swal.fire(
+                                    'Success!',
+                                    `Reservation has been ${status}!`,
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .fail(function() {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to connect to server.',
+                                'error'
+                            );
+                        });
                     }
                 });
             });

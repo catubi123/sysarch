@@ -1,67 +1,51 @@
 <?php
-session_start();
-include('../users/db.php');
+include('db.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reservation_id = (int)$_POST['id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST['status'])) {
+    $id = intval($_POST['id']);
     $status = $_POST['status'];
-    $current_time = date('H:i:s');
-    $current_date = date('Y-m-d');
-
+    
+    // Start transaction
+    $con->begin_transaction();
+    
     try {
-        $con->begin_transaction();
-
-        // Get reservation details
-        $get_query = "SELECT * FROM reservation WHERE reservation_id = ?";
-        $stmt = $con->prepare($get_query);
-        $stmt->bind_param("i", $reservation_id);
+        // Get reservation details first
+        $get_reservation = "SELECT r.id_number, r.reservation_date, r.reservation_time, r.lab 
+                          FROM reservation r 
+                          WHERE r.reservation_id = ?";
+        $stmt = $con->prepare($get_reservation);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
-        $reservation = $stmt->get_result()->fetch_assoc();
-
-        if (!$reservation) {
-            throw new Exception("Reservation not found");
-        }
+        $result = $stmt->get_result();
+        $reservation = $result->fetch_assoc();
 
         // Update reservation status
         $update_query = "UPDATE reservation SET status = ? WHERE reservation_id = ?";
-        $update_stmt = $con->prepare($update_query);
-        $update_stmt->bind_param("si", $status, $reservation_id);
-        $update_stmt->execute();
+        $stmt = $con->prepare($update_query);
+        $stmt->bind_param("si", $status, $id);
+        $stmt->execute();
 
-        if ($status === 'approved') {
-            // Create sit-in entry with pc_number
-            $sit_query = "INSERT INTO student_sit_in (id_number, sit_purpose, sit_lab, pc_number, time_in, sit_date, status) 
-                          VALUES (?, ?, ?, ?, ?, ?, 'Active')";
-            $sit_stmt = $con->prepare($sit_query);
-            $current_time = date('H:i:s');
-            $current_date = date('Y-m-d');
-            
-            $sit_stmt->bind_param("ississ", 
-                $reservation['id_number'],
-                $reservation['purpose'],
-                $reservation['lab'],
-                $reservation['pc_number'],  // Include pc_number from reservation
-                $current_time,
-                $current_date
-            );
-            
-            if (!$sit_stmt->execute()) {
-                throw new Exception("Failed to create sit-in entry: " . $con->error);
-            }
+        // Create notification message
+        $message = $status === 'approved' 
+            ? "Your reservation for Lab {$reservation['lab']} on {$reservation['reservation_date']} at {$reservation['reservation_time']} has been approved."
+            : "Your reservation for Lab {$reservation['lab']} on {$reservation['reservation_date']} at {$reservation['reservation_time']} has been rejected.";
 
-            // Create notification
-            $notif_query = "INSERT INTO notification (id_number, message) VALUES (?, ?)";
-            $notif_stmt = $con->prepare($notif_query);
-            $message = "Your reservation for Lab {$reservation['lab']} has been approved. You can now use PC #{$reservation['pc_number']}.";
-            $notif_stmt->bind_param("is", $reservation['id_number'], $message);
-            $notif_stmt->execute();
-        }
+        // Insert notification
+        $notify_query = "INSERT INTO notification (id_number, message) VALUES (?, ?)";
+        $stmt = $con->prepare($notify_query);
+        $stmt->bind_param("is", $reservation['id_number'], $message);
+        $stmt->execute();
 
+        // Commit transaction
         $con->commit();
         echo "success";
+        
     } catch (Exception $e) {
+        // Rollback on error
         $con->rollback();
         echo "error: " . $e->getMessage();
     }
+} else {
+    echo "invalid request";
 }
 ?>
