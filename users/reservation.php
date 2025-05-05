@@ -58,6 +58,32 @@ if ($id) {
     }
 }
 
+// Define selected_lab before using it
+$selected_lab = $_POST['lab'] ?? null;
+
+if ($selected_lab) {
+    // Query to get available PCs
+    $query = "SELECT pn.* 
+              FROM pc_numbers pn
+              LEFT JOIN pc_status ps ON pn.lab_number = ps.lab_number 
+              AND pn.pc_number = ps.pc_number 
+              WHERE (ps.is_active IS NULL OR ps.is_active = 1) 
+              AND pn.lab_number = ?";
+
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $selected_lab);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Display available PCs
+    while($row = $result->fetch_assoc()) {
+        echo '<div class="computer-icon" data-pc="' . $row['pc_number'] . '">';
+        echo '<i class="fas fa-desktop"></i>';
+        echo '<span class="pc-number">PC-' . str_pad($row['pc_number'], 2, '0', STR_PAD_LEFT) . '</span>';
+        echo '</div>';
+    }
+}
+
 // SweetAlert success/error handlers
 if (isset($_SESSION['swal_success'])) {
     $swal = $_SESSION['swal_success'];
@@ -102,6 +128,7 @@ if (isset($_SESSION['swal_error'])) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Add SweetAlert2 CSS and JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .card {
@@ -147,6 +174,10 @@ if (isset($_SESSION['swal_error'])) {
     .computer-icon.selected {
       border-color: #0d6efd;
       background-color: #cfe2ff;
+    }
+    .computer-icon.unavailable {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .pc-number {
       font-size: 12px;
@@ -326,60 +357,121 @@ function updateComputerControl(lab) {
     const container = document.getElementById('computerIcons');
     container.innerHTML = '';
 
-    if (labComputers[lab]) {
+    if (lab) {
         document.getElementById('labSelector').value = lab;
-        labComputers[lab].forEach((pc, index) => {
+        
+        // Clear previous selection when changing labs
+        const existingInput = document.getElementById('pcNumberInput');
+        if (existingInput) {
+            existingInput.remove();
+        }
+        
+        // Generate PCs immediately
+        for (let i = 1; i <= 50; i++) {
             const icon = document.createElement('div');
             icon.className = 'computer-icon';
             icon.innerHTML = `
                 <i class="fas fa-desktop"></i>
-                <span class="pc-number">PC-${String(index + 1).padStart(2, '0')}</span>
+                <span class="pc-number">PC-${String(i).padStart(2, '0')}</span>
             `;
-            icon.title = pc;
+            icon.setAttribute('data-pc', i);
+            icon.setAttribute('data-lab', lab);
+            
+            // Add click handler by default
             icon.onclick = function() {
-                document.querySelectorAll('.computer-icon').forEach(el => el.classList.remove('selected'));
-                this.classList.add('selected');
-                
-                // Add hidden input for selected PC number
-                const pcInput = document.getElementById('pcNumberInput') || document.createElement('input');
-                pcInput.type = 'hidden';
-                pcInput.id = 'pcNumberInput';
-                pcInput.name = 'pc_number';
-                pcInput.value = index + 1;
-                document.getElementById('reservationForm').appendChild(pcInput);
+                // Only allow selection if PC is not unavailable
+                if (!this.classList.contains('unavailable')) {
+                    // Remove selection from all PCs across all labs
+                    document.querySelectorAll('.computer-icon').forEach(el => 
+                        el.classList.remove('selected'));
+                    // Add selection to clicked PC
+                    this.classList.add('selected');
+                    
+                    // Update hidden input for form submission
+                    const pcInput = document.getElementById('pcNumberInput') || 
+                        document.createElement('input');
+                    pcInput.type = 'hidden';
+                    pcInput.id = 'pcNumberInput';
+                    pcInput.name = 'pc_number';
+                    pcInput.value = i;
+                    
+                    // Add lab number to form
+                    const labInput = document.getElementById('labNumberInput') || 
+                        document.createElement('input');
+                    labInput.type = 'hidden';
+                    labInput.id = 'labNumberInput';
+                    labInput.name = 'lab_number';
+                    labInput.value = lab;
+                    
+                    const form = document.getElementById('reservationForm');
+                    form.appendChild(pcInput);
+                    form.appendChild(labInput);
+                }
             };
+            
             container.appendChild(icon);
-        });
+            
+            // Check availability after adding
+            $.ajax({
+                url: '../admin/get_pc_status.php',
+                method: 'GET',
+                data: { lab: lab, pc: i },
+                success: function(response) {
+                    if (!response.active) {
+                        icon.classList.add('unavailable');
+                        icon.onclick = null;
+                    }
+                }
+            });
+        }
     }
 }
 
-// Update form validation
+// Update the form submission handler
 document.getElementById('reservationForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    // Basic form validation
+    // Get form values
     const purpose = document.getElementById('purpose').value;
     const lab = document.getElementById('lab').value;
     const date = document.getElementById('date').value;
     const timeIn = document.getElementById('timeIn').value;
     const pcNumber = document.getElementById('pcNumberInput');
-
+    
+    // Validate all required fields
     if (!purpose || !lab || !date || !timeIn) {
-        Swal.fire('Error', 'Please fill in all required fields', 'error');
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please fill in all required fields',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
-    if (!pcNumber) {
-        Swal.fire('Error', 'Please select a computer', 'error');
+    // Check if PC is selected
+    if (!pcNumber || !pcNumber.value) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please select a computer from the laboratory',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
-    // Validate only for past dates
+    // Validate date
     const selectedDate = new Date(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    
     if (selectedDate < today) {
-        Swal.fire('Error', 'Please select today or a future date', 'error');
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please select today or a future date',
+            icon: 'error',
+            confirmButtonColor: '#d33'
+        });
         return;
     }
 
@@ -388,6 +480,7 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
         title: 'Confirm Reservation',
         html: `Are you sure you want to make a reservation for:<br>
                Lab ${lab}<br>
+               PC ${pcNumber.value}<br>
                Date: ${date}<br>
                Time: ${timeIn}`,
         icon: 'question',
@@ -402,6 +495,5 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
     });
 });
 </script>
-
 </body>
 </html>

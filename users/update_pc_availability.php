@@ -2,10 +2,10 @@
 include('db.php');
 header('Content-Type: application/json');
 
-if(isset($_POST['lab']) && isset($_POST['pc_number'])) {
+if(isset($_POST['lab']) && isset($_POST['pc_number']) && isset($_POST['is_active'])) {
     $lab = $_POST['lab'];
     $pc = $_POST['pc_number'];
-    $active = isset($_POST['active']) ? $_POST['active'] : 0;
+    $active = $_POST['is_active'] ? 1 : 0;
 
     $stmt = $con->prepare("INSERT INTO pc_status (lab_number, pc_number, is_active) 
                           VALUES (?, ?, ?) 
@@ -17,4 +17,3 @@ if(isset($_POST['lab']) && isset($_POST['pc_number'])) {
 } else {
     echo json_encode(['success' => false]);
 }
-?>

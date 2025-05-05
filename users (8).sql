@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 03:25 PM
+-- Generation Time: May 05, 2025 at 04:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -110,7 +110,178 @@ INSERT INTO `notification` (`notification_id`, `id_number`, `message`) VALUES
 (0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
 (0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
 (0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
-(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati');
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pc_numbers`
+--
+
+CREATE TABLE `pc_numbers` (
+  `lab_number` varchar(10) NOT NULL,
+  `pc_number` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pc_numbers`
+--
+
+INSERT INTO `pc_numbers` (`lab_number`, `pc_number`) VALUES
+('524', 1),
+('524', 2),
+('524', 3),
+('524', 4),
+('524', 5),
+('524', 6),
+('524', 7),
+('524', 8),
+('524', 9),
+('524', 10),
+('524', 11),
+('524', 12),
+('524', 13),
+('524', 14),
+('524', 15),
+('524', 16),
+('524', 17),
+('524', 18),
+('524', 19),
+('524', 20),
+('524', 21),
+('524', 22),
+('524', 23),
+('524', 24),
+('524', 25),
+('526', 1),
+('526', 2),
+('526', 3),
+('526', 4),
+('526', 5),
+('526', 6),
+('526', 7),
+('526', 8),
+('526', 9),
+('526', 10),
+('526', 11),
+('526', 12),
+('526', 13),
+('526', 14),
+('526', 15),
+('526', 16),
+('526', 17),
+('526', 18),
+('526', 19),
+('526', 20),
+('526', 21),
+('526', 22),
+('526', 23),
+('526', 24),
+('526', 25),
+('528', 1),
+('528', 2),
+('528', 3),
+('528', 4),
+('528', 5),
+('528', 6),
+('528', 7),
+('528', 8),
+('528', 9),
+('528', 10),
+('528', 11),
+('528', 12),
+('528', 13),
+('528', 14),
+('528', 15),
+('528', 16),
+('528', 17),
+('528', 18),
+('528', 19),
+('528', 20),
+('528', 21),
+('528', 22),
+('528', 23),
+('528', 24),
+('528', 25),
+('530', 1),
+('530', 2),
+('530', 3),
+('530', 4),
+('530', 5),
+('530', 6),
+('530', 7),
+('530', 8),
+('530', 9),
+('530', 10),
+('530', 11),
+('530', 12),
+('530', 13),
+('530', 14),
+('530', 15),
+('530', 16),
+('530', 17),
+('530', 18),
+('530', 19),
+('530', 20),
+('530', 21),
+('530', 22),
+('530', 23),
+('530', 24),
+('530', 25),
+('542', 1),
+('542', 2),
+('542', 3),
+('542', 4),
+('542', 5),
+('542', 6),
+('542', 7),
+('542', 8),
+('542', 9),
+('542', 10),
+('542', 11),
+('542', 12),
+('542', 13),
+('542', 14),
+('542', 15),
+('542', 16),
+('542', 17),
+('542', 18),
+('542', 19),
+('542', 20),
+('542', 21),
+('542', 22),
+('542', 23),
+('542', 24),
+('542', 25),
+('544', 1),
+('544', 2),
+('544', 3),
+('544', 4),
+('544', 5),
+('544', 6),
+('544', 7),
+('544', 8),
+('544', 9),
+('544', 10),
+('544', 11),
+('544', 12),
+('544', 13),
+('544', 14),
+('544', 15),
+('544', 16),
+('544', 17),
+('544', 18),
+('544', 19),
+('544', 20),
+('544', 21),
+('544', 22),
+('544', 23),
+('544', 24),
+('544', 25);
 
 -- --------------------------------------------------------
 
@@ -119,25 +290,27 @@ INSERT INTO `notification` (`notification_id`, `id_number`, `message`) VALUES
 --
 
 CREATE TABLE `pc_status` (
-  `lab` varchar(10) NOT NULL,
+  `lab_number` varchar(10) NOT NULL,
   `pc_number` int(11) NOT NULL,
-  `status` tinyint(4) DEFAULT 0
+  `is_active` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pc_status`
 --
 
-INSERT INTO `pc_status` (`lab`, `pc_number`, `status`) VALUES
-('526', 7, 1),
-('526', 8, 1),
-('526', 9, 1),
-('526', 11, 1),
-('526', 14, 1),
-('528', 6, 1),
-('528', 7, 1),
-('528', 8, 1),
-('528', 9, 1);
+INSERT INTO `pc_status` (`lab_number`, `pc_number`, `is_active`) VALUES
+('524', 1, 1),
+('524', 2, 1),
+('524', 3, 1),
+('524', 4, 1),
+('524', 5, 1),
+('524', 8, 1),
+('526', 1, 1),
+('526', 2, 0),
+('526', 3, 1),
+('526', 5, 1),
+('526', 10, 1);
 
 -- --------------------------------------------------------
 
@@ -175,7 +348,11 @@ INSERT INTO `reservation` (`reservation_id`, `id_number`, `lab`, `pc_number`, `p
 (13, 226771156, '542', 2, 'Python', '2025-05-09', '20:45', 'approved', '2025-05-04 12:45:50'),
 (14, 22677116, '526', 0, 'Others', '2025-05-14', '09:10', 'approved', '2025-05-04 13:10:55'),
 (15, 226771156, '528', 0, 'C#', '2025-05-24', '09:11', 'rejected', '2025-05-04 13:11:39'),
-(16, 226771156, '528', 0, 'Python', '2025-05-15', '09:13', 'approved', '2025-05-04 13:13:18');
+(16, 226771156, '528', 0, 'Python', '2025-05-15', '09:13', 'approved', '2025-05-04 13:13:18'),
+(22, 226771156, '526', 0, 'Python', '2025-05-10', '21:01', 'approved', '2025-05-05 01:01:13'),
+(23, 226771156, '524', 0, 'System', '2025-05-10', '09:42', 'approved', '2025-05-05 01:42:50'),
+(24, 226771156, '530', 0, 'Python', '2025-05-15', '10:37', 'approved', '2025-05-05 02:37:13'),
+(25, 226771156, '524', 0, 'Web', '2025-05-09', '10:49', 'approved', '2025-05-05 02:49:46');
 
 -- --------------------------------------------------------
 
@@ -335,7 +512,11 @@ INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `
 (114, 226771156, 'Python', '542', 0, '20:45', '2025-05-04 20:4', '2025-05-09', 'Completed'),
 (115, 226771156, 'DGILOG', '530', 0, '15:05:30', '2025-05-04 21:0', '2025-05-04', 'Completed'),
 (116, 22677116, 'Others', '526', 0, '09:10', '2025-05-04 21:1', '2025-05-14', 'Completed'),
-(117, 226771156, 'Python', '528', 0, '09:13', '15:14:16', '2025-05-15', 'Completed');
+(117, 226771156, 'Python', '528', 0, '09:13', '15:14:16', '2025-05-15', 'Completed'),
+(118, 226771156, 'Python', '526', 0, '21:01', '2025-05-05 09:0', '2025-05-10', 'Completed'),
+(119, 226771156, 'System', '524', 0, '09:42', '2025-05-05 10:3', '2025-05-10', 'Completed'),
+(120, 226771156, 'Python', '530', 0, '10:37', '2025-05-05 10:3', '2025-05-15', 'Completed'),
+(121, 226771156, 'Web', '524', 0, '10:49', '04:51:44', '2025-05-09', 'Completed');
 
 -- --------------------------------------------------------
 
@@ -367,7 +548,7 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `image`, `email`, `address`, `role`, `remaining_session`, `points`) VALUES
 (1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin', 0, 0),
 (22677116, 'Catubig', 'Mark Dave', 'Cabingatan', 'BSIT', '3', 'mark', '$2y$10$zchvWcHidQPT0Ac7k0B8jub.KnCFlWdbnDeIJnoG8zhLCaRvB5OKC', 'uploads/320738403_1115980445778336_3190117843245493251_n.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user', 30, 1),
-(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 30, 11),
+(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 31, 14),
 (2147483647, 'Racuma', 'Denise', 'Cabingatan', 'BSCA', '1', 'hahaha', '$2y$10$se1cwLGKhBJCmUE5OMCADOcnAY1TZnhJt46nf7kbeb9BPtlnSVdGi', NULL, '', NULL, 'user', 28, 3);
 
 --
@@ -381,10 +562,16 @@ ALTER TABLE `feedback`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `pc_numbers`
+--
+ALTER TABLE `pc_numbers`
+  ADD PRIMARY KEY (`lab_number`,`pc_number`);
+
+--
 -- Indexes for table `pc_status`
 --
 ALTER TABLE `pc_status`
-  ADD PRIMARY KEY (`lab`,`pc_number`);
+  ADD PRIMARY KEY (`lab_number`,`pc_number`);
 
 --
 -- Indexes for table `reservation`
@@ -426,13 +613,13 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `student_sit_in`
 --
 ALTER TABLE `student_sit_in`
-  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT for table `user`

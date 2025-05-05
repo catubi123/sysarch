@@ -91,122 +91,110 @@ include('admin_navbar.php');
     </style>
 </head>
 <body>
-    <!-- Tab Navigation -->
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#laboratory">
-                <i class="fas fa-laptop"></i> Laboratory
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#logs">
-                <i class="fas fa-history"></i> Logs
-            </a>
-        </li>
-    </ul>
-
-    <!-- Tab Content -->
-    <div class="tab-content">
-        <!-- Laboratory Tab -->
-        <div class="tab-pane fade show active" id="laboratory">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="status-card bg-success text-white">
-                        <i class="fas fa-check-circle fa-2x mb-2"></i>
-                        <div class="status-number" id="availablePCs">0</div>
-                        <div>Available PCs</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="status-card bg-danger text-white">
-                        <i class="fas fa-times-circle fa-2x mb-2"></i>
-                        <div class="status-number" id="usedPCs">0</div>
-                        <div>Used PCs</div>
-                    </div>
-                </div>
+    <div class="container-fluid px-4 py-3">
+        <!-- Laboratory Card -->
+        <div class="card mb-4">
+            <div class="header-gradient">
+                <h4 class="mb-0"><i class="fas fa-laptop"></i> Laboratory</h4>
             </div>
-
-            <!-- Existing Laboratory Management Card -->
-            <div class="card">
-                <div class="header-gradient">
-                    <h4 class="mb-0"><i class="fas fa-laptop-code"></i> Laboratory Management</h4>
+            <div class="card-body">
+                <!-- PC Status Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="status-card bg-success text-white">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <div class="status-number" id="availablePCs">0</div>
+                            <div>Available PCs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="status-card bg-danger text-white">
+                            <i class="fas fa-times-circle fa-2x mb-2"></i>
+                            <div class="status-number" id="usedPCs">0</div>
+                            <div>Used PCs</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <!-- Lab Filter -->
-                    <div class="lab-filter">
-                        <div class="row align-items-center">
-                            <div class="col-md-3">
-                                <select class="form-select" id="labFilter" onchange="filterLab()">
-                                    <option value="">Select Laboratory</option>
-                                    <option value="524">Lab 524</option>
-                                    <option value="526">Lab 526</option>
-                                    <option value="528">Lab 528</option>
-                                    <option value="530">Lab 530</option>
-                                    <option value="542">Lab 542</option>
-                                    <option value="544">Lab 544</option>
-                                </select>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="d-flex gap-2">
-                                    <span class="badge bg-success">Available</span>
-                                    <span class="badge bg-danger">Unavailable</span>
-                                    <span class="badge bg-info">Selected</span>
-                                </div>
+
+                <!-- Lab Filter -->
+                <div class="lab-filter">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <select class="form-select" id="labFilter" onchange="filterLab()">
+                                <option value="">Select Laboratory</option>
+                                <option value="524">Lab 524</option>
+                                <option value="526">Lab 526</option>
+                                <option value="528">Lab 528</option>
+                                <option value="530">Lab 530</option>
+                                <option value="542">Lab 542</option>
+                                <option value="544">Lab 544</option>
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-success">Working</span>
+                                <span class="badge bg-danger">Not Working</span>
+                                <span class="badge bg-info">Selected</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Computer Grid -->
-                    <div id="computerGrid" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+                <!-- Computer Grid -->
+                <div id="computerGrid" class="d-flex flex-wrap gap-2 justify-content-center">
+                    <!-- PCs will be dynamically loaded here -->
                 </div>
             </div>
         </div>
 
-        <!-- Logs Tab -->
-        <div class="tab-pane fade" id="logs">
-            <div class="row">
-                <!-- Approved Reservations -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="header-gradient">
-                            <h5 class="mb-0"><i class="fas fa-check"></i> Approved Reservations</h5>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-striped" id="approvedTable">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Lab</th>
-                                        <th>PC</th>
-                                        <th>Student ID</th>
-                                        <th>Purpose</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        <!-- Logs Card -->
+        <div class="card">
+            <div class="header-gradient">
+                <h4 class="mb-0"><i class="fas fa-history"></i> Reservation Logs</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="reservationLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Student ID</th>
+                                <th>Lab</th>
+                                <th>PC Number</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $query = "SELECT r.*, u.fname, u.lname 
+                                    FROM reservation r 
+                                    LEFT JOIN user u ON r.id_number = u.id 
+                                    ORDER BY r.reservation_date DESC, r.reservation_time DESC";
+                            $result = $con->query($query);
 
-                <!-- Rejected Reservations -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="header-gradient">
-                            <h5 class="mb-0"><i class="fas fa-times"></i> Rejected Reservations</h5>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-striped" id="rejectedTable">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Lab</th>
-                                        <th>PC</th>
-                                        <th>Student ID</th>
-                                        <th>Reason</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
+                            while($row = $result->fetch_assoc()) {
+                                $status_class = match($row['status']) {
+                                    'pending' => 'text-warning',
+                                    'approved' => 'text-success',
+                                    'rejected' => 'text-danger',
+                                    default => ''
+                                };
+
+                                echo "<tr>
+                                    <td>{$row['reservation_date']}</td>
+                                    <td>{$row['reservation_time']}</td>
+                                    <td>{$row['id_number']}</td>
+                                    <td>Lab {$row['lab']}</td>
+                                    <td>PC-" . str_pad($row['pc_number'], 2, '0', STR_PAD_LEFT) . "</td>
+                                    <td>{$row['purpose']}</td>
+                                    <td class='{$status_class}'>" . ucfirst($row['status']) . "</td>
+                                </tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -215,36 +203,53 @@ include('admin_navbar.php');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Define the PC configurations for each lab
+        const labComputers = {
+            '524': Array.from({length: 50}, (_, i) => i + 1),
+            '526': Array.from({length: 50}, (_, i) => i + 1),
+            '528': Array.from({length: 50}, (_, i) => i + 1),
+            '530': Array.from({length: 50}, (_, i) => i + 1),
+            '542': Array.from({length: 50}, (_, i) => i + 1),
+            '544': Array.from({length: 50}, (_, i) => i + 1)
+        };
+
         function generateComputers(lab) {
             const container = document.getElementById('computerGrid');
             container.innerHTML = '';
+            let availableCount = 50;
             
-            for (let i = 1; i <= 50; i++) {
-                const pc = document.createElement('div');
-                pc.className = 'computer-icon';
-                pc.innerHTML = `
-                    <i class="fas fa-desktop"></i>
-                    <span class="pc-number">PC-${String(i).padStart(2, '0')}</span>
-                `;
-                pc.setAttribute('data-pc', i);
-                pc.setAttribute('data-lab', lab);
-                
-                pc.onclick = function() {
-                    if (!this.classList.contains('unavailable')) {
+            if (labComputers[lab]) {
+                labComputers[lab].forEach((pcNumber) => {
+                    const pc = document.createElement('div');
+                    pc.className = 'computer-icon checked';
+                    pc.innerHTML = `
+                        <i class="fas fa-desktop"></i>
+                        <span class="pc-number">PC-${String(pcNumber).padStart(2, '0')}</span>
+                    `;
+                    pc.setAttribute('data-pc', pcNumber);
+                    pc.setAttribute('data-lab', lab);
+                    
+                    pc.onclick = function() {
                         togglePCStatus(this);
-                    }
-                };
+                    };
+                    
+                    container.appendChild(pc);
+                });
                 
-                checkPCStatus(lab, i, pc);
-                container.appendChild(pc);
+                // Update initial counts
+                updatePCCounts(availableCount, 0);
+                
+                // Check actual status from database
+                checkLabStatus(lab);
             }
-            updatePCCounts(lab);
         }
 
         function togglePCStatus(pcElement) {
             const pcNumber = pcElement.getAttribute('data-pc');
             const lab = pcElement.getAttribute('data-lab');
+            const isAvailable = pcElement.classList.contains('checked');
             
             $.ajax({
                 url: 'update_pc_status.php',
@@ -252,74 +257,92 @@ include('admin_navbar.php');
                 data: {
                     pc_number: pcNumber,
                     lab: lab,
-                    action: pcElement.classList.contains('checked') ? 'uncheck' : 'check'
+                    active: !isAvailable
                 },
                 success: function(response) {
                     if (response.success) {
                         pcElement.classList.toggle('checked');
-                        updatePCCounts(lab);
+                        updatePCCounts(
+                            document.querySelectorAll('.computer-icon.checked').length,
+                            document.querySelectorAll('.computer-icon:not(.checked)').length
+                        );
+                        
+                        // Broadcast PC status change
+                        $.ajax({
+                            url: '../users/update_pc_availability.php',
+                            method: 'POST',
+                            data: {
+                                lab: lab,
+                                pc_number: pcNumber,
+                                is_active: !isAvailable
+                            }
+                        });
+                        
+                        Swal.fire({
+                            title: 'Success!',
+                            text: isAvailable ? 'PC marked as unavailable' : 'PC marked as available',
+                            icon: 'success',
+                            timer: 1500
+                        });
                     }
                 }
             });
         }
 
-        function checkPCStatus(lab, pcNumber, pcElement) {
+        function checkLabStatus(lab) {
             $.ajax({
-                url: 'get_pc_status.php',
+                url: 'get_lab_status.php',
                 method: 'GET',
-                data: { lab: lab, pc_number: pcNumber },
-                success: function(response) {
-                    if (response.checked) {
-                        pcElement.classList.add('checked');
-                    }
-                    if (response.unavailable) {
-                        pcElement.classList.add('unavailable');
-                    }
-                }
-            });
-        }
-
-        function updatePCCounts(lab) {
-            $.ajax({
-                url: 'get_pc_counts.php',
                 data: { lab: lab },
                 success: function(response) {
-                    $('#availablePCs').text(response.available);
-                    $('#usedPCs').text(response.used);
+                    if (response.pcs) {
+                        response.pcs.forEach(pc => {
+                            const pcElement = document.querySelector(`.computer-icon[data-pc="${pc.number}"][data-lab="${lab}"]`);
+                            if (pcElement && !pc.is_active) {
+                                pcElement.classList.remove('checked');
+                            }
+                        });
+                        updatePCCounts(
+                            document.querySelectorAll('.computer-icon.checked').length,
+                            document.querySelectorAll('.computer-icon:not(.checked)').length
+                        );
+                    }
                 }
             });
+        }
+
+        function updatePCCounts(available, unavailable) {
+            $('#availablePCs').text(available);
+            $('#usedPCs').text(unavailable);
         }
 
         function filterLab() {
-            const lab = document.getElementById('labFilter').value;
-            if (lab) {
-                generateComputers(lab);
+            const selectedLab = document.getElementById('labFilter').value;
+            if (selectedLab) {
+                generateComputers(selectedLab);
             }
         }
 
-        // Initialize DataTables and event handlers
+        // Initialize DataTable
         $(document).ready(function() {
-            $('#approvedTable').DataTable({
-                ajax: 'get_approved_reservations.php',
-                order: [[0, 'desc']]
-            });
-            
-            $('#rejectedTable').DataTable({
-                ajax: 'get_rejected_reservations.php',
-                order: [[0, 'desc']]
+            $('#reservationLogsTable').DataTable({
+                order: [[0, 'desc'], [1, 'desc']],
+                pageLength: 10,
+                language: {
+                    search: "Search logs:",
+                    lengthMenu: "Show _MENU_ entries"
+                }
             });
 
-            // Auto-refresh data every 30 seconds
+            // Auto-refresh every 30 seconds
             setInterval(function() {
                 const selectedLab = $('#labFilter').val();
                 if (selectedLab) {
-                    updatePCCounts(selectedLab);
+                    checkLabStatus(selectedLab);
                 }
-                $('#approvedTable').DataTable().ajax.reload();
-                $('#rejectedTable').DataTable().ajax.reload();
+                $('#reservationLogsTable').DataTable().ajax.reload(null, false);
             }, 30000);
         });
     </script>
 </body>
 </html>
-
