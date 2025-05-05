@@ -267,22 +267,23 @@ include('admin_navbar.php');
                             document.querySelectorAll('.computer-icon:not(.checked)').length
                         );
                         
-                        // Update status in database
+                        // Notify reservation page of status change
                         $.ajax({
-                            url: 'update_pc_status.php',
+                            url: '../users/update_pc_status.php',
                             method: 'POST',
                             data: {
                                 pc_number: pcNumber,
                                 lab: lab,
                                 is_active: !isAvailable
+                            },
+                            success: function() {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: isAvailable ? 'PC marked as unavailable' : 'PC marked as available',
+                                    icon: 'success',
+                                    timer: 1500
+                                });
                             }
-                        });
-                        
-                        Swal.fire({
-                            title: 'Success!',
-                            text: isAvailable ? 'PC marked as unavailable' : 'PC marked as available',
-                            icon: 'success',
-                            timer: 1500
                         });
                     }
                 }

@@ -427,6 +427,14 @@ function updateComputerControl(lab) {
     }
 }
 
+// Add periodic refresh
+setInterval(function() {
+    const selectedLab = document.getElementById('lab').value;
+    if (selectedLab) {
+        updateComputerControl(selectedLab);
+    }
+}, 5000); // Check every 5 seconds
+
 // Update the form submission handler
 document.getElementById('reservationForm').addEventListener('submit', function(event) {
     event.preventDefault();
