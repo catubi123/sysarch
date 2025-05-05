@@ -109,6 +109,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </span>
                 <?php endif; ?>
             </a>
+
+<style>
+.modal-body {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+}
+</style>
             <a href="history.php" class="nav-link text-white">
                 <i class="fas fa-history"></i> History
             </a>
