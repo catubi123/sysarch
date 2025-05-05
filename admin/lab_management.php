@@ -325,22 +325,24 @@ include('admin_navbar.php');
 
         // Initialize DataTable
         $(document).ready(function() {
-            $('#reservationLogsTable').DataTable({
+            const table = $('#reservationLogsTable').DataTable({
                 order: [[0, 'desc'], [1, 'desc']],
                 pageLength: 10,
                 language: {
                     search: "Search logs:",
                     lengthMenu: "Show _MENU_ entries"
-                }
+                },
+                processing: true
             });
 
-            // Auto-refresh every 30 seconds
+            // Modified auto-refresh function
             setInterval(function() {
                 const selectedLab = $('#labFilter').val();
                 if (selectedLab) {
                     checkLabStatus(selectedLab);
                 }
-                $('#reservationLogsTable').DataTable().ajax.reload(null, false);
+                // Refresh the page instead of using ajax reload
+                // location.reload();
             }, 30000);
         });
     </script>
