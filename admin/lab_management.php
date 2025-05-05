@@ -267,13 +267,13 @@ include('admin_navbar.php');
                             document.querySelectorAll('.computer-icon:not(.checked)').length
                         );
                         
-                        // Broadcast PC status change
+                        // Update status in database
                         $.ajax({
-                            url: '../users/update_pc_availability.php',
+                            url: 'update_pc_status.php',
                             method: 'POST',
                             data: {
-                                lab: lab,
                                 pc_number: pcNumber,
+                                lab: lab,
                                 is_active: !isAvailable
                             }
                         });
