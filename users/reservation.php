@@ -2,13 +2,32 @@
 session_start();
 require_once('db.php'); // Change include to require_once
 
+// Check if user is logged in and has necessary session data
+if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
+    // If no session data, fetch from database
+    $query = "SELECT id, fname, lname FROM user WHERE username = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("s", $_SESSION['username']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($row = $result->fetch_assoc()) {
+        $_SESSION['id'] = $row['id'];
+        $_SESSION['studentName'] = $row['fname'] . ' ' . $row['lname'];
+    } else {
+        // Redirect to login if user data can't be found
+        header("Location: index.php");
+        exit();
+    }
+}
+
 // Verify database connection
 if (!isset($con) || $con->connect_error) {
     die("Database connection failed: " . ($con->connect_error ?? "Connection not established"));
 }
 
-$id = $_SESSION['id'] ?? '';
-$studentName = $_SESSION['studentName'] ?? '';
+$id = $_SESSION['id'];
+$studentName = $_SESSION['studentName'];
 
 // Check for existing reservation first
 if ($id) {

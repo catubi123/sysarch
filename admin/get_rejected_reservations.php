@@ -1,8 +1,10 @@
 <?php
 include('db.php');
 
-$query = "SELECT r.reservation_date, r.lab, r.pc_number, r.id_number, r.reason 
+$query = "SELECT r.reservation_date, r.lab, r.pc_number, r.id_number, r.reason,
+          u.fname, u.lname 
           FROM reservation r 
+          LEFT JOIN user u ON r.id_number = u.id 
           WHERE r.status = 'rejected' 
           ORDER BY r.reservation_date DESC";
 
@@ -14,7 +16,7 @@ while ($row = $result->fetch_assoc()) {
         $row['reservation_date'],
         'Lab ' . $row['lab'],
         'PC-' . str_pad($row['pc_number'], 2, '0', STR_PAD_LEFT),
-        $row['id_number'],
+        $row['id_number'] . ' - ' . $row['fname'] . ' ' . $row['lname'], // Added name
         $row['reason'] ?? 'No reason provided'
     );
 }
