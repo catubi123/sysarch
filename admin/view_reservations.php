@@ -153,7 +153,10 @@ include('admin_navbar.php');
                                 $query .= " WHERE " . implode(" AND ", $where_conditions);
                             }
 
-                            $query .= " ORDER BY r.reservation_date DESC, r.reservation_time DESC";
+                            // Modified ORDER BY to show newest first based on creation date
+                            $query .= " ORDER BY CAST(r.reservation_date as DATE) DESC, 
+                                      STR_TO_DATE(r.reservation_time, '%H:%i') DESC, 
+                                      r.created_at DESC";
 
                             $stmt = $con->prepare($query);
                             if (!empty($params)) {
@@ -181,10 +184,10 @@ include('admin_navbar.php');
                                         <td class='action-buttons'>";
                                 
                                 if ($row['status'] === 'pending') {
-                                    echo "<button class='btn btn-success btn-sm approve-btn' data-id='{$row['reservation_id']}'>
+                                    echo "<button type='button' class='btn btn-success btn-sm approve-btn' data-id='{$row['reservation_id']}'>
                                             <i class='fas fa-check'></i> Approve
                                           </button>
-                                          <button class='btn btn-danger btn-sm reject-btn' data-id='{$row['reservation_id']}'>
+                                          <button type='button' class='btn btn-danger btn-sm reject-btn' data-id='{$row['reservation_id']}'>
                                             <i class='fas fa-times'></i> Reject
                                           </button>";
                                 }
@@ -207,27 +210,33 @@ include('admin_navbar.php');
         $(document).ready(function() {
             $('#reservationsTable').DataTable({
                 pageLength: 10,
+                // Set initial sort order to newest first
                 order: [[4, 'desc'], [5, 'desc']],
                 dom: '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
                 language: {
-                    lengthMenu: "Show _MENU_ entries",
+                    lengthMenu: "Show _MENU_ entries per page",
                     search: "Search reservations:",
                     emptyTable: "No reservations found"
-                }
+                },
+                // Ensure newest reservations appear first by default
+                "aaSorting": [[4, 'desc'], [5, 'desc']],
+                // Add created_at as hidden column for proper sorting
+                columnDefs: [
+                    { type: 'date', targets: 4 },
+                    { type: 'time', targets: 5 }
+                ]
             });
 
-            // Update approve/reject button handler
-            $('.approve-btn, .reject-btn').click(function() {
-                const id = $(this).data('id');
-                const status = $(this).hasClass('approve-btn') ? 'approved' : 'rejected';
+            // Update approve/reject button handlers
+            $(document).on('click', '.approve-btn, .reject-btn', function() {
+                const button = $(this);
+                const id = button.data('id');
+                const status = button.hasClass('approve-btn') ? 'approved' : 'rejected';
                 const actionText = status === 'approved' ? 'approve' : 'reject';
-                const message = status === 'approved' 
-                    ? 'This will approve the reservation and automatically start the sit-in session.'
-                    : 'Are you sure you want to reject this reservation?';
-                
+
                 Swal.fire({
                     title: `Confirm ${actionText}?`,
-                    text: message,
+                    text: `Are you sure you want to ${actionText} this reservation?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: status === 'approved' ? '#28a745' : '#dc3545',
@@ -235,27 +244,30 @@ include('admin_navbar.php');
                     confirmButtonText: `Yes, ${actionText} it!`
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.post('update_reservation_status.php', {
-                            id: id,
-                            status: status
-                        })
-                        .done(function(response) {
-                            if(response.includes('success')) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: status === 'approved' 
-                                        ? 'Reservation approved and sit-in session started!'
-                                        : 'Reservation has been rejected!',
-                                    icon: 'success'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire('Error!', 'Something went wrong.', 'error');
+                        $.ajax({
+                            url: 'update_reservation_status.php',
+                            method: 'POST',
+                            data: { 
+                                id: id, 
+                                status: status 
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: `Reservation has been ${status}!`,
+                                        icon: 'success',
+                                        timer: 1500
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Error!', response.error || 'Something went wrong.', 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('Error!', 'Failed to connect to server.', 'error');
                             }
-                        })
-                        .fail(function() {
-                            Swal.fire('Error!', 'Failed to connect to server.', 'error');
                         });
                     }
                 });

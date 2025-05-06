@@ -1,26 +1,41 @@
 <?php
-include('db.php');
+require_once('db.php');
+
 header('Content-Type: application/json');
 
-if(isset($_POST['pc_number']) && isset($_POST['lab'])) {
-    $pc = $_POST['pc_number'];
-    $lab = $_POST['lab'];
-    $active = isset($_POST['active']) ? (int)$_POST['active'] : 0;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $pc_number = $_POST['pc_number'] ?? null;
+    $lab = $_POST['lab'] ?? null;
+    $active = $_POST['active'] ?? null;
 
-    // First, ensure PC exists in pc_numbers
-    $stmt = $con->prepare("INSERT IGNORE INTO pc_numbers (lab_number, pc_number) VALUES (?, ?)");
-    $stmt->bind_param("si", $lab, $pc);
-    $stmt->execute();
+    if ($pc_number && $lab !== null && $active !== null) {
+        // Start transaction
+        $con->begin_transaction();
 
-    // Then update status
-    $stmt = $con->prepare("INSERT INTO pc_status (lab_number, pc_number, is_active) 
-                          VALUES (?, ?, ?) 
-                          ON DUPLICATE KEY UPDATE is_active = ?");
-    $stmt->bind_param("siii", $lab, $pc, $active, $active);
-    
-    $success = $stmt->execute();
-    echo json_encode(['success' => $success]);
-} else {
-    echo json_encode(['success' => false, 'error' => 'Missing parameters']);
+        try {
+            // Delete any existing record first
+            $delete_sql = "DELETE FROM pc_status WHERE pc_number = ? AND lab_number = ?";
+            $delete_stmt = $con->prepare($delete_sql);
+            $delete_stmt->bind_param("is", $pc_number, $lab);
+            $delete_stmt->execute();
+
+            // Insert new record
+            $insert_sql = "INSERT INTO pc_status (pc_number, lab_number, is_active, last_updated) VALUES (?, ?, ?, NOW())";
+            $insert_stmt = $con->prepare($insert_sql);
+            $active_val = $active ? 1 : 0;
+            $insert_stmt->bind_param("isi", $pc_number, $lab, $active_val);
+            $insert_stmt->execute();
+
+            $con->commit();
+            echo json_encode(['success' => true]);
+            exit;
+        } catch (Exception $e) {
+            $con->rollback();
+            error_log($e->getMessage());
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
+    }
 }
-?>
+
+echo json_encode(['success' => false, 'error' => 'Invalid parameters']);

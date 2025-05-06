@@ -360,13 +360,13 @@ function updateComputerControl(lab) {
     if (lab) {
         document.getElementById('labSelector').value = lab;
         
-        // Clear previous selection when changing labs
+        // Clear previous selection
         const existingInput = document.getElementById('pcNumberInput');
         if (existingInput) {
             existingInput.remove();
         }
-        
-        // Generate PCs immediately
+
+        // Create all PC icons first
         for (let i = 1; i <= 50; i++) {
             const icon = document.createElement('div');
             icon.className = 'computer-icon';
@@ -377,57 +377,73 @@ function updateComputerControl(lab) {
             icon.setAttribute('data-pc', i);
             icon.setAttribute('data-lab', lab);
             
-            // Add click handler by default
-            icon.onclick = function() {
-                // Only allow selection if PC is not unavailable
-                if (!this.classList.contains('unavailable')) {
-                    // Remove selection from all PCs across all labs
-                    document.querySelectorAll('.computer-icon').forEach(el => 
-                        el.classList.remove('selected'));
-                    // Add selection to clicked PC
-                    this.classList.add('selected');
-                    
-                    // Update hidden input for form submission
-                    const pcInput = document.getElementById('pcNumberInput') || 
-                        document.createElement('input');
-                    pcInput.type = 'hidden';
-                    pcInput.id = 'pcNumberInput';
-                    pcInput.name = 'pc_number';
-                    pcInput.value = i;
-                    
-                    // Add lab number to form
-                    const labInput = document.getElementById('labNumberInput') || 
-                        document.createElement('input');
-                    labInput.type = 'hidden';
-                    labInput.id = 'labNumberInput';
-                    labInput.name = 'lab_number';
-                    labInput.value = lab;
-                    
-                    const form = document.getElementById('reservationForm');
-                    form.appendChild(pcInput);
-                    form.appendChild(labInput);
-                }
-            };
-            
+            // Add tooltip for unavailable PCs
+            icon.title = 'Click to select this PC';
             container.appendChild(icon);
-            
-            // Check availability after adding
-            $.ajax({
-                url: '../admin/get_pc_status.php',
-                method: 'GET',
-                data: { lab: lab, pc: i },
-                success: function(response) {
-                    if (!response.active) {
-                        icon.classList.add('unavailable');
-                        icon.onclick = null;
-                    }
-                }
-            });
         }
+
+        // Check PC status from the database
+        $.ajax({
+            url: '../admin/get_lab_status.php',
+            method: 'GET',
+            data: { lab: lab },
+            success: function(response) {
+                if (response.pcs) {
+                    response.pcs.forEach(pc => {
+                        const pcElement = document.querySelector(`.computer-icon[data-pc="${pc.number}"][data-lab="${lab}"]`);
+                        if (pcElement) {
+                            if (!pc.is_active) {
+                                pcElement.classList.add('unavailable');
+                                pcElement.title = 'This PC is currently in use';
+                                pcElement.onclick = null;
+                            } else {
+                                pcElement.onclick = function() {
+                                    if (!this.classList.contains('unavailable')) {
+                                        // Remove selection from all PCs
+                                        document.querySelectorAll('.computer-icon').forEach(el => 
+                                            el.classList.remove('selected'));
+                                        
+                                        // Add selection to clicked PC
+                                        this.classList.add('selected');
+                                        
+                                        // Update form inputs
+                                        const pcInput = document.getElementById('pcNumberInput') || 
+                                            document.createElement('input');
+                                        pcInput.type = 'hidden';
+                                        pcInput.id = 'pcNumberInput';
+                                        pcInput.name = 'pc_number';
+                                        pcInput.value = pc.number;
+                                        
+                                        const labInput = document.getElementById('labNumberInput') || 
+                                            document.createElement('input');
+                                        labInput.type = 'hidden';
+                                        labInput.id = 'labNumberInput';
+                                        labInput.name = 'lab_number';
+                                        labInput.value = lab;
+                                        
+                                        const form = document.getElementById('reservationForm');
+                                        form.appendChild(pcInput);
+                                        form.appendChild(labInput);
+                                    }
+                                };
+                            }
+                        }
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to fetch PC status',
+                    icon: 'error',
+                    timer: 2000
+                });
+            }
+        });
     }
 }
 
-// Add periodic refresh
+// Add periodic refresh to keep PC status updated
 setInterval(function() {
     const selectedLab = document.getElementById('lab').value;
     if (selectedLab) {

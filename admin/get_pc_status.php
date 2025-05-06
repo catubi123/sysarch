@@ -1,32 +1,23 @@
 <?php
-include('db.php');
+require_once('db.php');
+
 header('Content-Type: application/json');
 
-if(isset($_GET['lab']) && isset($_GET['pc'])) {
-    // First check if PC exists
-    $stmt = $con->prepare("SELECT 1 FROM pc_numbers WHERE lab_number = ? AND pc_number = ?");
-    $stmt->bind_param("si", $_GET['lab'], $_GET['pc']);
-    $stmt->execute();
-    
-    if($stmt->get_result()->num_rows === 0) {
-        // If PC doesn't exist in pc_numbers, add it
-        $stmt = $con->prepare("INSERT INTO pc_numbers (lab_number, pc_number) VALUES (?, ?)");
-        $stmt->bind_param("si", $_GET['lab'], $_GET['pc']);
-        $stmt->execute();
-    }
+$lab = $_GET['lab'] ?? '';
+$pc = $_GET['pc'] ?? '';
 
-    // Get PC status
-    $stmt = $con->prepare("SELECT is_active FROM pc_status WHERE lab_number = ? AND pc_number = ?");
-    $stmt->bind_param("si", $_GET['lab'], $_GET['pc']);
+if ($lab && $pc) {
+    $query = "SELECT is_active FROM pc_status WHERE lab_number = ? AND pc_number = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("si", $lab, $pc);
     $stmt->execute();
     $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-
-    echo json_encode([
-        'active' => ($row === null || $row['is_active'] == 1),
-        'lab' => $_GET['lab'],
-        'pc' => $_GET['pc']
-    ]);
+    
+    if ($row = $result->fetch_assoc()) {
+        echo json_encode(['active' => (bool)$row['is_active']]);
+    } else {
+        echo json_encode(['active' => true]); // Default to available if no record
+    }
 } else {
-    echo json_encode(['active' => true]);
+    echo json_encode(['error' => 'Missing parameters']);
 }

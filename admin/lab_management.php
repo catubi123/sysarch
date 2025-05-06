@@ -251,41 +251,49 @@ include('admin_navbar.php');
             const lab = pcElement.getAttribute('data-lab');
             const isAvailable = pcElement.classList.contains('checked');
             
-            $.ajax({
-                url: 'update_pc_status.php',
-                method: 'POST',
-                data: {
-                    pc_number: pcNumber,
-                    lab: lab,
-                    active: !isAvailable
-                },
-                success: function(response) {
-                    if (response.success) {
-                        pcElement.classList.toggle('checked');
-                        updatePCCounts(
-                            document.querySelectorAll('.computer-icon.checked').length,
-                            document.querySelectorAll('.computer-icon:not(.checked)').length
-                        );
-                        
-                        // Notify reservation page of status change
-                        $.ajax({
-                            url: '../users/update_pc_status.php',
-                            method: 'POST',
-                            data: {
-                                pc_number: pcNumber,
-                                lab: lab,
-                                is_active: !isAvailable
-                            },
-                            success: function() {
+            Swal.fire({
+                title: 'Confirm Status Change',
+                text: `Are you sure you want to mark PC-${pcNumber} as ${isAvailable ? 'In Use' : 'Available'}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, change it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: 'update_pc_status.php',
+                        method: 'POST',
+                        data: {
+                            pc_number: pcNumber,
+                            lab: lab,
+                            active: !isAvailable
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                pcElement.classList.toggle('checked');
+                                pcElement.classList.toggle('unavailable');
+                                updatePCCounts(
+                                    document.querySelectorAll('.computer-icon.checked').length,
+                                    document.querySelectorAll('.computer-icon:not(.checked)').length
+                                );
+                                
                                 Swal.fire({
-                                    title: 'Success!',
-                                    text: isAvailable ? 'PC marked as unavailable' : 'PC marked as available',
+                                    title: 'Updated!',
+                                    text: `PC-${pcNumber} has been marked as ${!isAvailable ? 'Available' : 'In Use'}`,
                                     icon: 'success',
                                     timer: 1500
                                 });
                             }
-                        });
-                    }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to update PC status',
+                                icon: 'error'
+                            });
+                        }
+                    });
                 }
             });
         }
@@ -299,8 +307,14 @@ include('admin_navbar.php');
                     if (response.pcs) {
                         response.pcs.forEach(pc => {
                             const pcElement = document.querySelector(`.computer-icon[data-pc="${pc.number}"][data-lab="${lab}"]`);
-                            if (pcElement && !pc.is_active) {
-                                pcElement.classList.remove('checked');
+                            if (pcElement) {
+                                if (pc.is_active) {
+                                    pcElement.classList.add('checked');
+                                    pcElement.classList.remove('unavailable');
+                                } else {
+                                    pcElement.classList.remove('checked');
+                                    pcElement.classList.add('unavailable');
+                                }
                             }
                         });
                         updatePCCounts(
