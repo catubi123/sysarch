@@ -1,11 +1,14 @@
 <?php
-include('db.php');
+require_once('db.php');
 header('Content-Type: application/json');
 
 if (isset($_GET['lab'])) {
     $lab = $_GET['lab'];
     
-    $query = "SELECT pc_number, is_active FROM lab_pc WHERE lab = ?";
+    $query = "SELECT pc_number as number, is_active 
+              FROM lab_pc 
+              WHERE lab = ?";
+              
     $stmt = $con->prepare($query);
     $stmt->bind_param("s", $lab);
     $stmt->execute();
@@ -13,13 +16,11 @@ if (isset($_GET['lab'])) {
     
     $pcs = [];
     while ($row = $result->fetch_assoc()) {
-        $pcs[] = [
-            'number' => $row['pc_number'],
-            'is_active' => $row['is_active']
-        ];
+        $pcs[] = $row;
     }
     
     echo json_encode(['success' => true, 'pcs' => $pcs]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Lab parameter is required']);
+    echo json_encode(['success' => false, 'error' => 'Lab not specified']);
 }
+?>

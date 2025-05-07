@@ -154,18 +154,19 @@ if (isset($_SESSION['swal_error'])) {
       margin-left: 4px;
     }
     .computer-icon {
-      width: 60px;
-      height: 80px; /* Increased height to accommodate number */
-      border: 2px solid transparent;
+      width: 100%;
+      height: 80px;
+      border: 2px solid #dee2e6;
       border-radius: 10px;
       display: flex;
-      flex-direction: column; /* Stack items vertically */
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 24px;
       cursor: pointer;
       transition: all 0.3s ease;
       background-color: #f8f9fa;
+      margin: 0;
       padding: 5px;
     }
     .computer-icon:hover {
@@ -183,6 +184,16 @@ if (isset($_SESSION['swal_error'])) {
       font-size: 12px;
       margin-top: 5px;
       color: #666;
+    }
+    .computer-grid-container {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr); /* Changed from 5 to 10 columns */
+      gap: 10px;
+      padding: 15px;
+      max-height: 600px;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 0.5rem;
     }
   </style>
 </head>
@@ -324,199 +335,125 @@ if (isset($_SESSION['swal_error'])) {
           <label for="labSelector"><i class="fas fa-laptop-code"></i> Select Lab</label>
         </div>
 
-        <div id="computerIcons" class="d-flex flex-wrap gap-2 justify-content-start"></div>
+        <div id="computerGrid" class="computer-grid-container">
+            <!-- PCs will be loaded here -->
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
- const labComputers = {
-  '524': generateComputers(50),
-  '526': generateComputers(50),
-  '528': generateComputers(50),
-  '530': generateComputers(50),
-  '542': generateComputers(50),
-  '544': generateComputers(50)
-};
-
-function generateComputers(count) {
-  const computers = [];
-  for (let i = 1; i <= count; i++) {
-    computers.push(`PC-${String(i).padStart(2, '0')}`);
-  }
-  return computers;
-}
-
 function syncLabSelection() {
     const selectedLab = document.getElementById('lab').value;
-    updateComputerControl(selectedLab);
-}
-
-function updateComputerControl(lab) {
-    const container = document.getElementById('computerIcons');
-    container.innerHTML = '';
-
-    if (lab) {
-        document.getElementById('labSelector').value = lab;
-        
-        // Clear previous selection
-        const existingInput = document.getElementById('pcNumberInput');
-        if (existingInput) {
-            existingInput.remove();
-        }
-
-        // Create all PC icons first
-        for (let i = 1; i <= 50; i++) {
-            const icon = document.createElement('div');
-            icon.className = 'computer-icon';
-            icon.innerHTML = `
-                <i class="fas fa-desktop"></i>
-                <span class="pc-number">PC-${String(i).padStart(2, '0')}</span>
-            `;
-            icon.setAttribute('data-pc', i);
-            icon.setAttribute('data-lab', lab);
-            
-            // Add tooltip for unavailable PCs
-            icon.title = 'Click to select this PC';
-            container.appendChild(icon);
-        }
-
-        // Check PC status from the database
-        $.ajax({
-            url: '../admin/get_lab_status.php',
-            method: 'GET',
-            data: { lab: lab },
-            success: function(response) {
-                if (response.pcs) {
-                    response.pcs.forEach(pc => {
-                        const pcElement = document.querySelector(`.computer-icon[data-pc="${pc.number}"][data-lab="${lab}"]`);
-                        if (pcElement) {
-                            if (!pc.is_active) {
-                                pcElement.classList.add('unavailable');
-                                pcElement.title = 'This PC is currently in use';
-                                pcElement.onclick = null;
-                            } else {
-                                pcElement.onclick = function() {
-                                    if (!this.classList.contains('unavailable')) {
-                                        // Remove selection from all PCs
-                                        document.querySelectorAll('.computer-icon').forEach(el => 
-                                            el.classList.remove('selected'));
-                                        
-                                        // Add selection to clicked PC
-                                        this.classList.add('selected');
-                                        
-                                        // Update form inputs
-                                        const pcInput = document.getElementById('pcNumberInput') || 
-                                            document.createElement('input');
-                                        pcInput.type = 'hidden';
-                                        pcInput.id = 'pcNumberInput';
-                                        pcInput.name = 'pc_number';
-                                        pcInput.value = pc.number;
-                                        
-                                        const labInput = document.getElementById('labNumberInput') || 
-                                            document.createElement('input');
-                                        labInput.type = 'hidden';
-                                        labInput.id = 'labNumberInput';
-                                        labInput.name = 'lab_number';
-                                        labInput.value = lab;
-                                        
-                                        const form = document.getElementById('reservationForm');
-                                        form.appendChild(pcInput);
-                                        form.appendChild(labInput);
-                                    }
-                                };
-                            }
-                        }
-                    });
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to fetch PC status',
-                    icon: 'error',
-                    timer: 2000
-                });
-            }
-        });
-    }
-}
-
-// Add periodic refresh to keep PC status updated
-setInterval(function() {
-    const selectedLab = document.getElementById('lab').value;
+    document.getElementById('labSelector').value = selectedLab;
     if (selectedLab) {
         updateComputerControl(selectedLab);
     }
-}, 5000); // Check every 5 seconds
+}
 
-// Update the form submission handler
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+function updateComputerControl(lab) {
+    const container = document.getElementById('computerGrid');
+    if (!lab) return;
     
-    // Get form values
-    const purpose = document.getElementById('purpose').value;
-    const lab = document.getElementById('lab').value;
-    const date = document.getElementById('date').value;
-    const timeIn = document.getElementById('timeIn').value;
-    const pcNumber = document.getElementById('pcNumberInput');
-    
-    // Validate all required fields
-    if (!purpose || !lab || !date || !timeIn) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please fill in all required fields',
-            icon: 'error',
-            confirmButtonColor: '#d33'
-        });
-        return;
-    }
+    container.innerHTML = ''; // Clear existing content
 
-    // Check if PC is selected
-    if (!pcNumber || !pcNumber.value) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a computer from the laboratory',
-            icon: 'error',
-            confirmButtonColor: '#d33'
-        });
-        return;
-    }
+    // Show loading indicator
+    container.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading PCs...</div>';
 
-    // Validate date
-    const selectedDate = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (selectedDate < today) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select today or a future date',
-            icon: 'error',
-            confirmButtonColor: '#d33'
-        });
-        return;
-    }
-
-    // Show confirmation dialog
-    Swal.fire({
-        title: 'Confirm Reservation',
-        html: `Are you sure you want to make a reservation for:<br>
-               Lab ${lab}<br>
-               PC ${pcNumber.value}<br>
-               Date: ${date}<br>
-               Time: ${timeIn}`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, submit reservation'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            this.submit();
+    // Fetch PC status from server
+    $.ajax({
+        url: '../admin/get_pc_status.php',
+        method: 'GET',
+        data: { lab: lab },
+        success: function(response) {
+            container.innerHTML = ''; // Clear loading indicator
+            
+            if (response.success && response.pcs) {
+                // Create PC icons in numerical order
+                for (let i = 1; i <= 50; i++) {
+                    const pc = response.pcs.find(p => p.number === i) || { number: i, is_active: true };
+                    const icon = document.createElement('div');
+                    icon.className = `computer-icon ${pc.is_active ? '' : 'unavailable'}`;
+                    
+                    icon.innerHTML = `
+                        <i class="fas fa-desktop"></i>
+                        <span class="pc-number">PC ${String(i).padStart(2, '0')}</span>
+                    `;
+                    icon.setAttribute('data-pc', i);
+                    
+                    if (pc.is_active) {
+                        icon.onclick = function() {
+                            selectPC(this, i);
+                        };
+                        icon.title = `Click to select PC ${String(i).padStart(2, '0')}`;
+                    } else {
+                        icon.title = `PC ${String(i).padStart(2, '0')} is not available`;
+                    }
+                    
+                    container.appendChild(icon);
+                }
+            } else {
+                container.innerHTML = '<div class="alert alert-warning">Failed to load PC status</div>';
+            }
+        },
+        error: function(xhr, status, error) {
+            container.innerHTML = '<div class="alert alert-danger">Error loading PCs</div>';
+            console.error('Error:', error);
         }
     });
+}
+
+function selectPC(element, pcNumber) {
+    if (element.classList.contains('unavailable')) {
+        Swal.fire({
+            title: 'Not Available',
+            text: 'This PC is currently not available',
+            icon: 'warning',
+            timer: 1500
+        });
+        return;
+    }
+
+    // Remove selection from all PCs
+    document.querySelectorAll('.computer-icon').forEach(pc => 
+        pc.classList.remove('selected'));
+    
+    // Add selection to clicked PC
+    element.classList.add('selected');
+    
+    // Update hidden input
+    let pcInput = document.getElementById('pcNumberInput');
+    if (!pcInput) {
+        pcInput = document.createElement('input');
+        pcInput.type = 'hidden';
+        pcInput.id = 'pcNumberInput';
+        pcInput.name = 'pc_number';
+        document.getElementById('reservationForm').appendChild(pcInput);
+    }
+    pcInput.value = pcNumber;
+
+    // Show selection feedback
+    Swal.fire({
+        title: 'PC Selected',
+        text: `You selected PC ${String(pcNumber).padStart(2, '0')}`,
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+
+// Initialize form validation and date/time inputs
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+    document.getElementById('date').value = today;
+
+    // Set default time to current hour
+    const now = new Date();
+    now.setMinutes(0);
+    document.getElementById('timeIn').value = now.toTimeString().slice(0, 5);
 });
 </script>
 </body>

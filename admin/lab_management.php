@@ -88,6 +88,16 @@ include('admin_navbar.php');
             align-items: center;
             gap: 0.5rem;
         }
+        #computerGrid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr); /* 10 PCs per row */
+            gap: 10px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 0.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -218,7 +228,6 @@ include('admin_navbar.php');
         function generateComputers(lab) {
             const container = document.getElementById('computerGrid');
             container.innerHTML = '';
-            let availableCount = 50;
             
             if (labComputers[lab]) {
                 labComputers[lab].forEach((pcNumber) => {
@@ -238,10 +247,7 @@ include('admin_navbar.php');
                     container.appendChild(pc);
                 });
                 
-                // Update initial counts
-                updatePCCounts(availableCount, 0);
-                
-                // Check actual status from database
+                // Check actual status from database immediately after generating PCs
                 checkLabStatus(lab);
             }
         }
@@ -271,56 +277,61 @@ include('admin_navbar.php');
                         },
                         success: function(response) {
                             if (response.success) {
+                                // Update only this PC's status
                                 pcElement.classList.toggle('checked');
                                 pcElement.classList.toggle('unavailable');
+                                
+                                // Update counters without full refresh
                                 updatePCCounts(
                                     document.querySelectorAll('.computer-icon.checked').length,
-                                    document.querySelectorAll('.computer-icon:not(.checked)').length
+                                    document.querySelectorAll('.computer-icon.unavailable').length
                                 );
                                 
                                 Swal.fire({
                                     title: 'Updated!',
-                                    text: `PC-${pcNumber} has been marked as ${!isAvailable ? 'Available' : 'In Use'}`,
+                                    text: `PC-${pcNumber} status updated successfully`,
                                     icon: 'success',
-                                    timer: 1500
+                                    timer: 1500,
+                                    showConfirmButton: false
                                 });
                             }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Failed to update PC status',
-                                icon: 'error'
-                            });
                         }
                     });
                 }
             });
         }
 
-        function checkLabStatus(lab) {
+        function checkLabStatus(lab, keepExistingSelection = true) {
             $.ajax({
                 url: 'get_lab_status.php',
                 method: 'GET',
                 data: { lab: lab },
                 success: function(response) {
                     if (response.pcs) {
-                        response.pcs.forEach(pc => {
-                            const pcElement = document.querySelector(`.computer-icon[data-pc="${pc.number}"][data-lab="${lab}"]`);
-                            if (pcElement) {
-                                if (pc.is_active) {
-                                    pcElement.classList.add('checked');
-                                    pcElement.classList.remove('unavailable');
-                                } else {
-                                    pcElement.classList.remove('checked');
-                                    pcElement.classList.add('unavailable');
-                                }
+                        let availableCount = 0;
+                        let unavailableCount = 0;
+
+                        document.querySelectorAll('.computer-icon').forEach(pc => {
+                            const pcNumber = pc.getAttribute('data-pc');
+                            const pcInfo = response.pcs.find(p => p.number == pcNumber);
+                            
+                            if (keepExistingSelection && pc.classList.contains('selected')) {
+                                return; // Skip updating selected PCs
+                            }
+                            
+                            // Reset only status classes
+                            pc.classList.remove('checked', 'unavailable');
+                            
+                            if (pcInfo && !pcInfo.is_active) {
+                                pc.classList.add('unavailable');
+                                unavailableCount++;
+                            } else {
+                                pc.classList.add('checked');
+                                availableCount++;
                             }
                         });
-                        updatePCCounts(
-                            document.querySelectorAll('.computer-icon.checked').length,
-                            document.querySelectorAll('.computer-icon:not(.checked)').length
-                        );
+
+                        updatePCCounts(availableCount, unavailableCount);
                     }
                 }
             });
@@ -350,15 +361,13 @@ include('admin_navbar.php');
                 processing: true
             });
 
-            // Modified auto-refresh function
+            // Check for updates every 5 seconds
             setInterval(function() {
                 const selectedLab = $('#labFilter').val();
                 if (selectedLab) {
                     checkLabStatus(selectedLab);
                 }
-                // Refresh the page instead of using ajax reload
-                // location.reload();
-            }, 30000);
+            }, 5000);
         });
     </script>
 </body>

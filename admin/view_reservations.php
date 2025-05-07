@@ -111,6 +111,7 @@ include('admin_navbar.php');
                                 <th>Student ID</th>
                                 <th>Name</th>
                                 <th>Lab Room</th>
+                                <th>PC Number</th>
                                 <th>Purpose</th>
                                 <th>Date</th>
                                 <th>Time In</th>
@@ -177,6 +178,7 @@ include('admin_navbar.php');
                                         <td>{$row['id_number']}</td>
                                         <td>{$row['fname']} {$row['lname']}</td>
                                         <td>{$row['lab']}</td>
+                                        <td>PC-" . str_pad($row['pc_number'], 2, '0', STR_PAD_LEFT) . "</td>
                                         <td>{$row['purpose']}</td>
                                         <td>{$row['reservation_date']}</td>
                                         <td>{$row['reservation_time']}</td>
@@ -184,10 +186,14 @@ include('admin_navbar.php');
                                         <td class='action-buttons'>";
                                 
                                 if ($row['status'] === 'pending') {
-                                    echo "<button type='button' class='btn btn-success btn-sm approve-btn' data-id='{$row['reservation_id']}'>
+                                    echo "<button type='button' class='btn btn-success btn-sm approve-btn' 
+                                            data-id='{$row['reservation_id']}' 
+                                            data-pc='{$row['pc_number']}' 
+                                            data-lab='{$row['lab']}'>
                                             <i class='fas fa-check'></i> Approve
                                           </button>
-                                          <button type='button' class='btn btn-danger btn-sm reject-btn' data-id='{$row['reservation_id']}'>
+                                          <button type='button' class='btn btn-danger btn-sm reject-btn' 
+                                            data-id='{$row['reservation_id']}'>
                                             <i class='fas fa-times'></i> Reject
                                           </button>";
                                 }
@@ -247,26 +253,40 @@ include('admin_navbar.php');
                         $.ajax({
                             url: 'update_reservation_status.php',
                             method: 'POST',
+                            dataType: 'json',
                             data: { 
                                 id: id, 
-                                status: status 
+                                status: status,
+                                pc_number: button.data('pc'),
+                                lab: button.data('lab')
                             },
                             success: function(response) {
+                                console.log('Response:', response);
                                 if (response.success) {
                                     Swal.fire({
                                         title: 'Success!',
                                         text: `Reservation has been ${status}!`,
                                         icon: 'success',
-                                        timer: 1500
+                                        timer: 1500,
+                                        showConfirmButton: false
                                     }).then(() => {
                                         location.reload();
                                     });
                                 } else {
-                                    Swal.fire('Error!', response.error || 'Something went wrong.', 'error');
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.error || 'Something went wrong.',
+                                        icon: 'error'
+                                    });
                                 }
                             },
-                            error: function() {
-                                Swal.fire('Error!', 'Failed to connect to server.', 'error');
+                            error: function(xhr, status, error) {
+                                console.error('AJAX Error:', xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Server connection failed. Please try again.',
+                                    icon: 'error'
+                                });
                             }
                         });
                     }

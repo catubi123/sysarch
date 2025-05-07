@@ -1,63 +1,63 @@
 <?php
 session_start();
-include('db.php');
+require_once('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_number = $_POST['idNumber'];
+    $lab = $_POST['lab'];
+    $pc_number = $_POST['pc_number'];
+    $purpose = $_POST['purpose'];
     $date = $_POST['date'];
     $time = $_POST['timeIn'];
-    $lab = $_POST['lab'];
-    $purpose = $_POST['purpose'];
-    $status = 'pending'; // Default status for new reservations
+    $status = 'pending';
+    $created_at = date('Y-m-d H:i:s');
 
-    // Check if the user already has 3 reservations for the selected date
-    $check_limit_query = "SELECT COUNT(*) as reservation_count 
-                          FROM reservation 
-                          WHERE id_number = ? 
-                          AND reservation_date = ? 
-                          AND reservation_time BETWEEN '08:00:00' AND '17:00:00'";
-    
-    $stmt = $con->prepare($check_limit_query);
-    $stmt->bind_param("ss", $id_number, $date);
-    $stmt->execute();
-    $limit_result = $stmt->get_result()->fetch_assoc();
+    try {
+        // Check if PC is available
+        $check_pc = $con->prepare("SELECT is_active FROM lab_pc WHERE lab = ? AND pc_number = ?");
+        $check_pc->bind_param("si", $lab, $pc_number);
+        $check_pc->execute();
+        $result = $check_pc->get_result();
+        $pc_status = $result->fetch_assoc();
 
-    if ($limit_result['reservation_count'] >= 3) {
-        $_SESSION['error'] = "You can only make up to 3 reservations between 8:00 AM and 5:00 PM on the same day.";
+        if (!$pc_status || !$pc_status['is_active']) {
+            throw new Exception("Selected PC is not available");
+        }
+
+        // Insert reservation
+        $stmt = $con->prepare("INSERT INTO reservation 
+            (id_number, lab, pc_number, purpose, reservation_date, 
+             reservation_time, status, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        $stmt->bind_param("sissssss", 
+            $id_number, $lab, $pc_number, $purpose, 
+            $date, $time, $status, $created_at
+        );
+
+        if ($stmt->execute()) {
+            $_SESSION['swal_success'] = [
+                'title' => 'Success!',
+                'text' => 'Your reservation has been submitted and is pending approval.',
+                'icon' => 'success'
+            ];
+        } else {
+            throw new Exception("Failed to submit reservation");
+        }
+
+        header("Location: home.php");
+        exit();
+
+    } catch (Exception $e) {
+        $_SESSION['swal_error'] = [
+            'title' => 'Error!',
+            'text' => $e->getMessage(),
+            'icon' => 'error'
+        ];
         header("Location: reservation.php");
         exit();
     }
-
-    // Check for existing reservation at the same time and lab
-    $check_query = "SELECT * FROM reservation 
-                    WHERE reservation_date = ? 
-                    AND lab = ? 
-                    AND reservation_time = ?";
-    
-    $stmt = $con->prepare($check_query);
-    $stmt->bind_param("sss", $date, $lab, $time);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $_SESSION['error'] = "This time slot is already reserved.";
-        header("Location: reservation.php");
-        exit();
-    }
-
-    // Insert new reservation
-    $query = "INSERT INTO reservation (reservation_date, reservation_time, lab, purpose, 
-              id_number, status) VALUES (?, ?, ?, ?, ?, ?)";
-    
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("ssssss", $date, $time, $lab, $purpose, $id_number, $status);
-
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Reservation submitted successfully!";
-    } else {
-        $_SESSION['error'] = "Error submitting reservation.";
-    }
-
+} else {
     header("Location: reservation.php");
     exit();
 }
