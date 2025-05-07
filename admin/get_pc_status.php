@@ -12,6 +12,7 @@ if (isset($_GET['lab'])) {
             lab VARCHAR(10) NOT NULL,
             pc_number INT NOT NULL,
             is_active TINYINT(1) DEFAULT 1,
+            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY lab_pc_unique (lab, pc_number)
         )");
 
@@ -35,7 +36,7 @@ if (isset($_GET['lab'])) {
         $stmt->execute();
 
         // Get PC status
-        $query = "SELECT pc_number, is_active FROM lab_pc WHERE lab = ? ORDER BY pc_number";
+        $query = "SELECT pc_number, is_active, last_updated FROM lab_pc WHERE lab = ? ORDER BY pc_number";
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $lab);
         $stmt->execute();
@@ -45,7 +46,8 @@ if (isset($_GET['lab'])) {
         while ($row = $result->fetch_assoc()) {
             $pcs[] = [
                 'number' => (int)$row['pc_number'],
-                'is_active' => (bool)$row['is_active']
+                'is_active' => (bool)$row['is_active'],
+                'last_updated' => $row['last_updated']
             ];
         }
 
