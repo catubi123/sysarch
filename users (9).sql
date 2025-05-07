@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2025 at 10:32 AM
+-- Generation Time: May 07, 2025 at 06:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -81,7 +81,9 @@ CREATE TABLE `lab_materials` (
 --
 
 INSERT INTO `lab_materials` (`material_id`, `title`, `description`, `website_url`, `image_path`, `category`, `created_at`, `updated_at`) VALUES
-(1, 'My SQL', 'DATABASE', 'https://www.w3schools.com/MySQL/default.asp', 'uploads/materials/681b0ea5e85d3.jpg', 'Database', '2025-05-07 07:41:25', '2025-05-07 07:41:25');
+(1, 'My SQL', 'DATABASE', 'https://www.w3schools.com/MySQL/default.asp', 'uploads/materials/681b0ea5e85d3.jpg', 'Database', '2025-05-07 07:41:25', '2025-05-07 07:41:25'),
+(2, 'HTML', 'HTML is the standard markup language for Web pages.\r\n\r\nWith HTML you can create your own Website.\r\n\r\nHTML is easy to learn - You will enjoy it!', 'https://www.w3schools.com/html/default.a', 'uploads/materials/681b7a6e92f31.png', 'Web Development', '2025-05-07 15:21:18', '2025-05-07 15:21:18'),
+(3, 'Python ', 'Python is a popular programming language.\r\n\r\nPython can be used on a server to create web applications.', 'https://www.w3schools.com/python/default.asp', 'uploads/materials/681b7d5bcceda.png', 'Programming', '2025-05-07 15:33:47', '2025-05-07 15:33:47');
 
 -- --------------------------------------------------------
 
@@ -203,11 +205,11 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (112, '524', 48, 1, '2025-05-07 04:09:10'),
 (113, '524', 49, 1, '2025-05-07 04:09:10'),
 (114, '524', 50, 1, '2025-05-07 04:09:10'),
-(130, '526', 4, 0, '2025-05-07 08:05:55'),
+(130, '526', 4, 1, '2025-05-07 15:14:06'),
 (131, '542', 1, 1, '2025-05-07 04:09:31'),
 (132, '542', 2, 1, '2025-05-07 04:12:17'),
 (133, '542', 3, 1, '2025-05-07 04:09:31'),
-(134, '542', 4, 1, '2025-05-07 04:09:31'),
+(134, '542', 4, 1, '2025-05-07 15:12:22'),
 (135, '542', 5, 1, '2025-05-07 04:09:31'),
 (136, '542', 6, 1, '2025-05-07 04:09:31'),
 (137, '542', 7, 1, '2025-05-07 04:09:31'),
@@ -256,7 +258,7 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (180, '542', 50, 1, '2025-05-07 04:09:31'),
 (195, '526', 1, 1, '2025-05-07 07:02:00'),
 (196, '526', 2, 1, '2025-05-07 07:21:12'),
-(197, '526', 3, 1, '2025-05-07 07:01:26'),
+(197, '526', 3, 0, '2025-05-07 16:15:48'),
 (198, '526', 5, 1, '2025-05-07 07:01:31'),
 (199, '526', 7, 1, '2025-05-07 04:11:55'),
 (200, '526', 8, 1, '2025-05-07 04:11:55'),
@@ -402,6 +404,32 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (706, '530', 48, 1, '2025-05-07 04:55:47'),
 (707, '530', 49, 1, '2025-05-07 04:55:47'),
 (708, '530', 50, 1, '2025-05-07 04:55:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lab_schedules`
+--
+
+CREATE TABLE `lab_schedules` (
+  `schedule_id` int(11) NOT NULL,
+  `lab_number` varchar(10) NOT NULL,
+  `professor_name` varchar(100) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `day` varchar(20) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_schedules`
+--
+
+INSERT INTO `lab_schedules` (`schedule_id`, `lab_number`, `professor_name`, `subject`, `day`, `start_time`, `end_time`, `created_at`) VALUES
+(1, '524', 'Jeff Salimbangon', 'Syaten Architecture and Design', 'Tuesday', '10:30:00', '13:30:00', '2025-05-07 15:59:47'),
+(2, '526', 'Wilson Gayo', 'Integrative Programming', 'Monday', '16:30:00', '19:00:00', '2025-05-07 16:11:55'),
+(3, '530', 'Beverly Lahaylahay', 'Information Management', 'Saturday', '16:00:00', '18:30:00', '2025-05-07 16:13:08');
 
 -- --------------------------------------------------------
 
@@ -1155,6 +1183,12 @@ ALTER TABLE `lab_pc`
   ADD UNIQUE KEY `lab_pc_unique` (`lab`,`pc_number`);
 
 --
+-- Indexes for table `lab_schedules`
+--
+ALTER TABLE `lab_schedules`
+  ADD PRIMARY KEY (`schedule_id`);
+
+--
 -- Indexes for table `pc_numbers`
 --
 ALTER TABLE `pc_numbers`
@@ -1207,13 +1241,19 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `lab_materials`
 --
 ALTER TABLE `lab_materials`
-  MODIFY `material_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `material_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `lab_pc`
 --
 ALTER TABLE `lab_pc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1608;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1667;
+
+--
+-- AUTO_INCREMENT for table `lab_schedules`
+--
+ALTER TABLE `lab_schedules`
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pc_status`
