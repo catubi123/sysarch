@@ -2,6 +2,8 @@
 session_start();
 require_once('db.php');
 
+header('Content-Type: application/json'); // Change to JSON response
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_number = $_POST['idNumber'];
     $lab = $_POST['lab'];
@@ -13,16 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $created_at = date('Y-m-d H:i:s');
 
     try {
-        // Check if PC is available
-        $check_pc = $con->prepare("SELECT is_active FROM lab_pc WHERE lab = ? AND pc_number = ?");
-        $check_pc->bind_param("si", $lab, $pc_number);
-        $check_pc->execute();
-        $result = $check_pc->get_result();
-        $pc_status = $result->fetch_assoc();
-
-        if (!$pc_status || !$pc_status['is_active']) {
-            throw new Exception("Selected PC is not available");
-        }
+        // Start transaction
+        $con->begin_transaction();
 
         // Insert reservation
         $stmt = $con->prepare("INSERT INTO reservation 
@@ -36,29 +30,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
-            $_SESSION['swal_success'] = [
-                'title' => 'Success!',
-                'text' => 'Your reservation has been submitted and is pending approval.',
-                'icon' => 'success'
-            ];
+            $con->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => 'Your reservation has been submitted successfully!',
+                'details' => [
+                    'lab' => $lab,
+                    'pc' => $pc_number,
+                    'date' => $date,
+                    'time' => $time
+                ]
+            ]);
         } else {
             throw new Exception("Failed to submit reservation");
         }
 
-        header("Location: home.php");
-        exit();
-
     } catch (Exception $e) {
-        $_SESSION['swal_error'] = [
-            'title' => 'Error!',
-            'text' => $e->getMessage(),
-            'icon' => 'error'
-        ];
-        header("Location: reservation.php");
-        exit();
+        $con->rollback();
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
     }
 } else {
-    header("Location: reservation.php");
-    exit();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid request method'
+    ]);
 }
 ?>

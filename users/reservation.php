@@ -443,6 +443,109 @@ function selectPC(element, pcNumber) {
     });
 }
 
+// Update the form submission handler
+document.getElementById('reservationForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    // Validate PC selection
+    const pcNumber = document.getElementById('pcNumberInput')?.value;
+    if (!pcNumber) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'Please select a PC before submitting',
+            icon: 'error'
+        });
+        return;
+    }
+
+    // Validate date
+    const selectedDate = new Date(document.getElementById('date').value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+        Swal.fire({
+            title: 'Invalid Date',
+            text: 'Please select today or a future date',
+            icon: 'error'
+        });
+        return;
+    }
+
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Confirm Reservation',
+        html: `Are you sure you want to reserve:<br>
+               Lab ${document.getElementById('lab').value}<br>
+               PC ${String(pcNumber).padStart(2, '0')}<br>
+               Date: ${document.getElementById('date').value}<br>
+               Time: ${document.getElementById('timeIn').value}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, submit reservation'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit form via AJAX
+            const formData = new FormData(this);
+            
+            $.ajax({
+                url: 'process_reservation.php',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Reservation Submitted!',
+                            html: `Your reservation details:<br>
+                                  Lab: ${response.details.lab}<br>
+                                  PC: ${String(response.details.pc).padStart(2, '0')}<br>
+                                  Date: ${response.details.date}<br>
+                                  Time: ${response.details.time}`,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Clear form and reset PC selection
+                            document.getElementById('reservationForm').reset();
+                            document.querySelectorAll('.computer-icon').forEach(pc => 
+                                pc.classList.remove('selected'));
+                            document.getElementById('pcNumberInput')?.remove();
+                            
+                            // Reset lab selection and computer grid
+                            document.getElementById('lab').value = '';
+                            document.getElementById('labSelector').value = '';
+                            document.getElementById('computerGrid').innerHTML = '';
+
+                            // Set default date and time again
+                            const today = new Date().toISOString().split('T')[0];
+                            document.getElementById('date').value = today;
+                            const now = new Date();
+                            now.setMinutes(0);
+                            document.getElementById('timeIn').value = now.toTimeString().slice(0, 5);
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.message,
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to submit reservation. Please try again.',
+                        icon: 'error'
+                    });
+                }
+            });
+        }
+    });
+});
+
 // Initialize form validation and date/time inputs
 document.addEventListener('DOMContentLoaded', function() {
     // Set minimum date to today
