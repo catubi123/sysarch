@@ -112,6 +112,10 @@ $username = $_SESSION['username'];
             <a href="lab_materials.php" class="nav-link text-white">
                 <i class="fa-solid fa-book"></i> Lab Materials
             </a>
+            </a>
+            <a href="view_schedules.php" class="nav-link text-white">
+               <i class="fas fa-calendar-alt"></i> Lab Schedules
+           </a>
             <a href="reservation.php" class="nav-link text-white">
                 <i class="fas fa-calendar-check"></i> Reservation
             </a>
