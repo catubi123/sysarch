@@ -10,11 +10,22 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link text-white" href="admin_Dashboard.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="lab_management.php">Lab</a></li>
+                
+                <!-- Modified Lab dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="labDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Lab
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="labDropdown">
+                        <li><a class="dropdown-item" href="lab_management.php"><i class="fas fa-laptop"></i> Lab Management</a></li>
+                        <li><a class="dropdown-item" href="manage_materials.php"><i class="fas fa-book"></i> Lab Materials</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="lab_schedules.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a></li>
+                    </ul>
+                </li>
+
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in.php">Sit-in</a></li>
 
-                <!-- Add Lab Materials Management Link -->
-                <li class="nav-item"><a class="nav-link text-white" href="manage_materials.php"><i class="fas fa-book"></i> Lab Materials</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="viewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Views
@@ -26,14 +37,11 @@
                 </li>
                 <li class="nav-item"><a class="nav-link text-white" href="generate_report.php">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_reservations.php">Reservation</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">   </i> feedbacks</a></li>
-                <!-- Add new Top Users link -->
+                <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">Feedbacks</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="top_users.php">Top Users</a></li>
             </ul>
             <!-- Log Out Button -->
-                <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>
-
-
+            <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>
         </div>
     </div>
 </div>

@@ -126,7 +126,7 @@ $categories = $con->query("SELECT DISTINCT category FROM lab_materials ORDER BY 
     <div class="container mt-4">
         <div class="row mb-4">
             <div class="col">
-                <h2>Lab Materials</h2>
+                <h2>Lab Resources</h2>
             </div>
             <div class="col-auto">
                 <select class="form-select" onchange="window.location.href='?category='+this.value">

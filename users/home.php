@@ -126,6 +126,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="lab_materials.php" class="nav-link text-white">
                 <i class="fa-solid fa-pen-to-square"></i>Lab Materials
             </a>
+            <a href="view_schedules.php" class="nav-link text-white">
+               <i class="fas fa-calendar-alt"></i> Lab Schedules
+           </a>
             <a href="reservation.php" class="nav-link text-white">
                 <i class="fas fa-calendar-check"></i> Reservation
             </a>
