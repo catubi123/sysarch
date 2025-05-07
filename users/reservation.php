@@ -1,9 +1,34 @@
 <?php
 session_start();
-require_once('db.php'); // Change include to require_once
 
-// Add user data fetch for notifications like in home.php
+// Modified session check to match home.php's session variable
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
+
+require_once('db.php');
+
+// Get user data from database using username
+$username = $_SESSION['username'];
+$query = "SELECT id, CONCAT(fname, ' ', lname) as studentName FROM user WHERE username = ?";
+$stmt = $con->prepare($query);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($row = $result->fetch_assoc()) {
+    $_SESSION['id'] = $row['id'];
+    $_SESSION['studentName'] = $row['studentName'];
+} else {
+    header("Location: index.php");
+    exit();
+}
+
+// Now we can safely use session variables
 $user_id = $_SESSION['id'];
+
+// Get notification count
 $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
 $notif_stmt = $con->prepare($notif_query);
 $notif_stmt->bind_param("i", $user_id);
@@ -11,29 +36,9 @@ $notif_stmt->execute();
 $notif_result = $notif_stmt->get_result();
 $notif_count = $notif_result->fetch_assoc()['count'];
 
-// Check if user is logged in and has necessary session data
-if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
-    $stmt->bind_param("s", $_SESSION['username']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        $_SESSION['id'] = $row['id'];
-        $_SESSION['studentName'] = $row['fname'] . ' ' . $row['lname'];
-    } else {
-        // Redirect to login if user data can't be found
-        header("Location: index.php");
-        exit();
-    }
-}
-
-// Verify database connection
-if (!isset($con) || $con->connect_error) {
-    die("Database connection failed: " . ($con->connect_error ?? "Connection not established"));
-}
-
+// Store user data in variables
 $id = $_SESSION['id'];
-$studentName = $_SESSION['studentName'];
+$studentName = $_SESSION['studentName'] ?? '';
 
 // Check for existing reservation first
 if ($id) {
@@ -495,7 +500,7 @@ function selectPC(element, pcNumber) {
         pcInput = document.createElement('input');
         pcInput.type = 'hidden';
         pcInput.id = 'pcNumberInput';
-        pcInput.name = 'pc_number';  // This matches the expected POST parameter
+        pcInput.name = 'pc_number';
         document.getElementById('reservationForm').appendChild(pcInput);
     }
     pcInput.value = pcNumber;
@@ -508,55 +513,6 @@ function selectPC(element, pcNumber) {
         showConfirmButton: false
     });
 }
-
-// Update the form submission handler
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Check if a PC is selected
-    const pcNumber = document.getElementById('pcNumberInput')?.value;
-    if (!pcNumber) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a PC before submitting',
-            icon: 'error'
-        });
-        return;
-    }
-
-    // Show loading state
-    Swal.fire({
-        title: 'Submitting...',
-        text: 'Please wait while we process your reservation',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // Submit form
-    this.submit();
-});
-
-// Add form validation
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Check if a PC is selected
-    const pcNumber = document.getElementById('pcNumberInput')?.value;
-    if (!pcNumber) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a PC before submitting',
-            icon: 'error'
-        });
-        return;
-    }
-
-    // Continue with form submission if PC is selected
-    this.submit();
-});
 </script>
 </body>
 </html>
