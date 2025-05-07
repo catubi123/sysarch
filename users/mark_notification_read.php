@@ -1,22 +1,30 @@
 <?php
 session_start();
-include('db.php');
+require_once('db.php');
 
-if(isset($_POST['notification_id'])) {
+header('Content-Type: application/json');
+$response = ['success' => false, 'message' => ''];
+
+if(isset($_POST['notification_id']) && isset($_SESSION['id'])) {
     $notification_id = intval($_POST['notification_id']);
     
-    $query = "UPDATE notification SET is_read = 1 
-              WHERE notification_id = ? AND id_number = ?";
+    // Delete the notification instead of marking as read since there's no is_read column
+    $query = "DELETE FROM notification WHERE notification_id = ? AND id_number = ?";
     
     $stmt = $con->prepare($query);
-    $stmt->bind_param("is", $notification_id, $_SESSION['id']);
+    $stmt->bind_param("ii", $notification_id, $_SESSION['id']);
     
     if($stmt->execute()) {
-        echo "success";
+        $response = [
+            'success' => true,
+            'message' => 'Notification removed'
+        ];
     } else {
-        echo "error";
+        $response['message'] = 'Failed to remove notification';
     }
 } else {
-    echo "invalid request";
+    $response['message'] = 'Invalid request';
 }
+
+echo json_encode($response);
 ?>

@@ -1,4 +1,3 @@
-
 <div class="navbar navbar-expand-lg navbar-dark bg-primary rounded p-3">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
@@ -13,6 +12,9 @@
                 <li class="nav-item"><a class="nav-link text-white" href="search.php">Search</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="lab_management.php">Lab</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="sit-in.php">Sit-in</a></li>
+
+                <!-- Add Lab Materials Management Link -->
+                <li class="nav-item"><a class="nav-link text-white" href="manage_materials.php"><i class="fas fa-book"></i> Lab Materials</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="viewsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Views

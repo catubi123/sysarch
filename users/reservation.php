@@ -2,11 +2,17 @@
 session_start();
 require_once('db.php'); // Change include to require_once
 
+// Add user data fetch for notifications like in home.php
+$user_id = $_SESSION['id'];
+$notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
+$notif_stmt = $con->prepare($notif_query);
+$notif_stmt->bind_param("i", $user_id);
+$notif_stmt->execute();
+$notif_result = $notif_stmt->get_result();
+$notif_count = $notif_result->fetch_assoc()['count'];
+
 // Check if user is logged in and has necessary session data
 if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
-    // If no session data, fetch from database
-    $query = "SELECT id, fname, lname FROM user WHERE username = ?";
-    $stmt = $con->prepare($query);
     $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -199,18 +205,78 @@ if (isset($_SESSION['swal_error'])) {
 </head>
 <body>
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
   <div class="container-fluid">
     <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
     <div class="navbar-nav ms-auto">
-      <a href="home.php" class="nav-link text-white"><i class="fas fa-home"></i> Home</a>
-      <a href="#" class="nav-link text-white"><i class="fas fa-history"></i> History</a>
-      <a href="edit.php" class="nav-link text-white"><i class="fa-solid fa-pen-to-square"></i> Edit Profile</a>
-      <a href="reservation.php" class="nav-link text-white"><i class="fas fa-calendar-check"></i> Reservation</a>
-      <a href="index.php" class="nav-link text-white bg-danger rounded-pill px-3">Log out</a>
+      <a href="home.php" class="nav-link text-white">
+        <i class="fas fa-home"></i> Home
+      </a>
+      <a href="#" class="nav-link text-white position-relative" data-bs-toggle="modal" data-bs-target="#notificationModal">
+        <i class="fas fa-bell"></i> Notifications
+        <?php if ($notif_count > 0): ?>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            <?php echo $notif_count; ?>
+          </span>
+        <?php endif; ?>
+      </a>
+      <a href="history.php" class="nav-link text-white">
+        <i class="fas fa-history"></i> History
+      </a>
+      <a href="edit.php" class="nav-link text-white">
+        <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+      </a>
+      <a href="lab_materials.php" class="nav-link text-white">
+        <i class="fa-solid fa-book"></i> Lab Materials
+      </a>
+      <a href="reservation.php" class="nav-link text-white active">
+        <i class="fas fa-calendar-check"></i> Reservation
+      </a>
+      <a href="index.php" class="btn btn-danger ms-lg-3">Log out</a>
     </div>
   </div>
 </nav>
+
+<!-- Add Notification Modal -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="notificationModalLabel">
+          <i class="fas fa-bell"></i> Notifications
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <?php
+        $notifications_query = "SELECT notification_id, message FROM notification WHERE id_number = ? ORDER BY notification_id DESC";
+        $notifications_stmt = $con->prepare($notifications_query);
+        $notifications_stmt->bind_param("i", $user_id);
+        $notifications_stmt->execute();
+        $notifications = $notifications_stmt->get_result();
+
+        if ($notifications && $notifications->num_rows > 0) {
+            while ($row = $notifications->fetch_assoc()) {
+                echo '<div class="alert alert-info mb-2">';
+                echo '<div class="d-flex justify-content-between align-items-center">';
+                echo '<div><i class="fas fa-info-circle me-2"></i>' . htmlspecialchars($row['message']) . '</div>';
+                echo '</div>';
+                echo '</div>';
+            }
+        } else {
+            echo '<div class="text-center text-muted">';
+            echo '<i class="fas fa-bell-slash fa-2x mb-2"></i>';
+            echo '<p>No notifications available</p>';
+            echo '</div>';
+        }
+        ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="container mt-4">
   <div class="row">
