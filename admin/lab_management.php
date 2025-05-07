@@ -36,6 +36,7 @@ include('admin_navbar.php');
             cursor: pointer;
             transition: all 0.3s ease;
             margin: 5px;
+            position: relative;  /* Add this */
         }
         .computer-icon.checked {
             border-color: #198754;
@@ -46,9 +47,20 @@ include('admin_navbar.php');
             background-color: #f8d7da;
             cursor: not-allowed;
         }
+        .computer-icon.reserved {
+            border-color: #ffc107;
+            background-color: #fff3cd;
+        }
         .pc-number {
             font-size: 12px;
             margin-top: 5px;
+        }
+        .pc-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
         }
         .lab-filter {
             background: #f8f9fa;
@@ -225,6 +237,9 @@ include('admin_navbar.php');
             '544': Array.from({length: 50}, (_, i) => i + 1)
         };
 
+        // Add manual override tracking
+        const manualOverrides = new Map();
+
         function generateComputers(lab) {
             const container = document.getElementById('computerGrid');
             container.innerHTML = '';
@@ -273,10 +288,16 @@ include('admin_navbar.php');
                         data: {
                             pc_number: pcNumber,
                             lab: lab,
-                            active: !isAvailable
+                            active: isAvailable ? 0 : 1  // Changed this line to fix the logic
                         },
                         success: function(response) {
                             if (response.success) {
+                                // Store the manual override with timestamp
+                                manualOverrides.set(`${lab}_${pcNumber}`, {
+                                    status: !isAvailable,
+                                    timestamp: Date.now()
+                                });
+                                
                                 pcElement.classList.toggle('checked');
                                 pcElement.classList.toggle('unavailable');
                                 
@@ -284,14 +305,6 @@ include('admin_navbar.php');
                                 const available = document.querySelectorAll('.computer-icon.checked').length;
                                 const unavailable = document.querySelectorAll('.computer-icon.unavailable').length;
                                 updatePCCounts(available, unavailable);
-                                
-                                // Store the PC status in localStorage
-                                const pcStatus = {
-                                    lab: lab,
-                                    pc_number: pcNumber,
-                                    is_active: !isAvailable
-                                };
-                                localStorage.setItem(`pc_${lab}_${pcNumber}`, JSON.stringify(pcStatus));
                                 
                                 Swal.fire({
                                     title: 'Updated!',
@@ -313,49 +326,46 @@ include('admin_navbar.php');
                 method: 'GET',
                 data: { lab: lab },
                 success: function(response) {
-                    if (response.pcs) {
+                    if (response.success && response.pcs) {
                         let availableCount = 0;
                         let unavailableCount = 0;
 
                         document.querySelectorAll('.computer-icon').forEach(pc => {
-                            const pcNumber = pc.getAttribute('data-pc');
-                            const pcInfo = response.pcs.find(p => p.number == pcNumber);
+                            const pcNumber = parseInt(pc.getAttribute('data-pc'));
+                            const pcInfo = response.pcs.find(p => p.number === pcNumber);
+                            const overrideKey = `${lab}_${pcNumber}`;
+                            const override = manualOverrides.get(overrideKey);
                             
-                            // Check if PC has approved reservation
-                            const hasApprovedReservation = response.reservations && 
-                                response.reservations.some(r => 
-                                    r.pc_number == pcNumber && 
-                                    r.lab == lab && 
-                                    r.status === 'approved'
-                                );
+                            // Check if there's a recent manual override (within last 30 minutes)
+                            const hasRecentOverride = override && 
+                                (Date.now() - override.timestamp < 30 * 60 * 1000);
 
-                            if (hasApprovedReservation) {
-                                pc.classList.remove('checked');
-                                pc.classList.add('unavailable');
-                                unavailableCount++;
-                            } else {
-                                // Handle regular PC status
-                                const savedStatus = localStorage.getItem(`pc_${lab}_${pcNumber}`);
-                                if (savedStatus) {
-                                    const status = JSON.parse(savedStatus);
-                                    if (!status.is_active) {
-                                        pc.classList.remove('checked');
-                                        pc.classList.add('unavailable');
-                                        unavailableCount++;
-                                    } else {
-                                        pc.classList.remove('unavailable');
-                                        pc.classList.add('checked');
-                                        availableCount++;
-                                    }
-                                } else if (pcInfo) {
-                                    if (!pcInfo.is_active) {
-                                        pc.classList.remove('checked');
-                                        pc.classList.add('unavailable');
-                                        unavailableCount++;
-                                    } else {
-                                        pc.classList.remove('unavailable');
-                                        pc.classList.add('checked');
-                                        availableCount++;
+                            // Reset classes
+                            pc.classList.remove('checked', 'unavailable', 'reserved');
+                            
+                            if (hasRecentOverride) {
+                                // Use the manual override status
+                                if (override.status) {
+                                    pc.classList.add('checked');
+                                    availableCount++;
+                                } else {
+                                    pc.classList.add('unavailable');
+                                    unavailableCount++;
+                                }
+                            } else if (pcInfo) {
+                                if (pcInfo.is_active) {
+                                    pc.classList.add('checked');
+                                    availableCount++;
+                                } else {
+                                    pc.classList.add('unavailable');
+                                    unavailableCount++;
+                                    
+                                    // Check reservations
+                                    const reservation = response.reservations.find(r => 
+                                        parseInt(r.pc_number) === pcNumber);
+                                    if (reservation) {
+                                        pc.classList.add('reserved');
+                                        pc.title = `Reserved by: ${reservation.fname} ${reservation.lname}`;
                                     }
                                 }
                             }
@@ -390,14 +400,13 @@ include('admin_navbar.php');
                 },
                 processing: true
             });
-
-            // Check for updates every 5 seconds
+            // Reduce check frequency to 30 seconds instead of 5 seconds
             setInterval(function() {
                 const selectedLab = $('#labFilter').val();
                 if (selectedLab) {
                     checkLabStatus(selectedLab);
                 }
-            }, 5000);
+            }, 30000); // Changed to 30 seconds
         });
     </script>
 </body>

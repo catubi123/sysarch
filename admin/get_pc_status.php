@@ -36,7 +36,18 @@ if (isset($_GET['lab'])) {
         $stmt->execute();
 
         // Get PC status
-        $query = "SELECT pc_number, is_active, last_updated FROM lab_pc WHERE lab = ? ORDER BY pc_number";
+        $query = "SELECT lp.pc_number, lp.is_active, lp.last_updated,
+                 CASE WHEN r.reservation_id IS NOT NULL THEN 0 ELSE lp.is_active END as final_status
+                 FROM lab_pc lp
+                 LEFT JOIN reservation r ON lp.lab = r.lab 
+                    AND lp.pc_number = r.pc_number
+                    AND r.status = 'approved'
+                    AND r.reservation_date = CURRENT_DATE
+                    AND r.reservation_time <= CURRENT_TIME
+                    AND DATE_ADD(r.reservation_time, INTERVAL 1 HOUR) >= CURRENT_TIME
+                 WHERE lp.lab = ?
+                 ORDER BY lp.pc_number";
+        
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $lab);
         $stmt->execute();
@@ -46,7 +57,7 @@ if (isset($_GET['lab'])) {
         while ($row = $result->fetch_assoc()) {
             $pcs[] = [
                 'number' => (int)$row['pc_number'],
-                'is_active' => (bool)$row['is_active'],
+                'is_active' => (bool)$row['final_status'],
                 'last_updated' => $row['last_updated']
             ];
         }
@@ -55,12 +66,16 @@ if (isset($_GET['lab'])) {
         $today = date('Y-m-d');
         $current_time = date('H:i:s');
         
-        $reservation_query = "SELECT * FROM reservation 
-                             WHERE lab = ? 
-                             AND status = 'approved' 
-                             AND reservation_date = ? 
-                             AND reservation_time <= ? 
-                             AND DATE_ADD(reservation_time, INTERVAL 1 HOUR) >= ?";
+        $reservation_query = "SELECT r.reservation_id, r.id_number, r.lab, r.pc_number, 
+                                    r.reservation_date, r.reservation_time, r.status,
+                                    u.fname, u.lname 
+                             FROM reservation r 
+                             LEFT JOIN user u ON r.id_number = u.id 
+                             WHERE r.lab = ? 
+                             AND r.status = 'approved' 
+                             AND r.reservation_date = ? 
+                             AND r.reservation_time <= ? 
+                             AND DATE_ADD(r.reservation_time, INTERVAL 1 HOUR) >= ?";
         
         $stmt = $con->prepare($reservation_query);
         $stmt->bind_param("ssss", $lab, $today, $current_time, $current_time);
