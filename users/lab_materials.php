@@ -131,12 +131,11 @@ $categories = $con->query("SELECT DISTINCT category FROM lab_materials ORDER BY 
             <div class="col-auto">
                 <select class="form-select" onchange="window.location.href='?category='+this.value">
                     <option value="">All Categories</option>
-                    <?php while($cat = $categories->fetch_assoc()): ?>
-                    <option value="<?= htmlspecialchars($cat['category']) ?>"
-                            <?= $category === $cat['category'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($cat['category']) ?>
-                    </option>
-                    <?php endwhile; ?>
+                    <option value="Programming" <?= $category === 'Programming' ? 'selected' : '' ?>>Programming</option>
+                    <option value="Database" <?= $category === 'Database' ? 'selected' : '' ?>>Database</option>
+                    <option value="Networking" <?= $category === 'Networking' ? 'selected' : '' ?>>Networking</option>
+                    <option value="Web Development" <?= $category === 'Web Development' ? 'selected' : '' ?>>Web Development</option>
+                    <option value="Others" <?= $category === 'Others' ? 'selected' : '' ?>>Others</option>
                 </select>
             </div>
         </div>
