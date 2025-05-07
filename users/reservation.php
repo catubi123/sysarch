@@ -356,20 +356,17 @@ function updateComputerControl(lab) {
     const container = document.getElementById('computerGrid');
     if (!lab) return;
     
-    container.innerHTML = ''; // Clear existing content
-
-    // Show loading indicator
     container.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading PCs...</div>';
 
-    // Fetch PC status from server
     $.ajax({
         url: '../admin/get_pc_status.php',
         method: 'GET',
         data: { lab: lab },
         success: function(response) {
-            container.innerHTML = ''; // Clear loading indicator
+            console.log('Response:', response); // Debug line
+            container.innerHTML = '';
             
-            if (response.success && response.pcs) {
+            if (response && response.success && Array.isArray(response.pcs)) {
                 // Create PC icons in numerical order
                 for (let i = 1; i <= 50; i++) {
                     const pc = response.pcs.find(p => p.number === i) || { number: i, is_active: true };
@@ -394,12 +391,14 @@ function updateComputerControl(lab) {
                     container.appendChild(icon);
                 }
             } else {
-                container.innerHTML = '<div class="alert alert-warning">Failed to load PC status</div>';
+                container.innerHTML = '<div class="alert alert-warning">No PCs found for this laboratory</div>';
+                console.error('Invalid response format:', response);
             }
         },
         error: function(xhr, status, error) {
-            container.innerHTML = '<div class="alert alert-danger">Error loading PCs</div>';
-            console.error('Error:', error);
+            console.error('AJAX Error:', error);
+            console.log('Response Text:', xhr.responseText); // Debug line
+            container.innerHTML = '<div class="alert alert-danger">Error loading PCs. Please try again.</div>';
         }
     });
 }

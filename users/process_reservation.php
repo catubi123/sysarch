@@ -33,13 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $con->commit();
             echo json_encode([
                 'success' => true,
-                'message' => 'Your reservation has been submitted successfully!',
-                'details' => [
-                    'lab' => $lab,
-                    'pc' => $pc_number,
-                    'date' => $date,
-                    'time' => $time
-                ]
+                'message' => 'Your reservation has been submitted successfully!'
             ]);
         } else {
             throw new Exception("Failed to submit reservation");
