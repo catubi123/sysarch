@@ -18,6 +18,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="labDropdown">
                         <li><a class="dropdown-item" href="lab_management.php"><i class="fas fa-laptop"></i> Lab Management</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="manage_materials.php"><i class="fas fa-book"></i> Lab Materials</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="lab_schedules.php"><i class="fas fa-calendar-alt"></i> Lab Schedules</a></li>
@@ -32,6 +33,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="viewsDropdown">
                         <li><a class="dropdown-item" href="sit-in-records.php">View Sit-in Records</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="student_information.php">View List of Students</a></li>
                     </ul>
                 </li>
