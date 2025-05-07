@@ -321,28 +321,42 @@ include('admin_navbar.php');
                             const pcNumber = pc.getAttribute('data-pc');
                             const pcInfo = response.pcs.find(p => p.number == pcNumber);
                             
-                            // Check localStorage for saved status
-                            const savedStatus = localStorage.getItem(`pc_${lab}_${pcNumber}`);
-                            if (savedStatus) {
-                                const status = JSON.parse(savedStatus);
-                                if (!status.is_active) {
-                                    pc.classList.remove('checked');
-                                    pc.classList.add('unavailable');
-                                    unavailableCount++;
-                                } else {
-                                    pc.classList.remove('unavailable');
-                                    pc.classList.add('checked');
-                                    availableCount++;
-                                }
-                            } else if (pcInfo) {
-                                if (!pcInfo.is_active) {
-                                    pc.classList.remove('checked');
-                                    pc.classList.add('unavailable');
-                                    unavailableCount++;
-                                } else {
-                                    pc.classList.remove('unavailable');
-                                    pc.classList.add('checked');
-                                    availableCount++;
+                            // Check if PC has approved reservation
+                            const hasApprovedReservation = response.reservations && 
+                                response.reservations.some(r => 
+                                    r.pc_number == pcNumber && 
+                                    r.lab == lab && 
+                                    r.status === 'approved'
+                                );
+
+                            if (hasApprovedReservation) {
+                                pc.classList.remove('checked');
+                                pc.classList.add('unavailable');
+                                unavailableCount++;
+                            } else {
+                                // Handle regular PC status
+                                const savedStatus = localStorage.getItem(`pc_${lab}_${pcNumber}`);
+                                if (savedStatus) {
+                                    const status = JSON.parse(savedStatus);
+                                    if (!status.is_active) {
+                                        pc.classList.remove('checked');
+                                        pc.classList.add('unavailable');
+                                        unavailableCount++;
+                                    } else {
+                                        pc.classList.remove('unavailable');
+                                        pc.classList.add('checked');
+                                        availableCount++;
+                                    }
+                                } else if (pcInfo) {
+                                    if (!pcInfo.is_active) {
+                                        pc.classList.remove('checked');
+                                        pc.classList.add('unavailable');
+                                        unavailableCount++;
+                                    } else {
+                                        pc.classList.remove('unavailable');
+                                        pc.classList.add('checked');
+                                        availableCount++;
+                                    }
                                 }
                             }
                         });

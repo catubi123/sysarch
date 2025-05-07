@@ -1,3 +1,4 @@
+
 <div class="navbar navbar-expand-lg navbar-dark bg-primary rounded p-3">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
@@ -24,6 +25,8 @@
                 <li class="nav-item"><a class="nav-link text-white" href="generate_report.php">Generate Reports</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_reservations.php">Reservation</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">   </i> feedbacks</a></li>
+                <!-- Add new Top Users link -->
+                <li class="nav-item"><a class="nav-link text-white" href="top_users.php">Top Users</a></li>
             </ul>
             <!-- Log Out Button -->
                 <a href="../users/index.php" class="btn btn-danger ms-lg-3">Log Out</a>

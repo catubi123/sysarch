@@ -289,10 +289,6 @@ if (isset($_SESSION['swal_error'])) {
 
             <!-- Full Width Elements -->
             <div class="col-12 position-relative">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="remainingSession" name="remainingSession" value="30" readonly />
-                <label><i class="fas fa-hourglass-half"></i> Session Duration</label>
-              </div>
             </div>
 
             <div class="col-12">

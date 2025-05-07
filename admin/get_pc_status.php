@@ -49,9 +49,31 @@ if (isset($_GET['lab'])) {
             ];
         }
 
+        // Get current approved reservations
+        $today = date('Y-m-d');
+        $current_time = date('H:i:s');
+        
+        $reservation_query = "SELECT * FROM reservation 
+                             WHERE lab = ? 
+                             AND status = 'approved' 
+                             AND reservation_date = ? 
+                             AND reservation_time <= ? 
+                             AND DATE_ADD(reservation_time, INTERVAL 1 HOUR) >= ?";
+        
+        $stmt = $con->prepare($reservation_query);
+        $stmt->bind_param("ssss", $lab, $today, $current_time, $current_time);
+        $stmt->execute();
+        $reservation_result = $stmt->get_result();
+        
+        $reservations = [];
+        while ($row = $reservation_result->fetch_assoc()) {
+            $reservations[] = $row;
+        }
+
         echo json_encode([
             'success' => true,
             'pcs' => $pcs,
+            'reservations' => $reservations,
             'count' => count($pcs),
             'lab' => $lab
         ]);
