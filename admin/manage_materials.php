@@ -121,7 +121,7 @@ $materials = $con->query("SELECT * FROM lab_materials ORDER BY created_at DESC")
                                 </thead>
                                 <tbody>
                                     <?php while($material = $materials->fetch_assoc()): ?>
-                                    <tr>
+                                    <tr data-id="<?= $material['material_id'] ?>">
                                         <td><?= htmlspecialchars($material['title']) ?></td>
                                         <td><?= htmlspecialchars($material['category']) ?></td>
                                         <td>
@@ -131,8 +131,8 @@ $materials = $con->query("SELECT * FROM lab_materials ORDER BY created_at DESC")
                                             </a>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-danger delete-material" 
-                                                    data-id="<?= $material['material_id'] ?>">
+                                            <button onclick="deleteMaterial(<?= $material['material_id'] ?>)" 
+                                                    class="btn btn-sm btn-danger">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </td>
@@ -173,25 +173,49 @@ $materials = $con->query("SELECT * FROM lab_materials ORDER BY created_at DESC")
         <?php endif; ?>
 
         // Handle material deletion
-        document.querySelectorAll('.delete-material').forEach(button => {
-            button.addEventListener('click', function() {
-                const materialId = this.dataset.id;
-                
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = `delete_material.php?id=${materialId}`;
-                    }
-                });
+        function deleteMaterial(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Get the row element before deletion
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    
+                    // Show loading state in the row
+                    row.innerHTML = '<td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td>';
+                    
+                    // Use fetch for AJAX request
+                    fetch(`delete_material.php?id=${id}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the row immediately
+                            row.remove();
+                            Swal.fire('Deleted!', data.message, 'success');
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!', 'Failed to delete material', 'error');
+                        // Refresh the page if there's an error
+                        location.reload();
+                    });
+                }
             });
-        });
+        }
     </script>
 </body>
 </html>
