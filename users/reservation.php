@@ -3,16 +3,22 @@ session_start();
 require_once('db.php'); // Change include to require_once
 
 // Add user data fetch for notifications like in home.php
-$user_id = $_SESSION['id'];
-$notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
-$notif_stmt = $con->prepare($notif_query);
-$notif_stmt->bind_param("i", $user_id);
-$notif_stmt->execute();
-$notif_result = $notif_stmt->get_result();
-$notif_count = $notif_result->fetch_assoc()['count'];
+$user_id = $_SESSION['id'] ?? null; // Check if 'id' exists in session
+if ($user_id) {
+    $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
+    $notif_stmt = $con->prepare($notif_query);
+    $notif_stmt->bind_param("i", $user_id);
+    $notif_stmt->execute();
+    $notif_result = $notif_stmt->get_result();
+    $notif_count = $notif_result->fetch_assoc()['count'];
+} else {
+    $notif_count = 0; // Default to 0 if user is not logged in
+}
 
 // Check if user is logged in and has necessary session data
 if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
+    $login_query = "SELECT id, fname, lname FROM user WHERE username = ?";
+    $stmt = $con->prepare($login_query); // Ensure $stmt is initialized
     $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -32,8 +38,8 @@ if (!isset($con) || $con->connect_error) {
     die("Database connection failed: " . ($con->connect_error ?? "Connection not established"));
 }
 
-$id = $_SESSION['id'];
-$studentName = $_SESSION['studentName'];
+$id = $_SESSION['id'] ?? null; // Ensure $id is defined
+$studentName = $_SESSION['studentName'] ?? null;
 
 // Check for existing reservation first
 if ($id) {
@@ -441,122 +447,4 @@ function updateComputerControl(lab) {
                     icon.className = `computer-icon ${(!pc.is_active) ? 'unavailable' : ''}`;
                     
                     icon.innerHTML = `
-                        <i class="fas fa-desktop"></i>
-                        <span class="pc-number">PC ${String(i).padStart(2, '0')}</span>
-                        ${(!pc.is_active) ? '<span class="badge bg-danger">In Use</span>' : ''}
-                    `;
-                    icon.setAttribute('data-pc', i);
-                    
-                    if (pc.is_active) {
-                        icon.onclick = function() {
-                            selectPC(this, i);
-                        };
-                        icon.title = `Click to select PC ${String(i).padStart(2, '0')}`;
-                    } else {
-                        icon.title = `PC ${String(i).padStart(2, '0')} is currently in use`;
-                    }
-                    
-                    container.appendChild(icon);
-                }
-            } else {
-                container.innerHTML = '<div class="alert alert-warning">Error loading PCs: ' + 
-                    (response.error || 'Unknown error') + '</div>';
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', error);
-            container.innerHTML = '<div class="alert alert-danger">Failed to load PCs. Please try again.</div>';
-        }
-    });
-}
-
-// Add selectPC function
-function selectPC(element, pcNumber) {
-    if (element.classList.contains('unavailable')) {
-        Swal.fire({
-            title: 'Not Available',
-            text: 'This PC is currently not available',
-            icon: 'warning',
-            timer: 1500
-        });
-        return;
-    }
-
-    // Remove selection from all PCs
-    document.querySelectorAll('.computer-icon').forEach(pc => 
-        pc.classList.remove('selected'));
-    
-    // Add selection to clicked PC
-    element.classList.add('selected');
-    
-    // Create or update hidden input for PC number
-    let pcInput = document.getElementById('pcNumberInput');
-    if (!pcInput) {
-        pcInput = document.createElement('input');
-        pcInput.type = 'hidden';
-        pcInput.id = 'pcNumberInput';
-        pcInput.name = 'pc_number';  // This matches the expected POST parameter
-        document.getElementById('reservationForm').appendChild(pcInput);
-    }
-    pcInput.value = pcNumber;
-
-    Swal.fire({
-        title: 'PC Selected',
-        text: `You selected PC ${String(pcNumber).padStart(2, '0')}`,
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false
-    });
-}
-
-// Update the form submission handler
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Check if a PC is selected
-    const pcNumber = document.getElementById('pcNumberInput')?.value;
-    if (!pcNumber) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a PC before submitting',
-            icon: 'error'
-        });
-        return;
-    }
-
-    // Show loading state
-    Swal.fire({
-        title: 'Submitting...',
-        text: 'Please wait while we process your reservation',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // Submit form
-    this.submit();
-});
-
-// Add form validation
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Check if a PC is selected
-    const pcNumber = document.getElementById('pcNumberInput')?.value;
-    if (!pcNumber) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a PC before submitting',
-            icon: 'error'
-        });
-        return;
-    }
-
-    // Continue with form submission if PC is selected
-    this.submit();
-});
-</script>
-</body>
-</html>
+                        <i class="fas fa-des
