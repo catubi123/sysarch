@@ -1,13 +1,21 @@
 <?php
 require_once('db.php');
-
 header('Content-Type: application/json');
 
 if (isset($_GET['lab'])) {
     $lab = $_GET['lab'];
     
     try {
-        // Create PC records if they don't exist
+        // Create table if not exists
+        $con->query("CREATE TABLE IF NOT EXISTS lab_pc (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            lab VARCHAR(10) NOT NULL,
+            pc_number INT NOT NULL,
+            is_active TINYINT(1) DEFAULT 1,
+            UNIQUE KEY lab_pc_unique (lab, pc_number)
+        )");
+
+        // Insert default PC records if they don't exist
         $stmt = $con->prepare("INSERT IGNORE INTO lab_pc (lab, pc_number, is_active) 
                              SELECT ?, number, 1 
                              FROM (
@@ -22,12 +30,12 @@ if (isset($_GET['lab'])) {
                                  UNION SELECT 41 UNION SELECT 42 UNION SELECT 43 UNION SELECT 44 UNION SELECT 45
                                  UNION SELECT 46 UNION SELECT 47 UNION SELECT 48 UNION SELECT 49 UNION SELECT 50
                              ) numbers");
-                             
+        
         $stmt->bind_param("s", $lab);
         $stmt->execute();
 
         // Get PC status
-        $query = "SELECT pc_number, is_active FROM lab_pc WHERE lab = ? ORDER BY pc_number ASC";
+        $query = "SELECT pc_number, is_active FROM lab_pc WHERE lab = ? ORDER BY pc_number";
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $lab);
         $stmt->execute();
@@ -40,23 +48,24 @@ if (isset($_GET['lab'])) {
                 'is_active' => (bool)$row['is_active']
             ];
         }
-        
-        // Debug output
-        error_log("Found " . count($pcs) . " PCs for lab " . $lab);
-        
+
         echo json_encode([
-            'success' => true, 
+            'success' => true,
             'pcs' => $pcs,
+            'count' => count($pcs),
             'lab' => $lab
         ]);
+        
     } catch (Exception $e) {
         error_log("PC Status Error: " . $e->getMessage());
         echo json_encode([
-            'success' => false, 
-            'error' => $e->getMessage(),
-            'lab' => $lab
+            'success' => false,
+            'error' => $e->getMessage()
         ]);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Lab not specified']);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Lab not specified'
+    ]);
 }

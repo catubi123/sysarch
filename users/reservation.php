@@ -344,6 +344,7 @@ if (isset($_SESSION['swal_error'])) {
 </div>
 
 <script>
+// Modify syncLabSelection function to remove auto-refresh
 function syncLabSelection() {
     const selectedLab = document.getElementById('lab').value;
     document.getElementById('labSelector').value = selectedLab;
@@ -363,19 +364,24 @@ function updateComputerControl(lab) {
         method: 'GET',
         data: { lab: lab },
         success: function(response) {
-            console.log('Response:', response); // Debug line
+            console.log('PC Status Response:', response); // Debug line
             container.innerHTML = '';
             
-            if (response && response.success && Array.isArray(response.pcs)) {
-                // Create PC icons in numerical order
+            if (response && response.success) {
+                const pcs = response.pcs || [];
+                
+                // Always generate 50 PCs
                 for (let i = 1; i <= 50; i++) {
-                    const pc = response.pcs.find(p => p.number === i) || { number: i, is_active: true };
+                    const pc = pcs.find(p => p.number === i) || { number: i, is_active: true };
                     const icon = document.createElement('div');
-                    icon.className = `computer-icon ${pc.is_active ? '' : 'unavailable'}`;
+                    
+                    // Set unavailable class if PC is not active
+                    icon.className = `computer-icon ${(!pc.is_active) ? 'unavailable' : ''}`;
                     
                     icon.innerHTML = `
                         <i class="fas fa-desktop"></i>
                         <span class="pc-number">PC ${String(i).padStart(2, '0')}</span>
+                        ${(!pc.is_active) ? '<span class="badge bg-danger">In Use</span>' : ''}
                     `;
                     icon.setAttribute('data-pc', i);
                     
@@ -385,24 +391,24 @@ function updateComputerControl(lab) {
                         };
                         icon.title = `Click to select PC ${String(i).padStart(2, '0')}`;
                     } else {
-                        icon.title = `PC ${String(i).padStart(2, '0')} is not available`;
+                        icon.title = `PC ${String(i).padStart(2, '0')} is currently in use`;
                     }
                     
                     container.appendChild(icon);
                 }
             } else {
-                container.innerHTML = '<div class="alert alert-warning">No PCs found for this laboratory</div>';
-                console.error('Invalid response format:', response);
+                container.innerHTML = '<div class="alert alert-warning">Error loading PCs: ' + 
+                    (response.error || 'Unknown error') + '</div>';
             }
         },
         error: function(xhr, status, error) {
             console.error('AJAX Error:', error);
-            console.log('Response Text:', xhr.responseText); // Debug line
-            container.innerHTML = '<div class="alert alert-danger">Error loading PCs. Please try again.</div>';
+            container.innerHTML = '<div class="alert alert-danger">Failed to load PCs. Please try again.</div>';
         }
     });
 }
 
+// Add selectPC function
 function selectPC(element, pcNumber) {
     if (element.classList.contains('unavailable')) {
         Swal.fire({
@@ -421,18 +427,17 @@ function selectPC(element, pcNumber) {
     // Add selection to clicked PC
     element.classList.add('selected');
     
-    // Update hidden input
+    // Create or update hidden input for PC number
     let pcInput = document.getElementById('pcNumberInput');
     if (!pcInput) {
         pcInput = document.createElement('input');
         pcInput.type = 'hidden';
         pcInput.id = 'pcNumberInput';
-        pcInput.name = 'pc_number';
+        pcInput.name = 'pc_number';  // This matches the expected POST parameter
         document.getElementById('reservationForm').appendChild(pcInput);
     }
     pcInput.value = pcNumber;
 
-    // Show selection feedback
     Swal.fire({
         title: 'PC Selected',
         text: `You selected PC ${String(pcNumber).padStart(2, '0')}`,
@@ -446,7 +451,7 @@ function selectPC(element, pcNumber) {
 document.getElementById('reservationForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    // Validate PC selection
+    // Check if a PC is selected
     const pcNumber = document.getElementById('pcNumberInput')?.value;
     if (!pcNumber) {
         Swal.fire({
@@ -457,105 +462,38 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
         return;
     }
 
-    // Validate date
-    const selectedDate = new Date(document.getElementById('date').value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Show loading state
+    Swal.fire({
+        title: 'Submitting...',
+        text: 'Please wait while we process your reservation',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Submit form
+    this.submit();
+});
+
+// Add form validation
+document.getElementById('reservationForm').addEventListener('submit', function(event) {
+    event.preventDefault();
     
-    if (selectedDate < today) {
+    // Check if a PC is selected
+    const pcNumber = document.getElementById('pcNumberInput')?.value;
+    if (!pcNumber) {
         Swal.fire({
-            title: 'Invalid Date',
-            text: 'Please select today or a future date',
+            title: 'Error!',
+            text: 'Please select a PC before submitting',
             icon: 'error'
         });
         return;
     }
 
-    // Show confirmation dialog
-    Swal.fire({
-        title: 'Confirm Reservation',
-        html: `Are you sure you want to reserve:<br>
-               Lab ${document.getElementById('lab').value}<br>
-               PC ${String(pcNumber).padStart(2, '0')}<br>
-               Date: ${document.getElementById('date').value}<br>
-               Time: ${document.getElementById('timeIn').value}`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, submit reservation'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Submit form via AJAX
-            const formData = new FormData(this);
-            
-            $.ajax({
-                url: 'process_reservation.php',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Reservation Submitted!',
-                            html: `Your reservation details:<br>
-                                  Lab: ${response.details.lab}<br>
-                                  PC: ${String(response.details.pc).padStart(2, '0')}<br>
-                                  Date: ${response.details.date}<br>
-                                  Time: ${response.details.time}`,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            // Clear form and reset PC selection
-                            document.getElementById('reservationForm').reset();
-                            document.querySelectorAll('.computer-icon').forEach(pc => 
-                                pc.classList.remove('selected'));
-                            document.getElementById('pcNumberInput')?.remove();
-                            
-                            // Reset lab selection and computer grid
-                            document.getElementById('lab').value = '';
-                            document.getElementById('labSelector').value = '';
-                            document.getElementById('computerGrid').innerHTML = '';
-
-                            // Set default date and time again
-                            const today = new Date().toISOString().split('T')[0];
-                            document.getElementById('date').value = today;
-                            const now = new Date();
-                            now.setMinutes(0);
-                            document.getElementById('timeIn').value = now.toTimeString().slice(0, 5);
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: response.message,
-                            icon: 'error'
-                        });
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Failed to submit reservation. Please try again.',
-                        icon: 'error'
-                    });
-                }
-            });
-        }
-    });
-});
-
-// Initialize form validation and date/time inputs
-document.addEventListener('DOMContentLoaded', function() {
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date').min = today;
-    document.getElementById('date').value = today;
-
-    // Set default time to current hour
-    const now = new Date();
-    now.setMinutes(0);
-    document.getElementById('timeIn').value = now.toTimeString().slice(0, 5);
+    // Continue with form submission if PC is selected
+    this.submit();
 });
 </script>
 </body>

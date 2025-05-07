@@ -277,15 +277,21 @@ include('admin_navbar.php');
                         },
                         success: function(response) {
                             if (response.success) {
-                                // Update only this PC's status
                                 pcElement.classList.toggle('checked');
                                 pcElement.classList.toggle('unavailable');
                                 
-                                // Update counters without full refresh
-                                updatePCCounts(
-                                    document.querySelectorAll('.computer-icon.checked').length,
-                                    document.querySelectorAll('.computer-icon.unavailable').length
-                                );
+                                // Update counters
+                                const available = document.querySelectorAll('.computer-icon.checked').length;
+                                const unavailable = document.querySelectorAll('.computer-icon.unavailable').length;
+                                updatePCCounts(available, unavailable);
+                                
+                                // Store the PC status in localStorage
+                                const pcStatus = {
+                                    lab: lab,
+                                    pc_number: pcNumber,
+                                    is_active: !isAvailable
+                                };
+                                localStorage.setItem(`pc_${lab}_${pcNumber}`, JSON.stringify(pcStatus));
                                 
                                 Swal.fire({
                                     title: 'Updated!',
@@ -301,9 +307,9 @@ include('admin_navbar.php');
             });
         }
 
-        function checkLabStatus(lab, keepExistingSelection = true) {
+        function checkLabStatus(lab) {
             $.ajax({
-                url: 'get_lab_status.php',
+                url: 'get_pc_status.php',
                 method: 'GET',
                 data: { lab: lab },
                 success: function(response) {
@@ -315,19 +321,29 @@ include('admin_navbar.php');
                             const pcNumber = pc.getAttribute('data-pc');
                             const pcInfo = response.pcs.find(p => p.number == pcNumber);
                             
-                            if (keepExistingSelection && pc.classList.contains('selected')) {
-                                return; // Skip updating selected PCs
-                            }
-                            
-                            // Reset only status classes
-                            pc.classList.remove('checked', 'unavailable');
-                            
-                            if (pcInfo && !pcInfo.is_active) {
-                                pc.classList.add('unavailable');
-                                unavailableCount++;
-                            } else {
-                                pc.classList.add('checked');
-                                availableCount++;
+                            // Check localStorage for saved status
+                            const savedStatus = localStorage.getItem(`pc_${lab}_${pcNumber}`);
+                            if (savedStatus) {
+                                const status = JSON.parse(savedStatus);
+                                if (!status.is_active) {
+                                    pc.classList.remove('checked');
+                                    pc.classList.add('unavailable');
+                                    unavailableCount++;
+                                } else {
+                                    pc.classList.remove('unavailable');
+                                    pc.classList.add('checked');
+                                    availableCount++;
+                                }
+                            } else if (pcInfo) {
+                                if (!pcInfo.is_active) {
+                                    pc.classList.remove('checked');
+                                    pc.classList.add('unavailable');
+                                    unavailableCount++;
+                                } else {
+                                    pc.classList.remove('unavailable');
+                                    pc.classList.add('checked');
+                                    availableCount++;
+                                }
                             }
                         });
 

@@ -11,16 +11,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $con->begin_transaction();
         
         try {
-            // Update PC status
+            // First, ensure the record exists
             $stmt = $con->prepare("INSERT INTO lab_pc (lab, pc_number, is_active) 
                                  VALUES (?, ?, ?) 
-                                 ON DUPLICATE KEY UPDATE is_active = ?");
+                                 ON DUPLICATE KEY UPDATE is_active = VALUES(is_active)");
             $active = $is_active ? 1 : 0;
-            $stmt->bind_param("siii", $lab, $pc_number, $active, $active);
+            $stmt->bind_param("sii", $lab, $pc_number, $active);
             
             if ($stmt->execute()) {
+                // Log the status change
+                error_log("PC Status Updated - Lab: $lab, PC: $pc_number, Active: $active");
+                
+                // Also update pc_status table to keep both tables in sync
+                $stmt2 = $con->prepare("INSERT INTO pc_status (lab_number, pc_number, is_active) 
+                                      VALUES (?, ?, ?) 
+                                      ON DUPLICATE KEY UPDATE is_active = VALUES(is_active)");
+                $stmt2->bind_param("sii", $lab, $pc_number, $active);
+                $stmt2->execute();
+                
                 $con->commit();
-                echo json_encode(['success' => true]);
+                echo json_encode([
+                    'success' => true,
+                    'pc_number' => $pc_number,
+                    'lab' => $lab,
+                    'is_active' => $active
+                ]);
             } else {
                 throw new Exception("Failed to update PC status");
             }
