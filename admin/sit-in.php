@@ -38,6 +38,50 @@ $students_result = $conn->query($students_sql);
             height: 38px;
             border: 1px solid #ced4da;
         }
+        .computer-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            margin-top: 10px;
+        }
+
+        .computer-icon {
+            aspect-ratio: 1;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            padding: 5px;
+        }
+
+        .computer-icon:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+
+        .computer-icon.selected {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+
+        .computer-icon.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f8f9fa;
+        }
+
+        .pc-number {
+            font-size: 12px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body class="bg-white">
@@ -142,7 +186,7 @@ $students_result = $conn->query($students_sql);
                                 
                                 <div class="col-md-6">
                                     <label class="form-label">Laboratory</label>
-                                    <select class="form-select" name="laboratory" required>
+                                    <select class="form-select" name="laboratory" id="laboratorySelect" required onchange="loadPCs(this.value)">
                                         <option value="">Select Laboratory</option>
                                         <option value="524">524</option>
                                         <option value="526">526</option>
@@ -154,7 +198,7 @@ $students_result = $conn->query($students_sql);
                                     <div class="invalid-feedback">Please select a laboratory</div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="form-label">Purpose</label>
                                     <select class="form-select" name="purpose" required>
                                         <option value="">Select Purpose</option>
@@ -171,13 +215,19 @@ $students_result = $conn->query($students_sql);
                                     <div class="invalid-feedback">Please select a purpose</div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">PC Number</label>
-                                    <input type="number" class="form-control" name="pc_number" min="1" max="50" required>
-                                    <div class="invalid-feedback">Please enter a valid PC number (1-50)</div>
+                                <!-- PC Grid Container -->
+                                <div class="col-12">
+                                    <label class="form-label">Select PC:</label>
+                                    <input type="hidden" name="pc_number" id="selectedPC" required>
+                                    <div id="pcGrid" class="computer-grid-container">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-desktop fa-3x mb-2"></i>
+                                            <p>Please select a laboratory to view available PCs</p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="col-12">
+                                <div class="col-12 mt-3">
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-save"></i> Submit Direct Sit-in
                                     </button>
@@ -201,41 +251,87 @@ $students_result = $conn->query($students_sql);
                 width: '100%',
                 placeholder: 'Select a student'
             });
-
-            // Form validation
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-
-            // Initialize tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Auto-hide success messages
-            setTimeout(function() {
-                $('.alert-success').fadeOut('slow');
-            }, 3000);
         });
 
-        // Add DataTable initialization if needed
-        if ($.fn.DataTable) {
-            $('.table').DataTable({
-                responsive: true,
-                order: [[7, 'desc'], [6, 'desc']], // Sort by date and time
-                language: {
-                    search: "Search sit-ins:"
-                }
+        function loadPCs(labNumber) {
+            const pcGrid = document.getElementById('pcGrid');
+            if (!labNumber) {
+                pcGrid.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-desktop fa-3x mb-2"></i>
+                        <p>Please select a laboratory to view available PCs</p>
+                    </div>`;
+                return;
+            }
+
+            pcGrid.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading PCs...</p>
+                </div>`;
+
+            fetch(`get_pc_status.php?lab=${labNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    pcGrid.innerHTML = '';
+                    for (let i = 1; i <= 50; i++) {
+                        const pc = data.pcs?.find(p => p.number === i) || { number: i, is_active: true };
+                        const div = document.createElement('div');
+                        div.className = `computer-icon ${!pc.is_active ? 'unavailable' : ''}`;
+                        div.innerHTML = `
+                            <i class="fas fa-desktop"></i>
+                            <span class="pc-number">PC ${String(i).padStart(2, '0')}</span>`;
+                        
+                        if (pc.is_active) {
+                            div.onclick = () => selectPC(div, i);
+                        }
+                        pcGrid.appendChild(div);
+                    }
+                })
+                .catch(error => {
+                    pcGrid.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error loading PCs. Please try again.
+                        </div>`;
+                    console.error('Error:', error);
+                });
+        }
+
+        function selectPC(element, pcNumber) {
+            if (element.classList.contains('unavailable')) return;
+            
+            document.querySelectorAll('.computer-icon').forEach(pc => 
+                pc.classList.remove('selected'));
+            
+            element.classList.add('selected');
+            document.getElementById('selectedPC').value = pcNumber;
+
+            // Show selection feedback
+            Swal.fire({
+                title: 'PC Selected',
+                text: `You selected PC ${String(pcNumber).padStart(2, '0')}`,
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
             });
         }
+
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity() || !document.getElementById('selectedPC').value) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!document.getElementById('selectedPC').value) {
+                        alert('Please select a PC');
+                    }
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
     </script>
 </body>
 </html>
