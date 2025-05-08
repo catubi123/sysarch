@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 07, 2025 at 06:17 PM
+-- Generation Time: May 08, 2025 at 06:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,12 @@ CREATE TABLE `announce` (
 --
 
 INSERT INTO `announce` (`announce_id`, `admin_name`, `date`, `message`) VALUES
+(0, 'Mark', 'April 09, 2025 03:20', 'HAPIT NA HOMAN\r\n'),
+(0, 'Mark', 'April 29, 2025 07:50', 'hapit na deadline guys HAHHAHA\r\n'),
+(0, 'Mark', 'May 04, 2025 07:19:3', 'pak you  ka'),
+(0, 'Mark', 'April 09, 2025 03:20', 'HAPIT NA HOMAN\r\n'),
+(0, 'Mark', 'April 29, 2025 07:50', 'hapit na deadline guys HAHHAHA\r\n'),
+(0, 'Mark', 'May 04, 2025 07:19:3', 'pak you  ka'),
 (0, 'Mark', 'April 09, 2025 03:20', 'HAPIT NA HOMAN\r\n'),
 (0, 'Mark', 'April 29, 2025 07:50', 'hapit na deadline guys HAHHAHA\r\n'),
 (0, 'Mark', 'May 04, 2025 07:19:3', 'pak you  ka');
@@ -81,7 +87,6 @@ CREATE TABLE `lab_materials` (
 --
 
 INSERT INTO `lab_materials` (`material_id`, `title`, `description`, `website_url`, `image_path`, `category`, `created_at`, `updated_at`) VALUES
-(1, 'My SQL', 'DATABASE', 'https://www.w3schools.com/MySQL/default.asp', 'uploads/materials/681b0ea5e85d3.jpg', 'Database', '2025-05-07 07:41:25', '2025-05-07 07:41:25'),
 (2, 'HTML', 'HTML is the standard markup language for Web pages.\r\n\r\nWith HTML you can create your own Website.\r\n\r\nHTML is easy to learn - You will enjoy it!', 'https://www.w3schools.com/html/default.a', 'uploads/materials/681b7a6e92f31.png', 'Web Development', '2025-05-07 15:21:18', '2025-05-07 15:21:18'),
 (3, 'Python ', 'Python is a popular programming language.\r\n\r\nPython can be used on a server to create web applications.', 'https://www.w3schools.com/python/default.asp', 'uploads/materials/681b7d5bcceda.png', 'Programming', '2025-05-07 15:33:47', '2025-05-07 15:33:47');
 
@@ -107,14 +112,14 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (1, '524', 4, 1, '2025-05-07 07:19:40'),
 (2, '524', 5, 1, '2025-05-07 07:00:03'),
 (3, '526', 6, 1, '2025-05-07 04:08:25'),
-(4, '528', 1, 1, '2025-05-07 07:01:00'),
+(4, '528', 1, 1, '2025-05-08 04:13:18'),
 (5, '528', 2, 1, '2025-05-07 07:00:47'),
 (6, '528', 3, 1, '2025-05-07 07:00:50'),
 (7, '528', 4, 1, '2025-05-07 07:00:52'),
 (8, '528', 5, 1, '2025-05-07 04:09:08'),
 (9, '528', 6, 1, '2025-05-07 04:09:08'),
-(10, '528', 7, 1, '2025-05-07 04:09:08'),
-(11, '528', 8, 1, '2025-05-07 04:09:08'),
+(10, '528', 7, 1, '2025-05-08 03:59:14'),
+(11, '528', 8, 1, '2025-05-08 03:59:18'),
 (12, '528', 9, 1, '2025-05-07 04:09:08'),
 (13, '528', 10, 1, '2025-05-07 04:09:08'),
 (14, '528', 11, 1, '2025-05-07 04:09:08'),
@@ -152,11 +157,11 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (46, '528', 43, 1, '2025-05-07 04:09:08'),
 (47, '528', 44, 1, '2025-05-07 04:09:08'),
 (48, '528', 45, 1, '2025-05-07 04:09:08'),
-(49, '528', 46, 1, '2025-05-07 04:09:08'),
-(50, '528', 47, 1, '2025-05-07 04:09:08'),
-(51, '528', 48, 1, '2025-05-07 04:09:08'),
-(52, '528', 49, 1, '2025-05-07 04:09:08'),
-(53, '528', 50, 1, '2025-05-07 04:09:08'),
+(49, '528', 46, 1, '2025-05-08 03:58:28'),
+(50, '528', 47, 1, '2025-05-08 03:58:31'),
+(51, '528', 48, 1, '2025-05-08 03:58:34'),
+(52, '528', 49, 1, '2025-05-08 03:58:38'),
+(53, '528', 50, 1, '2025-05-08 03:58:40'),
 (67, '524', 1, 1, '2025-05-07 05:57:59'),
 (68, '524', 2, 1, '2025-05-07 07:08:10'),
 (69, '524', 3, 1, '2025-05-07 06:59:54'),
@@ -258,7 +263,7 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (180, '542', 50, 1, '2025-05-07 04:09:31'),
 (195, '526', 1, 1, '2025-05-07 07:02:00'),
 (196, '526', 2, 1, '2025-05-07 07:21:12'),
-(197, '526', 3, 0, '2025-05-07 16:15:48'),
+(197, '526', 3, 1, '2025-05-08 03:59:10'),
 (198, '526', 5, 1, '2025-05-07 07:01:31'),
 (199, '526', 7, 1, '2025-05-07 04:11:55'),
 (200, '526', 8, 1, '2025-05-07 04:11:55'),
@@ -304,7 +309,7 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (240, '526', 48, 1, '2025-05-07 04:11:55'),
 (241, '526', 49, 1, '2025-05-07 04:11:55'),
 (242, '526', 50, 1, '2025-05-07 04:11:55'),
-(258, '544', 1, 1, '2025-05-07 04:11:58'),
+(258, '544', 1, 1, '2025-05-08 04:13:22'),
 (259, '544', 2, 1, '2025-05-07 04:11:58'),
 (260, '544', 3, 1, '2025-05-07 04:11:58'),
 (261, '544', 4, 1, '2025-05-07 04:11:58'),
@@ -354,8 +359,8 @@ INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VAL
 (305, '544', 48, 1, '2025-05-07 04:11:58'),
 (306, '544', 49, 1, '2025-05-07 04:11:58'),
 (307, '544', 50, 1, '2025-05-07 04:11:58'),
-(659, '530', 1, 1, '2025-05-07 04:55:47'),
-(660, '530', 2, 0, '2025-05-07 06:59:05'),
+(659, '530', 1, 1, '2025-05-08 03:59:37'),
+(660, '530', 2, 1, '2025-05-08 03:59:35'),
 (661, '530', 3, 1, '2025-05-07 04:55:47'),
 (662, '530', 4, 1, '2025-05-07 04:55:47'),
 (663, '530', 5, 1, '2025-05-07 04:55:47'),
@@ -448,6 +453,64 @@ CREATE TABLE `notification` (
 --
 
 INSERT INTO `notification` (`notification_id`, `id_number`, `message`) VALUES
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 has been approved. You can now use PC #3.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 on  at  has been approved.'),
+(0, 226771156, 'Your reservation for Lab 524 on  at  has been rejected.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-16 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-04 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:24 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:27 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-20 at 20:40 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 has been approved. You can now use PC #3.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 on  at  has been approved.'),
+(0, 226771156, 'Your reservation for Lab 524 on  at  has been rejected.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-16 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-04 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:24 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:27 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-20 at 20:40 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
 (0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
 (0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
 (0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
@@ -926,7 +989,9 @@ INSERT INTO `reservation` (`reservation_id`, `id_number`, `lab`, `pc_number`, `p
 (64, 226771156, '524', 4, 'DGILOG', '2025-05-17', '14:40', 'approved', '2025-05-07 00:40:34', '2025-05-07 00:40:46', NULL, '2025-05-07 08:40:46', NULL),
 (65, 226771156, '524', 2, 'PHP', '2025-05-15', '15:02', 'approved', '2025-05-07 01:02:20', '2025-05-07 01:02:36', NULL, '2025-05-07 09:02:36', NULL),
 (66, 226771156, '524', 24, 'Database', '2025-05-13', '15:08', 'approved', '2025-05-07 01:08:41', '2025-05-07 01:08:54', NULL, '2025-05-07 09:08:54', NULL),
-(67, 226771156, '526', 2, 'Embedded', '2025-05-22', '15:20', 'approved', '2025-05-07 01:20:18', '2025-05-07 01:20:33', NULL, '2025-05-07 09:20:33', NULL);
+(67, 226771156, '526', 2, 'Embedded', '2025-05-22', '15:20', 'approved', '2025-05-07 01:20:18', '2025-05-07 01:20:33', NULL, '2025-05-07 09:20:33', NULL),
+(68, 226771156, '544', 1, 'Java', '2025-05-16', '12:00', 'approved', '2025-05-07 22:00:13', '2025-05-07 22:04:08', NULL, '2025-05-08 06:04:08', NULL),
+(69, 226771156, '528', 1, 'Java', '2025-05-10', '12:12', 'approved', '2025-05-07 22:12:51', '2025-05-07 22:13:08', NULL, '2025-05-08 06:13:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -1123,7 +1188,9 @@ INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `
 (152, 226771156, 'DGILOG', '524', 4, '08:40:46', '14:43:44', '2025-05-07', 'Completed', 64),
 (153, 226771156, 'PHP', '524', 2, '09:02:36', '15:02:52', '2025-05-07', 'Completed', 65),
 (154, 226771156, 'Database', '524', 24, '09:08:54', '15:11:56', '2025-05-07', 'Completed', 66),
-(155, 226771156, 'Embedded', '526', 2, '09:20:33', '15:21:12', '2025-05-07', 'Completed', 67);
+(155, 226771156, 'Embedded', '526', 2, '09:20:33', '15:21:12', '2025-05-07', 'Completed', 67),
+(156, 226771156, 'Java', '544', 1, '06:04:08', '12:13:22', '2025-05-08', 'Completed', 68),
+(157, 226771156, 'Java', '528', 1, '06:13:08', '12:13:18', '2025-05-08', 'Completed', 69);
 
 -- --------------------------------------------------------
 
@@ -1156,7 +1223,7 @@ INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `usernam
 (1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin', 0, 0),
 (222222, 'test', 'test', 'user', 'BSIT', '3', 'test', '$2y$10$mYPajn7HbDaVTxkQbV0dR.ayeVxqinHHmcbcJM1.IiD8VDHGKIoMS', 'uploads/download.jpg', 'test@gmail.com', 'Dam View Deck, Buhisan', 'user', 30, 0),
 (22677116, 'Catubig', 'Mark Dave', 'Cabingatan', 'BSIT', '3', 'mark', '$2y$10$zchvWcHidQPT0Ac7k0B8jub.KnCFlWdbnDeIJnoG8zhLCaRvB5OKC', 'uploads/320738403_1115980445778336_3190117843245493251_n.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user', 29, 2),
-(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 35, 36),
+(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 35, 38),
 (2147483647, 'Racuma', 'Denise', 'Cabingatan', 'BSCA', '1', 'hahaha', '$2y$10$se1cwLGKhBJCmUE5OMCADOcnAY1TZnhJt46nf7kbeb9BPtlnSVdGi', NULL, '', NULL, 'user', 26, 5);
 
 --
@@ -1247,7 +1314,7 @@ ALTER TABLE `lab_materials`
 -- AUTO_INCREMENT for table `lab_pc`
 --
 ALTER TABLE `lab_pc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1667;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1718;
 
 --
 -- AUTO_INCREMENT for table `lab_schedules`
@@ -1265,13 +1332,13 @@ ALTER TABLE `pc_status`
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `student_sit_in`
 --
 ALTER TABLE `student_sit_in`
-  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
+  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 
 --
 -- AUTO_INCREMENT for table `user`
