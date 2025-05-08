@@ -106,7 +106,9 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" id="notificationList" style="width: 350px;">
                         <li><h6 class="dropdown-header"><i class="fas fa-bell me-2"></i>Notifications</h6></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="view_reservations.php">View All Reservations</a></li>
+                        <li><a class="dropdown-item text-center" href="view_reservations.php?status=pending">
+                            <i class="fas fa-list-alt me-2"></i>View Pending Reservations
+                        </a></li>
                     </ul>
                 </li>
 
@@ -160,9 +162,81 @@ document.querySelectorAll('.dropdown-menu').forEach(function(element) {
     });
 });
 
-// Make sure Bootstrap is properly loaded
-if (typeof bootstrap === 'undefined') {
-    console.error('Bootstrap is not loaded! Please check your dependencies.');
+// Update the notification click handler
+function checkNewReservations() {
+    fetch('check_new_reservations.php')
+    .then(response => response.json())
+    .then(data => {
+        const notificationCount = document.getElementById('notificationCount');
+        const notificationList = document.getElementById('notificationList');
+        const divider = notificationList.querySelector('.dropdown-divider');
+        
+        notificationCount.textContent = data.length;
+        
+        // Remove old notifications
+        const oldNotifications = notificationList.querySelectorAll('.notification-item');
+        oldNotifications.forEach(item => item.remove());
+        
+        // Add new notifications
+        if (data.length > 0) {
+            data.forEach(notification => {
+                const li = document.createElement('li');
+                li.className = 'notification-item';
+                li.innerHTML = `
+                    <a class="dropdown-item" href="view_reservations.php?status=pending&id=${notification.id}">
+                        <div class="d-flex align-items-center">
+                            ${getNotificationIcon(notification.type)}
+                            <div class="ms-2">
+                                <div class="small text-muted">${formatDate(notification.created_at)}</div>
+                                <div>${notification.message}</div>
+                                <div class="small text-muted">
+                                    ${notification.student_name ? `From: ${notification.student_name}` : ''}
+                                    ${notification.lab ? `| Lab ${notification.lab}` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </a>`;
+                notificationList.insertBefore(li, divider);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.className = 'notification-item';
+            li.innerHTML = `
+                <div class="dropdown-item text-muted text-center">
+                    <i class="fas fa-bell-slash me-2"></i>No new notifications
+                </div>`;
+            notificationList.insertBefore(li, divider);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('notificationCount').textContent = '!';
+    });
+}
+
+// Helper functions
+function getNotificationIcon(type) {
+    const icons = {
+        'reservation': 'fa-calendar-check',
+        'warning': 'fa-exclamation-triangle',
+        'info': 'fa-info-circle',
+        'success': 'fa-check-circle',
+        'error': 'fa-times-circle'
+    };
+    const iconClass = icons[type] || 'fa-bell';
+    return `<i class="fas ${iconClass} text-primary"></i>`;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 </script>
 </body>
