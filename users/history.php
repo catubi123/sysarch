@@ -8,6 +8,23 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
+
+// Update the user ID fetching section
+$get_user_id_query = "SELECT id FROM user WHERE username = ?";
+$user_stmt = $con->prepare($get_user_id_query);
+$user_stmt->bind_param("s", $username);
+$user_stmt->execute();
+$user_result = $user_stmt->get_result();
+
+if ($user_data = $user_result->fetch_assoc()) {
+    $user_id = $user_data['id'];
+    error_log("Found user ID: " . $user_id); // Debug log
+} else {
+    error_log("No user found for username: " . $username);
+    $_SESSION['error'] = "User not found";
+    header('Location: index.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -86,16 +103,6 @@ $username = $_SESSION['username'];
                 <i class="fas fa-home"></i> Home
             </a>
             <?php
-            // Get user ID from database
-            $get_user_id_query = "SELECT id FROM user WHERE username = ?";
-            $user_stmt = $con->prepare($get_user_id_query);
-            $user_stmt->bind_param("s", $username);
-            $user_stmt->execute();
-            $user_result = $user_stmt->get_result();
-            $user_data = $user_result->fetch_assoc();
-            $_SESSION['user_id'] = $user_data['id'];
-            $user_id = $_SESSION['user_id'];
-
             // Add notification count query
             $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
             $notif_stmt = $con->prepare($notif_query);
@@ -179,81 +186,153 @@ $username = $_SESSION['username'];
             <h4><i class="fas fa-history"></i> My Lab History</h4>
         </div>
         <div class="card-body">
-            <div class="table-container">
-                <table class="table table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Date</th>
-                            <th>Purpose</th>
-                            <th>Lab Room</th>
-                            <th>Time In</th>
-                            <th>Time Out</th>
-                            <th>Rating</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // Get user's ID first
-                        $user_query = "SELECT id FROM user WHERE username = ?";
-                        $user_stmt = $con->prepare($user_query);
-                        $user_stmt->bind_param("s", $username);
-                        $user_stmt->execute();
-                        $user_result = $user_stmt->get_result();
-                        $user_id = $user_result->fetch_assoc()['id'];
+            <ul class="nav nav-tabs" id="historyTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="sit-in-tab" data-bs-toggle="tab" data-bs-target="#sit-in" type="button" role="tab">
+                        Sit-in History
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reservations-tab" data-bs-toggle="tab" data-bs-target="#reservations" type="button" role="tab">
+                        Reservation History
+                    </button>
+                </li>
+            </ul>
 
-                        // Modified query to show all records but highlight newest ones
-                        $sit_in_query = "SELECT s.*, 
-                                       f.id as feedback_id,
-                                       f.rating as rating,
-                                       CASE 
-                                           WHEN s.sit_id = (
-                                               SELECT MAX(sit_id) 
-                                               FROM student_sit_in 
-                                               WHERE id_number = s.id_number 
-                                               AND status = 'Completed'
-                                           ) THEN 1 
-                                           ELSE 0 
-                                       END as is_newest
-                                       FROM student_sit_in s
-                                       LEFT JOIN feedback f ON s.sit_id = f.sit_id AND f.user_id = ?
-                                       WHERE s.id_number = ? 
-                                       AND s.status = 'Completed'
-                                       ORDER BY s.sit_date DESC, s.sit_id DESC";
-                        
-                        $sit_stmt = $con->prepare($sit_in_query);
-                        $sit_stmt->bind_param("ss", $username, $username); // Changed to use string type for both parameters
-                        $sit_stmt->execute();
-                        $result = $sit_stmt->get_result();
+            <div class="tab-content mt-3" id="historyTabContent">
+                <!-- Sit-in History Tab -->
+                <div class="tab-pane fade show active" id="sit-in" role="tabpanel">
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Lab Room</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Rating</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Debug log
+                                error_log("User ID for history: " . $user_id);
 
-                        while($row = $result->fetch_assoc()) {
-                            $has_feedback = isset($row['feedback_id']);
-                            $is_newest = $row['is_newest'] == 1;
-                            $stars = $has_feedback ? str_repeat('★', $row['rating']) . str_repeat('☆', 5 - $row['rating']) : '☆☆☆☆☆';
-                            
-                            echo "<tr class='" . ($is_newest ? 'table-info' : '') . "'>
-                                    <td>{$row['sit_date']}</td>
-                                    <td>{$row['sit_purpose']}</td>
-                                    <td>{$row['sit_lab']}</td>
-                                    <td>{$row['time_in']}</td>
-                                    <td>{$row['time_out']}</td>
-                                    <td><span class='text-warning'>{$stars}</span></td>
-                                    <td>";
-                            
-                            if ($is_newest && !$has_feedback) {
-                                echo "<button class='btn btn-warning btn-sm' onclick='showFeedbackModal({$row['sit_id']})'>
-                                        <i class='fas fa-heart'></i> Feedback
-                                    </button>";
-                            } else if ($has_feedback) {
-                                echo "<span class='badge bg-success'>Done</span>";
-                            } else {
-                                echo "<span class='badge bg-secondary'>Not Available</span>";
-                            }
-                            echo "</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                                // Update the sit-in query section
+                                $sit_in_query = "SELECT s.*, 
+                                                 f.id as feedback_id, 
+                                                 f.rating as rating,
+                                                 f.message as feedback_text,
+                                                 CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END as has_feedback
+                                                 FROM student_sit_in s
+                                                 LEFT JOIN feedback f ON s.sit_id = f.sit_id AND f.user_id = ?
+                                                 WHERE s.id_number = ?
+                                                 ORDER BY s.sit_date DESC, s.time_in DESC";
+
+                                $sit_stmt = $con->prepare($sit_in_query);
+                                $sit_stmt->bind_param("ii", $user_id, $user_id); // Bind user_id twice
+                                error_log("Executing sit-in query for user ID: " . $user_id); // Debug log
+                                $sit_stmt->execute();
+                                $result = $sit_stmt->get_result();
+
+                                if ($result->num_rows > 0) {
+                                    while($row = $result->fetch_assoc()) {
+                                        $has_feedback = $row['has_feedback'] == 1;
+                                        $stars = $has_feedback ? str_repeat('★', $row['rating']) . str_repeat('☆', 5 - $row['rating']) : '☆☆☆☆☆';
+                                        
+                                        echo "<tr>
+                                                <td>{$row['sit_date']}</td>
+                                                <td>{$row['sit_purpose']}</td>
+                                                <td>{$row['sit_lab']}</td>
+                                                <td>{$row['time_in']}</td>
+                                                <td>{$row['time_out']}</td>
+                                                <td><span class='text-warning'>{$stars}</span></td>
+                                                <td>";
+                                        
+                                        if ($row['status'] === 'Completed') {
+                                            if (!$has_feedback) {
+                                                echo "<button class='btn btn-warning btn-sm' onclick='showFeedbackModal({$row['sit_id']})'>
+                                                        <i class='fas fa-heart'></i> Give Feedback
+                                                    </button>";
+                                            } else {
+                                                echo "<button class='btn btn-secondary btn-sm' disabled>
+                                                        <i class='fas fa-check'></i> Feedback Submitted
+                                                    </button>";
+                                            }
+                                        } else {
+                                            echo "<button class='btn btn-secondary btn-sm' disabled>
+                                                    Not Available
+                                                </button>";
+                                        }
+                                        echo "</td></tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7' class='text-center'>No sit-in history found</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reservations History Tab -->
+                <div class="tab-pane fade" id="reservations" role="tabpanel">
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Lab Room</th>
+                                    <th>PC Number</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Update the reservations query section
+                                $reservations_query = "SELECT * FROM reservation 
+                                                      WHERE id_number = ? 
+                                                      ORDER BY reservation_date DESC, reservation_time DESC";
+
+                                $res_stmt = $con->prepare($reservations_query);
+                                $res_stmt->bind_param("i", $user_id); // Changed to integer binding
+                                error_log("Executing reservations query for user ID: " . $user_id); // Debug log
+                                $res_stmt->execute();
+                                $res_result = $res_stmt->get_result();
+
+                                if ($res_result->num_rows > 0) {
+                                    while($row = $res_result->fetch_assoc()) {
+                                        $status_class = match($row['status']) {
+                                            'pending' => 'warning',
+                                            'active' => 'primary',
+                                            'completed' => 'success',
+                                            'rejected' => 'danger',
+                                            default => 'secondary'
+                                        };
+                                        
+                                        echo "<tr>
+                                                <td>{$row['reservation_date']}</td>
+                                                <td>{$row['purpose']}</td>
+                                                <td>Lab {$row['lab']}</td>
+                                                <td>PC-{$row['pc_number']}</td>
+                                                <td>" . (isset($row['actual_time_in']) ? $row['actual_time_in'] : $row['reservation_time']) . "</td>
+                                                <td>" . (isset($row['actual_time_out']) ? $row['actual_time_out'] : 'N/A') . "</td>
+                                                <td><span class='badge bg-{$status_class}'>" . ucfirst($row['status']) . "</span></td>
+                                            </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7' class='text-center'>No reservation history found</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -307,13 +386,29 @@ function submitFeedback(sitInId, rating, feedback) {
         },
         body: `sit_in_id=${sitInId}&rating=${rating}&feedback=${feedback}`
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        if(data.includes('success')) {
-            Swal.fire('Success!', 'Thank you for your feedback!', 'success')
-            .then(() => location.reload());
+        if(data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Thank you for your feedback!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                // Find and update the button immediately
+                const button = document.querySelector(`button[onclick="showFeedbackModal(${sitInId})"]`);
+                if (button) {
+                    const td = button.parentElement;
+                    td.innerHTML = `
+                        <button class='btn btn-secondary btn-sm' disabled>
+                            <i class='fas fa-check'></i> Feedback Submitted
+                        </button>
+                    `;
+                }
+            });
         } else {
-            Swal.fire('Error!', 'Failed to submit feedback: ' + data, 'error');
+            Swal.fire('Error!', data.error || 'Failed to submit feedback', 'error');
         }
     })
     .catch(error => {
