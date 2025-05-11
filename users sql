@@ -1,0 +1,1413 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: May 11, 2025 at 01:51 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `users`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announce`
+--
+
+CREATE TABLE `announce` (
+  `announce_id` int(11) NOT NULL,
+  `admin_name` varchar(20) NOT NULL,
+  `date` varchar(20) NOT NULL,
+  `message` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `announce`
+--
+
+INSERT INTO `announce` (`announce_id`, `admin_name`, `date`, `message`) VALUES
+(0, 'Mark', 'April 29, 2025 07:50', 'hapit na deadline guys HAHHAHA\r\n'),
+(0, 'Mark', 'May 04, 2025 07:19:3', 'pak you  ka');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id` int(11) NOT NULL,
+  `sit_id` int(11) DEFAULT NULL,
+  `user_id` varchar(50) DEFAULT NULL,
+  `rating` int(11) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `status` varchar(20) DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feedback`
+--
+
+INSERT INTO `feedback` (`id`, `sit_id`, `user_id`, `rating`, `message`, `created_at`, `status`) VALUES
+(26, 133, 'user1', 5, 'dsvcsvc', '2025-05-11 19:37:23', 'pending'),
+(27, 133, '222222', 5, 'scac', '2025-05-11 19:42:15', 'pending');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lab_materials`
+--
+
+CREATE TABLE `lab_materials` (
+  `material_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `website_url` varchar(255) NOT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `category` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_materials`
+--
+
+INSERT INTO `lab_materials` (`material_id`, `title`, `description`, `website_url`, `image_path`, `category`, `created_at`, `updated_at`) VALUES
+(2, 'HTML', 'HTML is the standard markup language for Web pages.\r\n\r\nWith HTML you can create your own Website.\r\n\r\nHTML is easy to learn - You will enjoy it!', 'https://www.w3schools.com/html/default.a', 'uploads/materials/681b7a6e92f31.png', 'Web Development', '2025-05-07 15:21:18', '2025-05-07 15:21:18'),
+(3, 'Python ', 'Python is a popular programming language.\r\n\r\nPython can be used on a server to create web applications.', 'https://www.w3schools.com/python/default.asp', 'uploads/materials/681b7d5bcceda.png', 'Programming', '2025-05-07 15:33:47', '2025-05-07 15:33:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lab_pc`
+--
+
+CREATE TABLE `lab_pc` (
+  `id` int(11) NOT NULL,
+  `lab` varchar(10) NOT NULL,
+  `pc_number` int(11) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_pc`
+--
+
+INSERT INTO `lab_pc` (`id`, `lab`, `pc_number`, `is_active`, `last_updated`) VALUES
+(1, '524', 4, 1, '2025-05-07 07:19:40'),
+(2, '524', 5, 1, '2025-05-11 03:57:13'),
+(3, '526', 6, 1, '2025-05-07 04:08:25'),
+(4, '528', 1, 1, '2025-05-11 10:38:02'),
+(5, '528', 2, 1, '2025-05-11 09:34:25'),
+(6, '528', 3, 1, '2025-05-11 08:58:01'),
+(7, '528', 4, 1, '2025-05-11 08:57:59'),
+(8, '528', 5, 1, '2025-05-07 04:09:08'),
+(9, '528', 6, 1, '2025-05-07 04:09:08'),
+(10, '528', 7, 1, '2025-05-08 03:59:14'),
+(11, '528', 8, 1, '2025-05-08 03:59:18'),
+(12, '528', 9, 1, '2025-05-07 04:09:08'),
+(13, '528', 10, 1, '2025-05-07 04:09:08'),
+(14, '528', 11, 1, '2025-05-07 04:09:08'),
+(15, '528', 12, 1, '2025-05-07 04:09:08'),
+(16, '528', 13, 1, '2025-05-07 04:09:08'),
+(17, '528', 14, 1, '2025-05-07 04:09:08'),
+(18, '528', 15, 1, '2025-05-07 04:09:08'),
+(19, '528', 16, 1, '2025-05-07 04:09:08'),
+(20, '528', 17, 1, '2025-05-07 04:09:08'),
+(21, '528', 18, 1, '2025-05-07 04:09:08'),
+(22, '528', 19, 1, '2025-05-07 04:09:08'),
+(23, '528', 20, 1, '2025-05-07 04:09:08'),
+(24, '528', 21, 1, '2025-05-07 04:09:08'),
+(25, '528', 22, 1, '2025-05-07 04:09:08'),
+(26, '528', 23, 1, '2025-05-07 04:09:08'),
+(27, '528', 24, 1, '2025-05-07 04:09:08'),
+(28, '528', 25, 1, '2025-05-07 04:09:08'),
+(29, '528', 26, 1, '2025-05-07 04:09:08'),
+(30, '528', 27, 1, '2025-05-07 04:09:08'),
+(31, '528', 28, 1, '2025-05-07 04:09:08'),
+(32, '528', 29, 1, '2025-05-07 04:09:08'),
+(33, '528', 30, 1, '2025-05-07 04:09:08'),
+(34, '528', 31, 1, '2025-05-07 04:09:08'),
+(35, '528', 32, 1, '2025-05-07 04:09:08'),
+(36, '528', 33, 1, '2025-05-07 04:09:08'),
+(37, '528', 34, 1, '2025-05-07 04:09:08'),
+(38, '528', 35, 1, '2025-05-07 04:09:08'),
+(39, '528', 36, 1, '2025-05-07 04:09:08'),
+(40, '528', 37, 1, '2025-05-07 04:09:08'),
+(41, '528', 38, 1, '2025-05-07 04:09:08'),
+(42, '528', 39, 1, '2025-05-07 04:09:08'),
+(43, '528', 40, 1, '2025-05-07 04:09:08'),
+(44, '528', 41, 1, '2025-05-07 04:09:08'),
+(45, '528', 42, 1, '2025-05-07 04:09:08'),
+(46, '528', 43, 1, '2025-05-07 04:09:08'),
+(47, '528', 44, 1, '2025-05-07 04:09:08'),
+(48, '528', 45, 1, '2025-05-07 04:09:08'),
+(49, '528', 46, 1, '2025-05-08 03:58:28'),
+(50, '528', 47, 1, '2025-05-08 03:58:31'),
+(51, '528', 48, 1, '2025-05-08 03:58:34'),
+(52, '528', 49, 1, '2025-05-08 03:58:38'),
+(53, '528', 50, 1, '2025-05-08 03:58:40'),
+(67, '524', 1, 1, '2025-05-11 11:48:32'),
+(68, '524', 2, 1, '2025-05-07 07:08:10'),
+(69, '524', 3, 1, '2025-05-11 11:09:46'),
+(70, '524', 6, 1, '2025-05-11 03:57:10'),
+(71, '524', 7, 1, '2025-05-07 04:09:10'),
+(72, '524', 8, 1, '2025-05-07 04:09:10'),
+(73, '524', 9, 1, '2025-05-07 04:09:10'),
+(74, '524', 10, 1, '2025-05-07 04:09:10'),
+(75, '524', 11, 1, '2025-05-07 04:09:10'),
+(76, '524', 12, 1, '2025-05-07 04:09:10'),
+(77, '524', 13, 1, '2025-05-07 04:09:10'),
+(78, '524', 14, 1, '2025-05-07 04:09:10'),
+(79, '524', 15, 1, '2025-05-07 04:09:10'),
+(80, '524', 16, 1, '2025-05-07 04:09:10'),
+(81, '524', 17, 1, '2025-05-07 04:09:10'),
+(82, '524', 18, 1, '2025-05-07 04:09:10'),
+(83, '524', 19, 1, '2025-05-07 04:09:10'),
+(84, '524', 20, 1, '2025-05-07 04:09:10'),
+(85, '524', 21, 1, '2025-05-07 04:09:10'),
+(86, '524', 22, 1, '2025-05-07 04:09:10'),
+(87, '524', 23, 1, '2025-05-07 04:09:10'),
+(88, '524', 24, 1, '2025-05-07 07:11:56'),
+(89, '524', 25, 1, '2025-05-07 04:09:10'),
+(90, '524', 26, 1, '2025-05-07 04:09:10'),
+(91, '524', 27, 1, '2025-05-07 04:09:10'),
+(92, '524', 28, 1, '2025-05-07 04:09:10'),
+(93, '524', 29, 1, '2025-05-07 04:09:10'),
+(94, '524', 30, 1, '2025-05-07 04:09:10'),
+(95, '524', 31, 1, '2025-05-07 04:09:10'),
+(96, '524', 32, 1, '2025-05-07 04:09:10'),
+(97, '524', 33, 1, '2025-05-07 04:09:10'),
+(98, '524', 34, 1, '2025-05-07 04:09:10'),
+(99, '524', 35, 1, '2025-05-07 04:09:10'),
+(100, '524', 36, 1, '2025-05-07 04:09:10'),
+(101, '524', 37, 1, '2025-05-07 04:09:10'),
+(102, '524', 38, 1, '2025-05-07 04:09:10'),
+(103, '524', 39, 1, '2025-05-07 04:09:10'),
+(104, '524', 40, 1, '2025-05-07 04:09:10'),
+(105, '524', 41, 1, '2025-05-07 04:09:10'),
+(106, '524', 42, 1, '2025-05-07 04:09:10'),
+(107, '524', 43, 1, '2025-05-07 04:09:10'),
+(108, '524', 44, 1, '2025-05-07 04:09:10'),
+(109, '524', 45, 1, '2025-05-07 04:09:10'),
+(110, '524', 46, 1, '2025-05-07 04:09:10'),
+(111, '524', 47, 1, '2025-05-07 04:09:10'),
+(112, '524', 48, 1, '2025-05-07 04:09:10'),
+(113, '524', 49, 1, '2025-05-07 04:09:10'),
+(114, '524', 50, 1, '2025-05-07 04:09:10'),
+(130, '526', 4, 1, '2025-05-11 11:10:49'),
+(131, '542', 1, 1, '2025-05-07 04:09:31'),
+(132, '542', 2, 1, '2025-05-07 04:12:17'),
+(133, '542', 3, 1, '2025-05-07 04:09:31'),
+(134, '542', 4, 1, '2025-05-07 15:12:22'),
+(135, '542', 5, 1, '2025-05-07 04:09:31'),
+(136, '542', 6, 1, '2025-05-07 04:09:31'),
+(137, '542', 7, 1, '2025-05-07 04:09:31'),
+(138, '542', 8, 1, '2025-05-07 04:09:31'),
+(139, '542', 9, 1, '2025-05-07 04:09:31'),
+(140, '542', 10, 1, '2025-05-07 04:09:31'),
+(141, '542', 11, 1, '2025-05-07 04:09:31'),
+(142, '542', 12, 1, '2025-05-07 04:09:31'),
+(143, '542', 13, 1, '2025-05-07 04:09:31'),
+(144, '542', 14, 1, '2025-05-07 04:09:31'),
+(145, '542', 15, 1, '2025-05-07 04:09:31'),
+(146, '542', 16, 1, '2025-05-07 04:09:31'),
+(147, '542', 17, 1, '2025-05-07 04:09:31'),
+(148, '542', 18, 1, '2025-05-07 04:09:31'),
+(149, '542', 19, 1, '2025-05-07 04:09:31'),
+(150, '542', 20, 1, '2025-05-07 04:09:31'),
+(151, '542', 21, 1, '2025-05-07 04:09:31'),
+(152, '542', 22, 1, '2025-05-07 04:09:31'),
+(153, '542', 23, 1, '2025-05-07 04:09:31'),
+(154, '542', 24, 1, '2025-05-07 04:09:31'),
+(155, '542', 25, 1, '2025-05-07 04:09:31'),
+(156, '542', 26, 1, '2025-05-07 04:09:31'),
+(157, '542', 27, 1, '2025-05-07 04:09:31'),
+(158, '542', 28, 1, '2025-05-07 04:09:31'),
+(159, '542', 29, 1, '2025-05-07 04:09:31'),
+(160, '542', 30, 1, '2025-05-07 04:09:31'),
+(161, '542', 31, 1, '2025-05-07 04:09:31'),
+(162, '542', 32, 1, '2025-05-07 04:09:31'),
+(163, '542', 33, 1, '2025-05-07 04:09:31'),
+(164, '542', 34, 1, '2025-05-07 04:09:31'),
+(165, '542', 35, 1, '2025-05-07 04:09:31'),
+(166, '542', 36, 1, '2025-05-07 04:09:31'),
+(167, '542', 37, 1, '2025-05-07 04:09:31'),
+(168, '542', 38, 1, '2025-05-07 04:09:31'),
+(169, '542', 39, 1, '2025-05-07 04:09:31'),
+(170, '542', 40, 1, '2025-05-07 04:09:31'),
+(171, '542', 41, 1, '2025-05-07 04:09:31'),
+(172, '542', 42, 1, '2025-05-07 04:09:31'),
+(173, '542', 43, 1, '2025-05-07 04:09:31'),
+(174, '542', 44, 1, '2025-05-07 04:09:31'),
+(175, '542', 45, 1, '2025-05-07 04:09:31'),
+(176, '542', 46, 1, '2025-05-07 04:09:31'),
+(177, '542', 47, 1, '2025-05-07 04:09:31'),
+(178, '542', 48, 1, '2025-05-07 04:09:31'),
+(179, '542', 49, 1, '2025-05-07 04:09:31'),
+(180, '542', 50, 1, '2025-05-07 04:09:31'),
+(195, '526', 1, 1, '2025-05-11 11:50:51'),
+(196, '526', 2, 1, '2025-05-11 11:10:47'),
+(197, '526', 3, 1, '2025-05-11 11:10:44'),
+(198, '526', 5, 1, '2025-05-07 07:01:31'),
+(199, '526', 7, 1, '2025-05-07 04:11:55'),
+(200, '526', 8, 1, '2025-05-07 04:11:55'),
+(201, '526', 9, 1, '2025-05-07 04:11:55'),
+(202, '526', 10, 1, '2025-05-07 04:11:55'),
+(203, '526', 11, 1, '2025-05-07 04:11:55'),
+(204, '526', 12, 1, '2025-05-07 04:11:55'),
+(205, '526', 13, 1, '2025-05-07 04:11:55'),
+(206, '526', 14, 1, '2025-05-07 04:11:55'),
+(207, '526', 15, 1, '2025-05-07 04:11:55'),
+(208, '526', 16, 1, '2025-05-07 04:11:55'),
+(209, '526', 17, 1, '2025-05-07 04:11:55'),
+(210, '526', 18, 1, '2025-05-07 04:11:55'),
+(211, '526', 19, 1, '2025-05-07 04:11:55'),
+(212, '526', 20, 1, '2025-05-07 04:11:55'),
+(213, '526', 21, 1, '2025-05-07 04:11:55'),
+(214, '526', 22, 1, '2025-05-07 04:11:55'),
+(215, '526', 23, 1, '2025-05-11 04:00:56'),
+(216, '526', 24, 1, '2025-05-07 04:11:55'),
+(217, '526', 25, 1, '2025-05-07 04:11:55'),
+(218, '526', 26, 1, '2025-05-07 04:11:55'),
+(219, '526', 27, 1, '2025-05-07 04:11:55'),
+(220, '526', 28, 1, '2025-05-07 04:11:55'),
+(221, '526', 29, 1, '2025-05-07 04:11:55'),
+(222, '526', 30, 1, '2025-05-07 04:11:55'),
+(223, '526', 31, 1, '2025-05-07 04:11:55'),
+(224, '526', 32, 1, '2025-05-07 04:11:55'),
+(225, '526', 33, 1, '2025-05-07 04:11:55'),
+(226, '526', 34, 1, '2025-05-07 04:11:55'),
+(227, '526', 35, 1, '2025-05-07 04:11:55'),
+(228, '526', 36, 1, '2025-05-07 04:11:55'),
+(229, '526', 37, 1, '2025-05-07 04:11:55'),
+(230, '526', 38, 1, '2025-05-07 04:11:55'),
+(231, '526', 39, 1, '2025-05-07 04:11:55'),
+(232, '526', 40, 1, '2025-05-07 04:11:55'),
+(233, '526', 41, 1, '2025-05-07 04:11:55'),
+(234, '526', 42, 1, '2025-05-07 04:11:55'),
+(235, '526', 43, 1, '2025-05-07 04:11:55'),
+(236, '526', 44, 1, '2025-05-07 04:11:55'),
+(237, '526', 45, 1, '2025-05-07 04:11:55'),
+(238, '526', 46, 1, '2025-05-07 04:11:55'),
+(239, '526', 47, 1, '2025-05-07 04:11:55'),
+(240, '526', 48, 1, '2025-05-07 04:11:55'),
+(241, '526', 49, 1, '2025-05-07 04:11:55'),
+(242, '526', 50, 1, '2025-05-07 04:11:55'),
+(258, '544', 1, 1, '2025-05-08 04:13:22'),
+(259, '544', 2, 1, '2025-05-07 04:11:58'),
+(260, '544', 3, 1, '2025-05-07 04:11:58'),
+(261, '544', 4, 1, '2025-05-07 04:11:58'),
+(262, '544', 5, 1, '2025-05-07 04:11:58'),
+(263, '544', 6, 1, '2025-05-07 04:11:58'),
+(264, '544', 7, 1, '2025-05-07 04:11:58'),
+(265, '544', 8, 1, '2025-05-07 04:11:58'),
+(266, '544', 9, 1, '2025-05-07 04:11:58'),
+(267, '544', 10, 1, '2025-05-07 04:11:58'),
+(268, '544', 11, 1, '2025-05-07 04:11:58'),
+(269, '544', 12, 1, '2025-05-07 04:11:58'),
+(270, '544', 13, 1, '2025-05-07 04:11:58'),
+(271, '544', 14, 1, '2025-05-07 04:11:58'),
+(272, '544', 15, 1, '2025-05-07 04:11:58'),
+(273, '544', 16, 1, '2025-05-07 04:11:58'),
+(274, '544', 17, 1, '2025-05-07 04:11:58'),
+(275, '544', 18, 1, '2025-05-07 04:11:58'),
+(276, '544', 19, 1, '2025-05-07 04:11:58'),
+(277, '544', 20, 1, '2025-05-07 04:11:58'),
+(278, '544', 21, 1, '2025-05-07 04:11:58'),
+(279, '544', 22, 1, '2025-05-07 04:11:58'),
+(280, '544', 23, 1, '2025-05-07 04:11:58'),
+(281, '544', 24, 1, '2025-05-07 04:11:58'),
+(282, '544', 25, 1, '2025-05-07 04:11:58'),
+(283, '544', 26, 1, '2025-05-07 04:11:58'),
+(284, '544', 27, 1, '2025-05-07 04:11:58'),
+(285, '544', 28, 1, '2025-05-07 04:11:58'),
+(286, '544', 29, 1, '2025-05-07 04:11:58'),
+(287, '544', 30, 1, '2025-05-07 04:11:58'),
+(288, '544', 31, 1, '2025-05-07 04:11:58'),
+(289, '544', 32, 1, '2025-05-07 04:11:58'),
+(290, '544', 33, 1, '2025-05-07 04:11:58'),
+(291, '544', 34, 1, '2025-05-07 04:11:58'),
+(292, '544', 35, 1, '2025-05-07 04:11:58'),
+(293, '544', 36, 1, '2025-05-07 04:11:58'),
+(294, '544', 37, 1, '2025-05-07 04:11:58'),
+(295, '544', 38, 1, '2025-05-07 04:11:58'),
+(296, '544', 39, 1, '2025-05-07 04:11:58'),
+(297, '544', 40, 1, '2025-05-07 04:11:58'),
+(298, '544', 41, 1, '2025-05-07 04:11:58'),
+(299, '544', 42, 1, '2025-05-07 04:11:58'),
+(300, '544', 43, 1, '2025-05-07 04:11:58'),
+(301, '544', 44, 1, '2025-05-07 04:11:58'),
+(302, '544', 45, 1, '2025-05-07 04:11:58'),
+(303, '544', 46, 1, '2025-05-07 04:11:58'),
+(304, '544', 47, 1, '2025-05-07 04:11:58'),
+(305, '544', 48, 1, '2025-05-07 04:11:58'),
+(306, '544', 49, 1, '2025-05-07 04:11:58'),
+(307, '544', 50, 1, '2025-05-07 04:11:58'),
+(659, '530', 1, 1, '2025-05-08 03:59:37'),
+(660, '530', 2, 1, '2025-05-08 03:59:35'),
+(661, '530', 3, 1, '2025-05-07 04:55:47'),
+(662, '530', 4, 1, '2025-05-07 04:55:47'),
+(663, '530', 5, 1, '2025-05-07 04:55:47'),
+(664, '530', 6, 1, '2025-05-07 04:55:47'),
+(665, '530', 7, 1, '2025-05-07 04:55:47'),
+(666, '530', 8, 1, '2025-05-07 04:55:47'),
+(667, '530', 9, 1, '2025-05-07 04:55:47'),
+(668, '530', 10, 1, '2025-05-07 04:55:47'),
+(669, '530', 11, 1, '2025-05-07 04:55:47'),
+(670, '530', 12, 1, '2025-05-07 04:55:47'),
+(671, '530', 13, 1, '2025-05-07 04:55:47'),
+(672, '530', 14, 1, '2025-05-07 04:55:47'),
+(673, '530', 15, 1, '2025-05-07 04:55:47'),
+(674, '530', 16, 1, '2025-05-07 04:55:47'),
+(675, '530', 17, 1, '2025-05-07 04:55:47'),
+(676, '530', 18, 1, '2025-05-07 04:55:47'),
+(677, '530', 19, 1, '2025-05-07 04:55:47'),
+(678, '530', 20, 1, '2025-05-07 04:55:47'),
+(679, '530', 21, 1, '2025-05-07 04:55:47'),
+(680, '530', 22, 1, '2025-05-07 04:55:47'),
+(681, '530', 23, 1, '2025-05-07 04:55:47'),
+(682, '530', 24, 1, '2025-05-07 04:55:47'),
+(683, '530', 25, 1, '2025-05-07 04:55:47'),
+(684, '530', 26, 1, '2025-05-07 04:55:47'),
+(685, '530', 27, 1, '2025-05-07 04:55:47'),
+(686, '530', 28, 1, '2025-05-07 04:55:47'),
+(687, '530', 29, 1, '2025-05-07 04:55:47'),
+(688, '530', 30, 1, '2025-05-07 04:55:47'),
+(689, '530', 31, 1, '2025-05-07 04:55:47'),
+(690, '530', 32, 1, '2025-05-07 04:55:47'),
+(691, '530', 33, 1, '2025-05-07 04:55:47'),
+(692, '530', 34, 1, '2025-05-07 04:55:47'),
+(693, '530', 35, 1, '2025-05-07 04:55:47'),
+(694, '530', 36, 1, '2025-05-07 04:55:47'),
+(695, '530', 37, 1, '2025-05-07 04:55:47'),
+(696, '530', 38, 1, '2025-05-07 04:55:47'),
+(697, '530', 39, 1, '2025-05-07 04:55:47'),
+(698, '530', 40, 1, '2025-05-07 04:55:47'),
+(699, '530', 41, 1, '2025-05-07 04:55:47'),
+(700, '530', 42, 1, '2025-05-07 04:55:47'),
+(701, '530', 43, 1, '2025-05-07 04:55:47'),
+(702, '530', 44, 1, '2025-05-07 04:55:47'),
+(703, '530', 45, 1, '2025-05-07 04:55:47'),
+(704, '530', 46, 1, '2025-05-07 04:55:47'),
+(705, '530', 47, 1, '2025-05-07 04:55:47'),
+(706, '530', 48, 1, '2025-05-07 04:55:47'),
+(707, '530', 49, 1, '2025-05-07 04:55:47'),
+(708, '530', 50, 1, '2025-05-07 04:55:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lab_schedules`
+--
+
+CREATE TABLE `lab_schedules` (
+  `schedule_id` int(11) NOT NULL,
+  `lab_number` varchar(10) NOT NULL,
+  `professor_name` varchar(100) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `day` varchar(20) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lab_schedules`
+--
+
+INSERT INTO `lab_schedules` (`schedule_id`, `lab_number`, `professor_name`, `subject`, `day`, `start_time`, `end_time`, `created_at`) VALUES
+(1, '524', 'Jeff Salimbangon', 'Syaten Architecture and Design', 'Tuesday', '10:30:00', '13:30:00', '2025-05-07 15:59:47'),
+(2, '526', 'Wilson Gayo', 'Integrative Programming', 'Monday', '16:30:00', '19:00:00', '2025-05-07 16:11:55'),
+(3, '530', 'Beverly Lahaylahay', 'Information Management', 'Saturday', '16:00:00', '18:30:00', '2025-05-07 16:13:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `notification_id` int(11) NOT NULL,
+  `id_number` int(11) NOT NULL,
+  `message` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`notification_id`, `id_number`, `message`) VALUES
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 has been approved. You can now use PC #3.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 on  at  has been approved.'),
+(0, 226771156, 'Your reservation for Lab 524 on  at  has been rejected.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-16 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-04 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:24 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:27 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-20 at 20:40 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 has been approved. You can now use PC #3.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 on  at  has been approved.'),
+(0, 226771156, 'Your reservation for Lab 524 on  at  has been rejected.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-16 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-04 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:24 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:27 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-20 at 20:40 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-05 at 10:00 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 has been approved. You can now use PC #3.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 has been approved. You can now use PC #0.'),
+(0, 226771156, 'Your reservation for Lab 526 on  at  has been approved.'),
+(0, 226771156, 'Your reservation for Lab 524 on  at  has been rejected.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-16 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-04 at 20:20 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:24 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-04 at 20:27 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-20 at 20:40 has been approved.'),
+(0, 226771156, 'Your reservation for Lab 542 on 2025-05-09 at 20:45 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-24 at 09:11 has been rejected.'),
+(0, 22677116, 'Your reservation for Lab 526 on 2025-05-14 at 09:10 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 528 on 2025-05-15 at 09:13 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 21:01 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-10 at 09:42 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 530 on 2025-05-15 at 10:37 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 524 on 2025-05-09 at 10:49 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati'),
+(0, 226771156, 'Your reservation for Lab 526 on 2025-05-10 at 23:31 has been approved. Your sit-in has been automati');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pc_numbers`
+--
+
+CREATE TABLE `pc_numbers` (
+  `lab_number` varchar(10) NOT NULL,
+  `pc_number` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pc_numbers`
+--
+
+INSERT INTO `pc_numbers` (`lab_number`, `pc_number`) VALUES
+('524', 1),
+('524', 2),
+('524', 3),
+('524', 4),
+('524', 5),
+('524', 6),
+('524', 7),
+('524', 8),
+('524', 9),
+('524', 10),
+('524', 11),
+('524', 12),
+('524', 13),
+('524', 14),
+('524', 15),
+('524', 16),
+('524', 17),
+('524', 18),
+('524', 19),
+('524', 20),
+('524', 21),
+('524', 22),
+('524', 23),
+('524', 24),
+('524', 25),
+('524', 26),
+('524', 27),
+('524', 28),
+('524', 29),
+('524', 30),
+('524', 31),
+('524', 32),
+('524', 33),
+('524', 34),
+('524', 35),
+('524', 36),
+('524', 37),
+('524', 38),
+('524', 39),
+('524', 40),
+('524', 41),
+('524', 42),
+('524', 43),
+('524', 44),
+('524', 45),
+('524', 46),
+('524', 47),
+('524', 48),
+('524', 49),
+('524', 50),
+('526', 1),
+('526', 2),
+('526', 3),
+('526', 4),
+('526', 5),
+('526', 6),
+('526', 7),
+('526', 8),
+('526', 9),
+('526', 10),
+('526', 11),
+('526', 12),
+('526', 13),
+('526', 14),
+('526', 15),
+('526', 16),
+('526', 17),
+('526', 18),
+('526', 19),
+('526', 20),
+('526', 21),
+('526', 22),
+('526', 23),
+('526', 24),
+('526', 25),
+('526', 26),
+('526', 27),
+('526', 28),
+('526', 29),
+('526', 30),
+('526', 31),
+('526', 32),
+('526', 33),
+('526', 34),
+('526', 35),
+('526', 36),
+('526', 37),
+('526', 38),
+('526', 39),
+('526', 40),
+('526', 41),
+('526', 42),
+('526', 43),
+('526', 44),
+('526', 45),
+('526', 46),
+('526', 47),
+('526', 48),
+('526', 49),
+('526', 50),
+('528', 1),
+('528', 2),
+('528', 3),
+('528', 4),
+('528', 5),
+('528', 6),
+('528', 7),
+('528', 8),
+('528', 9),
+('528', 10),
+('528', 11),
+('528', 12),
+('528', 13),
+('528', 14),
+('528', 15),
+('528', 16),
+('528', 17),
+('528', 18),
+('528', 19),
+('528', 20),
+('528', 21),
+('528', 22),
+('528', 23),
+('528', 24),
+('528', 25),
+('528', 26),
+('528', 27),
+('528', 28),
+('528', 29),
+('528', 30),
+('528', 31),
+('528', 32),
+('528', 33),
+('528', 34),
+('528', 35),
+('528', 36),
+('528', 37),
+('528', 38),
+('528', 39),
+('528', 40),
+('528', 41),
+('528', 42),
+('528', 43),
+('528', 44),
+('528', 45),
+('528', 46),
+('528', 47),
+('528', 48),
+('528', 49),
+('528', 50),
+('530', 1),
+('530', 2),
+('530', 3),
+('530', 4),
+('530', 5),
+('530', 6),
+('530', 7),
+('530', 8),
+('530', 9),
+('530', 10),
+('530', 11),
+('530', 12),
+('530', 13),
+('530', 14),
+('530', 15),
+('530', 16),
+('530', 17),
+('530', 18),
+('530', 19),
+('530', 20),
+('530', 21),
+('530', 22),
+('530', 23),
+('530', 24),
+('530', 25),
+('530', 26),
+('530', 27),
+('530', 28),
+('530', 29),
+('530', 30),
+('530', 31),
+('530', 32),
+('530', 33),
+('530', 34),
+('530', 35),
+('530', 36),
+('530', 37),
+('530', 38),
+('530', 39),
+('530', 40),
+('530', 41),
+('530', 42),
+('530', 43),
+('530', 44),
+('530', 45),
+('530', 46),
+('530', 47),
+('530', 48),
+('530', 49),
+('530', 50),
+('542', 1),
+('542', 2),
+('542', 3),
+('542', 4),
+('542', 5),
+('542', 6),
+('542', 7),
+('542', 8),
+('542', 9),
+('542', 10),
+('542', 11),
+('542', 12),
+('542', 13),
+('542', 14),
+('542', 15),
+('542', 16),
+('542', 17),
+('542', 18),
+('542', 19),
+('542', 20),
+('542', 21),
+('542', 22),
+('542', 23),
+('542', 24),
+('542', 25),
+('542', 26),
+('542', 27),
+('542', 28),
+('542', 29),
+('542', 30),
+('542', 31),
+('542', 32),
+('542', 33),
+('542', 34),
+('542', 35),
+('542', 36),
+('542', 37),
+('542', 38),
+('542', 39),
+('542', 40),
+('542', 41),
+('542', 42),
+('542', 43),
+('542', 44),
+('542', 45),
+('542', 46),
+('542', 47),
+('542', 48),
+('542', 49),
+('542', 50),
+('544', 1),
+('544', 2),
+('544', 3),
+('544', 4),
+('544', 5),
+('544', 6),
+('544', 7),
+('544', 8),
+('544', 9),
+('544', 10),
+('544', 11),
+('544', 12),
+('544', 13),
+('544', 14),
+('544', 15),
+('544', 16),
+('544', 17),
+('544', 18),
+('544', 19),
+('544', 20),
+('544', 21),
+('544', 22),
+('544', 23),
+('544', 24),
+('544', 25),
+('544', 26),
+('544', 27),
+('544', 28),
+('544', 29),
+('544', 30),
+('544', 31),
+('544', 32),
+('544', 33),
+('544', 34),
+('544', 35),
+('544', 36),
+('544', 37),
+('544', 38),
+('544', 39),
+('544', 40),
+('544', 41),
+('544', 42),
+('544', 43),
+('544', 44),
+('544', 45),
+('544', 46),
+('544', 47),
+('544', 48),
+('544', 49),
+('544', 50);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pc_status`
+--
+
+CREATE TABLE `pc_status` (
+  `id` int(11) NOT NULL,
+  `pc_number` int(11) NOT NULL,
+  `lab_number` varchar(10) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `last_updated` datetime DEFAULT current_timestamp(),
+  `last_modified` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pc_status`
+--
+
+INSERT INTO `pc_status` (`id`, `pc_number`, `lab_number`, `is_active`, `last_updated`, `last_modified`) VALUES
+(3, 2, '526', 1, '2025-05-07 08:51:24', '2025-05-07 00:51:24'),
+(19, 0, '524', 0, '2025-05-06 20:52:35', '2025-05-06 13:32:47'),
+(48, 6, '524', 1, '2025-05-07 08:51:41', '2025-05-07 00:51:41'),
+(90, 7, '524', 1, '2025-05-07 08:51:40', '2025-05-07 00:51:40'),
+(125, 45, '524', 1, '2025-05-06 22:17:08', '2025-05-06 14:17:08'),
+(131, 9, '524', 1, '2025-05-07 08:51:37', '2025-05-07 00:51:37'),
+(143, 46, '524', 1, '2025-05-06 22:16:46', '2025-05-06 14:16:46'),
+(144, 47, '524', 1, '2025-05-06 22:16:47', '2025-05-06 14:16:47'),
+(145, 49, '524', 1, '2025-05-06 22:16:54', '2025-05-06 14:16:54'),
+(147, 48, '524', 1, '2025-05-06 22:16:52', '2025-05-06 14:16:52'),
+(149, 50, '524', 1, '2025-05-06 22:16:56', '2025-05-06 14:16:56'),
+(163, 10, '524', 1, '2025-05-07 08:51:35', '2025-05-07 00:51:35'),
+(197, 1, '524', 1, '2025-05-07 09:11:22', '2025-05-07 01:11:22'),
+(219, 0, '526', 0, '2025-05-07 09:51:50', '2025-05-07 01:51:50'),
+(228, 7, '526', 1, '2025-05-07 12:26:07', '2025-05-07 04:26:07'),
+(248, 10, '526', 1, '2025-05-07 12:36:53', '2025-05-07 04:36:53'),
+(254, 14, '524', 1, '2025-05-07 12:37:49', '2025-05-07 04:37:49'),
+(258, 3, '530', 1, '2025-05-07 12:55:55', '2025-05-07 04:55:55'),
+(278, 2, '524', 1, '2025-05-07 14:22:31', '2025-05-07 06:22:31'),
+(280, 8, '524', 1, '2025-05-07 14:23:09', '2025-05-07 06:23:09'),
+(281, 4, '524', 1, '2025-05-07 14:23:13', '2025-05-07 06:23:13'),
+(284, 5, '524', 1, '2025-05-07 14:25:45', '2025-05-07 06:25:45'),
+(289, 3, '526', 1, '2025-05-07 14:31:52', '2025-05-07 06:31:52'),
+(292, 3, '524', 1, '2025-05-07 14:38:25', '2025-05-07 06:38:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation`
+--
+
+CREATE TABLE `reservation` (
+  `reservation_id` int(11) NOT NULL,
+  `id_number` int(11) NOT NULL,
+  `lab` varchar(11) NOT NULL,
+  `pc_number` int(11) NOT NULL,
+  `purpose` varchar(50) NOT NULL,
+  `reservation_date` varchar(10) NOT NULL,
+  `reservation_time` varchar(10) NOT NULL,
+  `status` varchar(20) DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `sit_in_time` time DEFAULT NULL,
+  `sit_in_started_at` datetime DEFAULT NULL,
+  `sit_in_ended_at` datetime DEFAULT NULL,
+  `actual_time_in` datetime DEFAULT NULL,
+  `actual_time_out` datetime DEFAULT NULL,
+  `type` varchar(20) DEFAULT 'reservation',
+  `approved_at` datetime DEFAULT NULL,
+  `completed_at` datetime DEFAULT NULL,
+  `points_awarded` tinyint(1) DEFAULT 0,
+  `points_awarded_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`reservation_id`, `id_number`, `lab`, `pc_number`, `purpose`, `reservation_date`, `reservation_time`, `status`, `created_at`, `updated_at`, `sit_in_time`, `sit_in_started_at`, `sit_in_ended_at`, `actual_time_in`, `actual_time_out`, `type`, `approved_at`, `completed_at`, `points_awarded`, `points_awarded_at`) VALUES
+(1, 226771156, '528', 3, 'DGILOG', '2025-05-04', '13:23', 'approved', '2025-05-04 05:23:52', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(2, 226771156, '526', 0, 'Python', '2025-05-04', '13:34', 'approved', '2025-05-04 05:34:59', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(3, 226771156, '526', 0, 'Python', '2025-05-04', '13:36', 'approved', '2025-05-04 05:36:59', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(4, 226771156, '526', 0, 'Python', '2025-05-04', '19:22', 'approved', '2025-05-04 11:22:49', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(5, 226771156, '526', 0, 'Python', '2025-05-04', '19:28', 'approved', '2025-05-04 11:28:57', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(8, 226771156, '526', 33, 'System', '2025-05-04', '20:20', 'approved', '2025-05-04 12:20:28', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(9, 226771156, '526', 25, 'Python', '2025-05-16', '20:20', 'approved', '2025-05-04 12:20:52', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(10, 226771156, '528', 2, 'System', '2025-05-04', '20:24', 'approved', '2025-05-04 12:24:10', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(11, 226771156, '528', 1, 'System', '2025-05-04', '20:27', 'approved', '2025-05-04 12:27:19', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(12, 226771156, '528', 0, 'System', '2025-05-20', '20:40', 'approved', '2025-05-04 12:40:11', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(13, 226771156, '542', 2, 'Python', '2025-05-09', '20:45', 'approved', '2025-05-04 12:45:50', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(14, 22677116, '526', 0, 'Others', '2025-05-14', '09:10', 'approved', '2025-05-04 13:10:55', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(15, 226771156, '528', 0, 'C#', '2025-05-24', '09:11', 'rejected', '2025-05-04 13:11:39', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(16, 226771156, '528', 0, 'Python', '2025-05-15', '09:13', 'approved', '2025-05-04 13:13:18', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(22, 226771156, '526', 0, 'Python', '2025-05-10', '21:01', 'approved', '2025-05-05 01:01:13', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(23, 226771156, '524', 0, 'System', '2025-05-10', '09:42', 'approved', '2025-05-05 01:42:50', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(24, 226771156, '530', 0, 'Python', '2025-05-15', '10:37', 'approved', '2025-05-05 02:37:13', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(25, 226771156, '524', 0, 'Web', '2025-05-09', '10:49', 'approved', '2025-05-05 02:49:46', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(26, 226771156, '526', 0, 'PHP', '2025-05-10', '23:31', 'approved', '2025-05-05 15:31:29', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(27, 226771156, '528', 0, '', '', '', 'approved', '2025-05-06 12:22:17', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(28, 226771156, '524', 0, 'Python', '2025-05-08', '20:45', 'approved', '2025-05-06 12:45:33', '2025-05-06 12:52:35', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(29, 226771156, '524', 0, 'Others', '2025-05-08', '20:54', 'approved', '2025-05-06 12:54:53', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(30, 226771156, '524', 0, 'PHP', '2025-05-10', '21:01', 'approved', '2025-05-06 13:01:43', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(31, 226771156, '524', 0, 'PHP', '2025-05-10', '21:05', 'approved', '2025-05-06 13:05:28', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(32, 226771156, '524', 0, 'PHP', '2025-05-07', '21:25', 'approved', '2025-05-06 13:26:20', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(33, 226771156, '524', 0, 'PHP', '', '21:39', 'approved', '2025-05-06 13:40:19', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(34, 226771156, '526', 0, 'PHP', '2025-05-09', '21:58', 'rejected', '2025-05-06 13:58:44', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(35, 226771156, '', 0, '', '', '', 'rejected', '2025-05-07 01:21:51', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(36, 226771156, '524', 0, 'Python', '2025-05-24', '09:25', 'approved', '2025-05-07 01:25:55', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(37, 226771156, '524', 0, 'PHP', '2025-05-22', '09:35', 'approved', '2025-05-07 01:35:05', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(38, 226771156, '524', 0, 'Java', '2025-05-15', '09:38', 'approved', '2025-05-07 01:38:59', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(39, 226771156, '526', 0, 'System', '2025-05-16', '09:49', 'approved', '2025-05-07 01:49:54', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(40, 226771156, '526', 0, 'PHP', '2025-05-25', '10:09', 'approved', '2025-05-07 02:09:42', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(41, 226771156, '524', 0, 'C#', '2025-05-07', '10:14', 'approved', '2025-05-07 02:14:41', NULL, '10:14:51', NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(42, 226771156, '524', 0, 'Python', '2025-05-07', '10:20', 'approved', '2025-05-07 02:20:49', '2025-05-06 20:21:46', NULL, '2025-05-07 04:21:46', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(43, 226771156, '524', 0, 'System', '2025-05-07', '10:22', 'approved', '2025-05-07 02:22:24', '2025-05-06 20:22:38', NULL, '2025-05-07 04:22:38', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(44, 226771156, '524', 0, 'DGILOG', '2025-05-13', '10:25', 'approved', '2025-05-07 02:25:06', NULL, NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(45, 226771156, '524', 0, 'PHP', '2025-05-08', '10:26', 'approved', '2025-05-07 02:26:46', '2025-05-06 20:26:57', NULL, '2025-05-07 04:26:57', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(46, 226771156, '526', 0, 'Others', '2025-05-29', '10:33', 'rejected', '2025-05-07 02:33:18', '2025-05-06 20:40:07', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(47, 226771156, '526', 0, 'ASP.net', '2025-05-12', '11:05', 'rejected', '2025-05-07 03:05:12', '2025-05-06 21:08:39', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(48, 226771156, '524', 4, 'Python', '2025-05-22', '11:00', 'approved', '2025-05-06 21:29:54', '2025-05-06 21:30:09', NULL, '2025-05-07 05:30:09', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(49, 226771156, '526', 4, 'Java', '2025-05-29', '11:00', 'approved', '2025-05-06 21:33:14', '2025-05-06 21:34:29', NULL, '2025-05-07 05:34:29', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(50, 226771156, '524', 14, 'Java', '2025-05-24', '11:00', 'approved', '2025-05-06 21:36:59', '2025-05-06 21:37:47', NULL, '2025-05-07 05:37:47', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(51, 226771156, '528', 2, 'Python', '2025-06-03', '11:00', 'approved', '2025-05-06 21:41:22', '2025-05-06 21:41:37', NULL, '2025-05-07 05:41:37', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(52, 226771156, '528', 12, 'PHP', '2025-05-15', '11:00', 'approved', '2025-05-06 21:47:07', '2025-05-06 21:48:22', NULL, '2025-05-07 05:48:22', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(53, 226771156, '526', 1, 'Java', '2025-05-22', '11:00', 'rejected', '2025-05-06 21:48:09', '2025-05-06 21:48:29', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(54, 226771156, '524', 13, 'Others', '2025-05-29', '11:00', 'rejected', '2025-05-06 21:59:07', '2025-05-06 22:00:54', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(55, 226771156, '542', 2, 'Embedded', '2025-05-22', '12:00', 'approved', '2025-05-06 22:09:44', '2025-05-06 22:10:08', NULL, '2025-05-07 06:10:08', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(56, 226771156, '542', 2, 'Embedded', '2025-05-22', '12:00', 'rejected', '2025-05-06 22:09:50', '2025-05-06 22:10:05', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(57, 226771156, '526', 2, 'Java', '2025-05-13', '12:00', 'approved', '2025-05-06 22:22:06', '2025-05-06 22:22:17', NULL, '2025-05-07 06:22:17', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(58, 226771156, '524', 1, 'PHP', '2025-05-16', '12:58', 'approved', '2025-05-06 22:58:39', '2025-05-06 22:59:28', NULL, '2025-05-07 06:59:28', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(59, 226771156, '528', 1, 'Java', '2025-05-16', '13:01', 'approved', '2025-05-06 23:01:52', '2025-05-06 23:02:09', NULL, '2025-05-07 07:02:09', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(60, 226771156, '524', 2, 'Java', '2025-05-29', '13:35', 'approved', '2025-05-06 23:35:11', '2025-05-06 23:35:24', NULL, '2025-05-07 07:35:24', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(61, 226771156, '526', 1, 'Java', '2025-05-08', '13:39', 'approved', '2025-05-06 23:39:35', '2025-05-06 23:39:52', NULL, '2025-05-07 07:39:52', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(62, 226771156, '524', 1, 'Others', '2025-05-28', '13:48', 'approved', '2025-05-06 23:48:48', '2025-05-06 23:48:55', NULL, '2025-05-07 07:48:55', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(63, 226771156, '524', 2, 'Java', '2025-05-16', '14:04', 'approved', '2025-05-07 00:04:09', '2025-05-07 00:04:24', NULL, '2025-05-07 08:04:24', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(64, 226771156, '524', 4, 'DGILOG', '2025-05-17', '14:40', 'approved', '2025-05-07 00:40:34', '2025-05-07 00:40:46', NULL, '2025-05-07 08:40:46', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(65, 226771156, '524', 2, 'PHP', '2025-05-15', '15:02', 'approved', '2025-05-07 01:02:20', '2025-05-07 01:02:36', NULL, '2025-05-07 09:02:36', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(66, 226771156, '524', 24, 'Database', '2025-05-13', '15:08', 'approved', '2025-05-07 01:08:41', '2025-05-07 01:08:54', NULL, '2025-05-07 09:08:54', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(67, 226771156, '526', 2, 'Embedded', '2025-05-22', '15:20', 'approved', '2025-05-07 01:20:18', '2025-05-07 01:20:33', NULL, '2025-05-07 09:20:33', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(68, 226771156, '544', 1, 'Java', '2025-05-16', '12:00', 'approved', '2025-05-07 22:00:13', '2025-05-07 22:04:08', NULL, '2025-05-08 06:04:08', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(69, 226771156, '528', 1, 'Java', '2025-05-10', '12:12', 'approved', '2025-05-07 22:12:51', '2025-05-07 22:13:08', NULL, '2025-05-08 06:13:08', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(70, 226771156, '528', 1, 'PHP', '2025-05-14', '17:13', 'rejected', '2025-05-11 03:13:36', '2025-05-11 03:14:13', NULL, NULL, NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(71, 226771156, '524', 1, 'Java', '2025-05-11', '17:13', 'approved', '2025-05-11 03:13:57', '2025-05-11 03:14:17', NULL, '2025-05-11 11:14:17', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(72, 226771156, '528', 2, 'PHP', '2025-05-16', '17:33', 'approved', '2025-05-11 03:33:56', '2025-05-11 03:34:09', NULL, '2025-05-11 11:34:09', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(73, 226771156, '528', 1, 'Java', '2025-05-22', '17:37', 'approved', '2025-05-11 03:37:27', '2025-05-11 03:40:46', NULL, '2025-05-11 11:40:46', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(74, 226771156, '526', 1, 'Java', '2025-05-11', '17:40', 'approved', '2025-05-11 03:40:30', '2025-05-11 03:40:50', NULL, '2025-05-11 11:40:50', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(75, 226771156, '524', 1, 'PHP', '2025-05-14', '17:57', 'approved', '2025-05-11 03:57:03', '2025-05-11 03:57:21', NULL, '2025-05-11 11:57:21', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(76, 226771156, '526', 2, 'Python', '2025-05-12', '17:59', 'approved', '2025-05-11 03:59:39', '2025-05-11 03:59:51', NULL, '2025-05-11 11:59:51', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(77, 226771156, '526', 1, 'PHP', '2025-05-29', '18:09', 'approved', '2025-05-11 04:09:52', '2025-05-11 04:10:02', NULL, '2025-05-11 12:10:02', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(78, 226771156, '526', 2, 'System', '2025-05-21', '18:23', 'approved', '2025-05-11 04:23:21', '2025-05-11 04:23:32', NULL, '2025-05-11 12:23:32', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(79, 226771156, '526', 2, 'PHP', '2025-05-15', '18:29', 'approved', '2025-05-11 04:29:14', '2025-05-11 04:29:24', NULL, '2025-05-11 12:29:24', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(80, 226771156, '528', 1, 'Web', '2025-05-14', '18:33', 'approved', '2025-05-11 04:33:31', '2025-05-11 04:33:42', NULL, '2025-05-11 12:33:42', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(81, 226771156, '526', 2, 'Java', '2025-05-15', '18:40', 'approved', '2025-05-11 04:40:39', '2025-05-11 04:40:49', NULL, '2025-05-11 12:40:49', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(82, 226771156, '524', 1, 'Java', '2025-05-23', '18:43', 'approved', '2025-05-11 04:43:49', '2025-05-11 04:45:59', NULL, '2025-05-11 12:45:59', NULL, NULL, NULL, 'reservation', NULL, NULL, 0, NULL),
+(83, 226771156, '526', 1, 'Python', '2025-05-29', '18:50', 'completed', '2025-05-11 04:50:24', NULL, NULL, NULL, NULL, '2025-05-11 18:52:13', '2025-05-11 19:03:58', 'reservation', NULL, NULL, 0, NULL),
+(84, 226771156, '524', 1, 'Python', '2025-05-11', '19:11', 'completed', '2025-05-11 05:11:42', NULL, NULL, NULL, NULL, '2025-05-11 19:11:59', '2025-05-11 19:18:35', 'reservation', NULL, NULL, 1, '2025-05-11 19:18:25'),
+(85, 226771156, '524', 1, 'System', '2025-05-23', '19:24', 'completed', '2025-05-11 05:24:18', NULL, NULL, NULL, NULL, '2025-05-11 19:24:31', '2025-05-11 19:25:33', 'reservation', NULL, NULL, 0, NULL),
+(86, 226771156, '524', 1, 'Web', '2025-05-15', '19:45', 'completed', '2025-05-11 05:45:47', NULL, NULL, NULL, NULL, '2025-05-11 19:45:59', '2025-05-11 19:48:32', 'reservation', NULL, NULL, 0, NULL),
+(87, 226771156, '526', 1, 'Python', '2025-05-15', '19:48', 'completed', '2025-05-11 05:48:53', NULL, NULL, NULL, NULL, '2025-05-11 19:49:04', '2025-05-11 19:50:51', 'reservation', NULL, NULL, 0, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings`
+--
+
+CREATE TABLE `settings` (
+  `setting_name` varchar(50) NOT NULL,
+  `value` int(11) NOT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`setting_name`, `value`, `description`) VALUES
+('default_sessions', 30, 'Default number of sessions for new users');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_sit_in`
+--
+
+CREATE TABLE `student_sit_in` (
+  `sit_id` int(11) NOT NULL,
+  `id_number` int(11) NOT NULL,
+  `sit_purpose` varchar(100) DEFAULT NULL,
+  `sit_lab` varchar(10) DEFAULT NULL,
+  `pc_number` int(11) DEFAULT NULL,
+  `time_in` time DEFAULT NULL,
+  `time_out` varchar(15) NOT NULL,
+  `sit_date` date DEFAULT NULL,
+  `status` varchar(20) NOT NULL,
+  `reservation_id` int(11) DEFAULT NULL,
+  `type` varchar(20) DEFAULT 'direct'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_sit_in`
+--
+
+INSERT INTO `student_sit_in` (`sit_id`, `id_number`, `sit_purpose`, `sit_lab`, `pc_number`, `time_in`, `time_out`, `sit_date`, `status`, `reservation_id`, `type`) VALUES
+(1, 46541, 'PHP', '544', 0, '10:51:32', '06:47:33', '2025-03-17', 'Completed', NULL, 'direct'),
+(2, 55564, 'ASP.net', '542', 0, '10:56:03', '06:47:33', '2025-03-17', 'Completed', NULL, 'direct'),
+(3, 55564, 'C#', '526', 0, '10:56:43', '06:47:33', '2025-03-17', 'Completed', NULL, 'direct'),
+(4, 46541, 'C#', '530', 0, '11:07:35', '06:47:33', '2025-03-17', 'Completed', NULL, 'direct'),
+(5, 46541, 'PHP', '530', 0, '10:29:53', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(6, 46541, 'Java', '544', 0, '10:41:01', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(7, 789946, 'C#', '542', 0, '10:54:08', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(8, 789946, 'PHP', '542', 0, '11:13:04', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(9, 789946, 'PHP', '524', 0, '11:25:00', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(10, 789946, 'PHP', '530', 0, '11:29:26', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(11, 22222, 'PHP', '544', 0, '11:32:08', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(12, 789946, 'Python', '530', 0, '11:59:49', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(13, 22222, 'Others', '542', 0, '12:12:34', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(14, 22222, 'ASP.net', '544', 0, '14:20:02', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(15, 123456, 'PHP', '528', 0, '14:24:05', '06:47:33', '2025-03-18', 'Completed', NULL, 'direct'),
+(16, 789946, 'ASP.net', '542', 0, '03:01:47', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(17, 123456, 'Python', '544', 0, '03:31:42', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(18, 789946, 'Others', '542', 0, '03:32:51', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(19, 789946, 'Others', '530', 0, '04:26:00', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(20, 789946, 'Python', '530', 0, '04:26:10', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(21, 22222, 'Python', '530', 0, '04:29:20', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(22, 22222, 'Python', '542', 0, '04:29:32', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(23, 22222, 'Python', '528', 0, '04:29:54', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(24, 22222, 'Python', '542', 0, '04:30:06', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(25, 789946, 'Python', '530', 0, '04:31:07', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(26, 789946, 'Python', '528', 0, '04:33:51', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(27, 789946, 'Python', '528', 0, '04:34:03', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(28, 789946, 'ASP.net', '530', 0, '04:37:45', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(29, 789946, 'ASP.net', '528', 0, '04:38:22', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(30, 789946, 'Python', '526', 0, '04:47:46', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(31, 789946, 'ASP.net', '542', 0, '09:20:36', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(32, 789946, 'Python', '544', 0, '09:24:50', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(33, 789946, 'ASP.net', '526', 0, '11:16:58', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(34, 789946, 'ASP.net', '526', 0, '13:46:50', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(35, 789946, 'Python', '542', 0, '13:47:20', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(36, 789946, 'ASP.net', '524', 0, '14:02:06', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(37, 789946, 'PHP Programming', '528', 0, '14:46:56', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(38, 123456, 'ASP.net Programming', '544', 0, '15:40:58', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(39, 123456, 'Java ', '526', 0, '15:44:46', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(40, 789946, 'ASP.net ', '524', 0, '15:59:47', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(41, 789946, 'ASP.net ', '524', 0, '16:00:00', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(42, 789946, 'ASP.net ', '530', 0, '16:00:17', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(43, 789946, 'Python ', '544', 0, '16:00:30', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(44, 789946, 'C# ', '526', 0, '16:00:44', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(45, 123456, 'Python ', '530', 0, '16:16:54', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(46, 22677116, 'Python ', '526', 0, '16:35:17', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(47, 22677116, 'ASP.net ', '542', 0, '16:39:46', '06:47:33', '2025-03-19', 'Completed', NULL, 'direct'),
+(48, 789946, 'Python ', '528', 0, '08:29:33', '06:47:33', '2025-03-20', 'Completed', NULL, 'direct'),
+(49, 22677116, 'Java ', '526', 0, '10:34:52', '06:47:33', '2025-03-21', 'Completed', NULL, 'direct'),
+(50, 2147483647, 'PHP ', '526', 0, '06:43:39', '06:47:33', '2025-03-22', 'Completed', NULL, 'direct'),
+(51, 22677116, 'ASP.net ', '542', 0, '08:19:42', '06:47:33', '2025-03-30', 'Completed', NULL, 'direct'),
+(52, 2147483647, 'ASP.net ', '526', 0, '08:19:58', '06:47:33', '2025-03-30', 'Completed', NULL, 'direct'),
+(53, 226771156, 'Python ', '530', 0, '15:27:45', '06:47:33', '2025-04-04', 'Completed', NULL, 'direct'),
+(54, 226771156, 'ASP.net ', '528', 0, '15:51:12', '06:47:33', '2025-04-04', 'Completed', NULL, 'direct'),
+(55, 226771156, 'PHP ', '524', 0, '15:54:18', '06:47:33', '2025-04-04', 'Completed', NULL, 'direct'),
+(56, 226771156, 'Python ', '528', 0, '15:58:30', '06:47:33', '2025-04-04', 'Completed', NULL, 'direct'),
+(57, 2222, 'PHP ', '526', 0, '16:15:56', '06:47:33', '2025-04-04', 'Completed', NULL, 'direct'),
+(58, 226771156, 'PHP ', '528', 0, '18:17:05', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(59, 226771156, 'ASP.net ', '526', 0, '18:26:22', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(60, 226771156, 'ASP.net ', '530', 0, '18:38:13', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(61, 226771156, 'PHP ', '528', 0, '18:46:43', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(62, 226771156, 'ASP.net ', '528', 0, '19:02:14', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(63, 226771156, 'Python ', '524', 0, '19:03:10', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(64, 226771156, 'C# ', '544', 0, '19:10:05', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(65, 226771156, 'ASP.net ', '530', 0, '19:15:58', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(66, 2222, 'C#', '528', 0, '19:40:21', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(67, 226771156, 'PHP ', '526', 0, '19:44:46', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(68, 226771156, 'Python ', '528', 0, '19:53:36', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(69, 226771156, 'PHP ', '528', 0, '19:56:39', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(70, 226771156, 'Java ', '526', 0, '20:03:29', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(71, 226771156, 'PHP ', '526', 0, '20:09:53', '06:47:33', '2025-04-05', 'Completed', NULL, 'direct'),
+(72, 226771156, 'PHP ', '542', 0, '04:32:25', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(73, 226771156, 'ASP.net ', '528', 0, '05:16:19', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(74, 226771156, 'ASP.net ', '544', 0, '05:17:01', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(75, 226771156, 'C# ', '528', 0, '05:20:29', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(76, 226771156, 'Java ', '530', 0, '05:24:10', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(77, 226771156, 'Java ', '528', 0, '05:41:52', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(78, 226771156, 'ASP.net ', '530', 0, '06:02:26', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(79, 226771156, 'ASP.net ', '530', 0, '06:33:17', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(80, 226771156, 'ASP.net ', '528', 0, '06:38:18', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(81, 226771156, 'ASP.net ', '526', 0, '06:47:30', '06:47:33', '2025-04-06', 'Completed', NULL, 'direct'),
+(82, 226771156, 'ASP.net ', '528', 0, '06:54:20', '06:54:22', '2025-04-06', 'Completed', NULL, 'direct'),
+(83, 226771156, 'ASP.net ', '526', 0, '17:28:05', '17:28:07', '2025-04-08', 'Completed', NULL, 'direct'),
+(84, 226771156, 'PHP ', '528', 0, '17:43:44', '17:43:45', '2025-04-08', 'Completed', NULL, 'direct'),
+(85, 226771156, 'C# ', '530', 0, '17:56:53', '17:56:55', '2025-04-08', 'Completed', NULL, 'direct'),
+(86, 226771156, 'Java ', '530', 0, '17:59:31', '17:59:32', '2025-04-08', 'Completed', NULL, 'direct'),
+(87, 226771156, 'ASP.net ', '542', 0, '18:05:56', '18:05:58', '2025-04-08', 'Completed', NULL, 'direct'),
+(88, 226771156, 'Python ', '528', 0, '18:12:53', '18:12:55', '2025-04-08', 'Completed', NULL, 'direct'),
+(89, 226771156, 'PHP ', '542', 0, '18:16:38', '18:16:40', '2025-04-08', 'Completed', NULL, 'direct'),
+(90, 226771156, 'PHP ', '530', 0, '18:22:44', '18:22:46', '2025-04-08', 'Completed', NULL, 'direct'),
+(91, 226771156, 'PHP ', '528', 0, '18:36:32', '18:36:34', '2025-04-08', 'Completed', NULL, 'direct'),
+(92, 226771156, 'PHP ', '526', 0, '18:43:09', '18:43:11', '2025-04-08', 'Completed', NULL, 'direct'),
+(93, 226771156, 'ASP.net ', '528', 0, '09:58:44', '09:58:45', '2025-04-09', 'Completed', NULL, 'direct'),
+(94, 226771156, 'Python ', '542', 0, '10:06:33', '10:06:34', '2025-04-09', 'Completed', NULL, 'direct'),
+(95, 226771156, 'PHP', '542', 0, '13:04:45', '2025-04-29 19:0', '2025-04-29', 'Completed', NULL, 'direct'),
+(96, 226771156, 'Embedded', '542', 0, '13:15:10', '2025-04-29 19:1', '2025-04-29', 'Completed', NULL, 'direct'),
+(97, 226771156, 'Python', '542', 0, '13:22:51', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(98, 226771156, 'Python', '528', 0, '13:23:13', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(99, 226771156, 'Others', '530', 0, '13:25:08', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(100, 226771156, 'PHP', '542', 0, '13:25:18', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(101, 226771156, 'PHP', '530', 0, '13:25:28', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(102, 226771156, 'Python', '528', 0, '13:26:31', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(103, 226771156, 'System', '530', 0, '13:26:43', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(104, 226771156, 'Web', '544', 0, '13:26:54', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(105, 2147483647, 'Others', '542', 0, '13:27:25', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(106, 2147483647, 'Database', '524', 0, '13:27:38', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(107, 2147483647, 'PHP', '542', 0, '13:27:49', '2025-04-29 19:2', '2025-04-29', 'Completed', NULL, 'direct'),
+(108, 226771156, 'Java', '528', 0, '09:28:18', '2025-05-02 15:2', '2025-05-02', 'Completed', NULL, 'direct'),
+(109, 226771156, 'DGILOG', '528', 3, '07:32:09', '2025-05-04 13:3', '2025-05-04', 'Completed', NULL, 'direct'),
+(110, 226771156, 'Python', '526', 0, '07:35:50', '2025-05-04 13:3', '2025-05-04', 'Completed', NULL, 'direct'),
+(111, 226771156, 'Python', '526', 0, '12:39:21', '2025-05-04 18:4', '2025-05-04', 'Completed', NULL, 'direct'),
+(112, 226771156, 'Python', '526', 0, '13:27:48', '2025-05-04 19:2', '2025-05-04', 'Completed', NULL, 'direct'),
+(113, 226771156, 'Python', '526', 0, '13:29:48', '2025-05-04 20:1', '2025-05-04', 'Completed', NULL, 'direct'),
+(114, 226771156, 'Python', '542', 0, '20:45:00', '2025-05-04 20:4', '2025-05-09', 'Completed', NULL, 'direct'),
+(115, 226771156, 'DGILOG', '530', 0, '15:05:30', '2025-05-04 21:0', '2025-05-04', 'Completed', NULL, 'direct'),
+(116, 22677116, 'Others', '526', 0, '09:10:00', '2025-05-04 21:1', '2025-05-14', 'Completed', NULL, 'direct'),
+(117, 226771156, 'Python', '528', 0, '09:13:00', '15:14:16', '2025-05-15', 'Completed', NULL, 'direct'),
+(118, 226771156, 'Python', '526', 0, '21:01:00', '2025-05-05 09:0', '2025-05-10', 'Completed', NULL, 'direct'),
+(119, 226771156, 'System', '524', 0, '09:42:00', '2025-05-05 10:3', '2025-05-10', 'Completed', NULL, 'direct'),
+(120, 226771156, 'Python', '530', 0, '10:37:00', '2025-05-05 10:3', '2025-05-15', 'Completed', NULL, 'direct'),
+(121, 226771156, 'Web', '524', 0, '10:49:00', '04:51:44', '2025-05-09', 'Completed', NULL, 'direct'),
+(122, 226771156, 'PHP', '526', 0, '23:31:00', '2025-05-05 23:3', '2025-05-10', 'Completed', NULL, 'direct'),
+(123, 226771156, 'PHP', '526', 0, '23:31:00', '2025-05-05 23:3', '2025-05-10', 'Completed', NULL, 'direct'),
+(124, 22677116, 'Others', '524', 0, '14:56:21', '2025-05-06 20:5', '2025-05-06', 'Completed', NULL, 'direct'),
+(125, 226771156, 'Others', '524', 0, '20:54:00', '2025-05-06 20:5', '2025-05-08', 'Completed', NULL, 'direct'),
+(126, 226771156, 'PHP', '524', 0, '21:01:00', '2025-05-06 21:0', '2025-05-10', 'Completed', NULL, 'direct'),
+(127, 226771156, 'PHP', '524', 0, '21:05:00', '2025-05-06 21:0', '2025-05-10', 'Completed', NULL, 'direct'),
+(128, 2147483647, 'Others', '524', 0, '15:24:15', '2025-05-06 21:2', '2025-05-06', 'Completed', NULL, 'direct'),
+(129, 226771156, 'PHP', '524', 0, '21:25:00', '2025-05-06 21:2', '2025-05-07', 'Completed', NULL, 'direct'),
+(130, 226771156, 'PHP', '524', 0, '21:39:00', '2025-05-06 21:4', '0000-00-00', 'Completed', NULL, 'direct'),
+(133, 226771156, 'Python', '524', 0, '09:25:00', '09:34:47', '2025-05-24', 'Completed', NULL, 'direct'),
+(134, 226771156, 'PHP', '524', 0, '09:35:00', '2025-05-07 09:4', '2025-05-22', 'Completed', NULL, 'direct'),
+(135, 226771156, 'Java', '524', 0, '09:38:00', '2025-05-07 09:4', '2025-05-15', 'Completed', NULL, 'direct'),
+(136, 226771156, 'System', '526', 0, '09:49:00', '2025-05-07 09:5', '2025-05-16', 'Completed', NULL, 'direct'),
+(137, 226771156, 'PHP', '524', 0, '04:26:57', '2025-05-07 10:2', '2025-05-07', 'Completed', 45, 'direct'),
+(138, 226771156, 'Python', '524', 4, '05:30:09', '05:34:58', '2025-05-07', 'Completed', 48, 'direct'),
+(139, 226771156, 'Java', '526', 4, '05:34:29', '2025-05-07 11:3', '2025-05-07', 'Completed', 49, 'direct'),
+(140, 226771156, 'Java', '524', 14, '05:37:47', '2025-05-07 11:3', '2025-05-07', 'Completed', 50, 'direct'),
+(141, 226771156, 'Python', '528', 2, '05:41:37', '05:42:12', '2025-05-07', 'Completed', 51, 'direct'),
+(142, 226771156, 'PHP', '528', 12, '05:48:22', '11:48:50', '2025-05-07', 'Completed', 52, 'direct'),
+(143, 226771156, 'Embedded', '542', 2, '06:10:08', '12:12:17', '2025-05-07', 'Completed', 55, 'direct'),
+(144, 226771156, 'Java', '526', 2, '06:22:17', '12:36:41', '2025-05-07', 'Completed', 57, 'direct'),
+(145, 226771156, 'PHP', '524', 1, '06:59:28', '13:01:15', '2025-05-07', 'Completed', 58, 'direct'),
+(146, 226771156, 'Java', '528', 1, '07:02:09', '13:06:41', '2025-05-07', 'Completed', 59, 'direct'),
+(147, 2147483647, 'Embedded', '526', 0, '07:32:38', '13:32:41', '2025-05-07', 'Completed', NULL, 'direct'),
+(148, 226771156, 'Java', '524', 2, '07:35:24', '13:36:59', '2025-05-07', 'Completed', 60, 'direct'),
+(149, 226771156, 'Java', '526', 1, '07:39:52', '13:42:11', '2025-05-07', 'Completed', 61, 'direct'),
+(150, 226771156, 'Others', '524', 1, '07:48:55', '13:57:59', '2025-05-07', 'Completed', 62, 'direct'),
+(151, 226771156, 'Java', '524', 2, '08:04:24', '14:24:58', '2025-05-07', 'Completed', 63, 'direct'),
+(152, 226771156, 'DGILOG', '524', 4, '08:40:46', '14:43:44', '2025-05-07', 'Completed', 64, 'direct'),
+(153, 226771156, 'PHP', '524', 2, '09:02:36', '15:02:52', '2025-05-07', 'Completed', 65, 'direct'),
+(154, 226771156, 'Database', '524', 24, '09:08:54', '15:11:56', '2025-05-07', 'Completed', 66, 'direct'),
+(155, 226771156, 'Embedded', '526', 2, '09:20:33', '15:21:12', '2025-05-07', 'Completed', 67, 'direct'),
+(156, 226771156, 'Java', '544', 1, '06:04:08', '12:13:22', '2025-05-08', 'Completed', 68, 'direct'),
+(157, 226771156, 'Java', '528', 1, '06:13:08', '12:13:18', '2025-05-08', 'Completed', 69, 'direct'),
+(158, 226771156, 'Java', '524', 1, '11:14:17', '17:14:27', '2025-05-11', 'Completed', 71, 'direct'),
+(159, 22677116, 'Embedded', '524', 0, '11:27:26', '17:32:57', '2025-05-11', 'Completed', NULL, 'direct'),
+(160, 226771156, 'PHP', '528', 2, '11:34:09', '17:34:25', '2025-05-11', 'Completed', 72, 'direct'),
+(161, 2147483647, 'Embedded', '528', 0, '11:35:19', '17:37:52', '2025-05-11', 'Completed', NULL, 'direct'),
+(162, 226771156, 'Java', '528', 1, '11:40:46', '17:49:22', '2025-05-11', 'Completed', 73, 'direct'),
+(163, 226771156, 'Java', '526', 1, '11:40:50', '17:49:19', '2025-05-11', 'Completed', 74, 'direct'),
+(164, 22677116, 'Others', '526', 0, '11:43:00', '17:49:21', '2025-05-11', 'Completed', NULL, 'direct'),
+(165, 226771156, 'PHP', '524', 1, '11:57:21', '17:58:11', '2025-05-11', 'Completed', 75, 'direct'),
+(166, 226771156, 'Python', '526', 2, '11:59:51', '18:07:29', '2025-05-11', 'Completed', 76, 'direct'),
+(167, 222222, 'Java', '524', NULL, '12:04:42', '18:07:27', '2025-05-11', 'Completed', NULL, 'direct'),
+(168, 226771156, 'PHP', '526', 1, '12:10:02', '18:20:57', '2025-05-11', 'Completed', 77, 'direct'),
+(169, 22677116, 'Others', '524', NULL, '12:23:04', '18:24:37', '2025-05-11', 'Completed', NULL, 'direct'),
+(170, 226771156, 'System', '526', 2, '12:23:32', '18:24:34', '2025-05-11', 'Completed', 78, 'direct'),
+(171, 226771156, 'PHP', '526', 2, '12:29:24', '18:38:03', '2025-05-11', 'Completed', 79, 'direct'),
+(172, 226771156, 'Web', '528', 1, '12:33:42', '18:38:02', '2025-05-11', 'Completed', 80, 'direct'),
+(173, 226771156, 'Java', '526', 2, '12:40:49', '18:41:04', '2025-05-11', 'Completed', 81, 'direct'),
+(174, 226771156, 'Java', '524', 1, '12:45:59', '18:47:33', '2025-05-11', 'Completed', 82, 'direct'),
+(175, 226771156, 'PHP', '530', NULL, '12:53:55', '18:56:01', '2025-05-11', 'Completed', NULL, 'direct'),
+(176, 22677116, 'Python', '530', NULL, '13:13:15', '19:13:26', '2025-05-11', 'Completed', NULL, 'direct'),
+(177, 226771156, 'PHP', '526', NULL, '13:19:05', '19:19:08', '2025-05-11', 'Completed', NULL, 'direct'),
+(178, 226771156, 'Python', '528', NULL, '13:22:05', '19:22:07', '2025-05-11', 'Completed', NULL, 'direct'),
+(179, 226771156, 'Python', '528', NULL, '13:22:21', '19:22:23', '2025-05-11', 'Completed', NULL, 'direct'),
+(180, 226771156, 'PHP', '526', NULL, '13:22:32', '19:22:34', '2025-05-11', 'Completed', NULL, 'direct');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `lname` varchar(50) DEFAULT NULL,
+  `fname` varchar(50) DEFAULT NULL,
+  `MName` varchar(50) DEFAULT NULL,
+  `Course` varchar(50) DEFAULT NULL,
+  `Level` varchar(10) DEFAULT NULL,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `role` enum('admin','user') NOT NULL DEFAULT 'user',
+  `remaining_session` int(11) NOT NULL DEFAULT 30,
+  `points` int(11) DEFAULT 0,
+  `remaining_sessions` int(11) DEFAULT 30
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `lname`, `fname`, `MName`, `Course`, `Level`, `username`, `password`, `image`, `email`, `address`, `role`, `remaining_session`, `points`, `remaining_sessions`) VALUES
+(1, 'CATUBIG', 'Super', NULL, NULL, NULL, 'admin', 'admin', NULL, 'admin@example.com', 'HQ Address', 'admin', 0, 0, 30),
+(222222, 'test', 'test', 'user', 'BSIT', '3', 'test', '$2y$10$mYPajn7HbDaVTxkQbV0dR.ayeVxqinHHmcbcJM1.IiD8VDHGKIoMS', 'uploads/download.jpg', 'test@gmail.com', 'Dam View Deck, Buhisan', 'user', 29, 1, 30),
+(22677116, 'Catubig', 'Mark Dave', 'Cabingatan', 'BSIT', '3', 'mark', '$2y$10$zchvWcHidQPT0Ac7k0B8jub.KnCFlWdbnDeIJnoG8zhLCaRvB5OKC', 'uploads/320738403_1115980445778336_3190117843245493251_n.jpg', 'catubigmarkdave0@gmail.com', 'Dam View Deck, Buhisan', 'user', 25, 4, 30),
+(226771156, 'Soberano', 'Elizabeth', '', 'BSCRIM', '3', 'user1', '$2y$10$yr4fm5tbvBsk5CufQvvgF.lhDHrP4GH0vBrgpk2udHF2n/1MnmZCm', 'uploads/jordan1.jpg', 'm@gmail.com', '', 'user', 30, 50, 30),
+(2147483647, 'Racuma', 'Denise', 'Cabingatan', 'BSCA', '1', 'hahaha', '$2y$10$se1cwLGKhBJCmUE5OMCADOcnAY1TZnhJt46nf7kbeb9BPtlnSVdGi', NULL, '', NULL, 'user', 25, 5, 30);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `lab_materials`
+--
+ALTER TABLE `lab_materials`
+  ADD PRIMARY KEY (`material_id`);
+
+--
+-- Indexes for table `lab_pc`
+--
+ALTER TABLE `lab_pc`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `lab_pc_unique` (`lab`,`pc_number`);
+
+--
+-- Indexes for table `lab_schedules`
+--
+ALTER TABLE `lab_schedules`
+  ADD PRIMARY KEY (`schedule_id`);
+
+--
+-- Indexes for table `pc_numbers`
+--
+ALTER TABLE `pc_numbers`
+  ADD PRIMARY KEY (`lab_number`,`pc_number`);
+
+--
+-- Indexes for table `pc_status`
+--
+ALTER TABLE `pc_status`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_pc_lab` (`pc_number`,`lab_number`);
+
+--
+-- Indexes for table `reservation`
+--
+ALTER TABLE `reservation`
+  ADD PRIMARY KEY (`reservation_id`),
+  ADD KEY `id_number` (`id_number`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`setting_name`);
+
+--
+-- Indexes for table `student_sit_in`
+--
+ALTER TABLE `student_sit_in`
+  ADD PRIMARY KEY (`sit_id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `lab_materials`
+--
+ALTER TABLE `lab_materials`
+  MODIFY `material_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `lab_pc`
+--
+ALTER TABLE `lab_pc`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1849;
+
+--
+-- AUTO_INCREMENT for table `lab_schedules`
+--
+ALTER TABLE `lab_schedules`
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `pc_status`
+--
+ALTER TABLE `pc_status`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=294;
+
+--
+-- AUTO_INCREMENT for table `reservation`
+--
+ALTER TABLE `reservation`
+  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+
+--
+-- AUTO_INCREMENT for table `student_sit_in`
+--
+ALTER TABLE `student_sit_in`
+  MODIFY `sit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2147483648;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `reservation`
+--
+ALTER TABLE `reservation`
+  ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`id_number`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
