@@ -236,19 +236,13 @@ if (!$reservations_result) {
                                                     <button type="submit" class="btn btn-warning btn-sm">Time Out</button>
                                                 </form>
                                                 <?php if (!$row['points_awarded']): ?>
-                                                    <?php if ($row['remaining_sessions'] < 3): ?>
-                                                        <form action="add_reservation_point.php" method="POST">
-                                                            <input type="hidden" name="reservation_id" value="<?php echo $row['reservation_id']; ?>">
-                                                            <input type="hidden" name="user_id" value="<?php echo $row['id_number']; ?>">
-                                                            <button type="submit" class="btn btn-success btn-sm">
-                                                                Add Point (Sessions: <?php echo $row['remaining_sessions']; ?>/3)
-                                                            </button>
-                                                        </form>
-                                                    <?php else: ?>
-                                                        <button class="btn btn-secondary btn-sm" disabled title="Maximum sessions reached">
-                                                            Max Sessions (3/3)
+                                                    <form action="add_reservation_point.php" method="POST">
+                                                        <input type="hidden" name="reservation_id" value="<?php echo $row['reservation_id']; ?>">
+                                                        <input type="hidden" name="user_id" value="<?php echo $row['id_number']; ?>">
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            Add Point
                                                         </button>
-                                                    <?php endif; ?>
+                                                    </form>
                                                 <?php else: ?>
                                                     <button class="btn btn-secondary btn-sm" disabled>Points Awarded</button>
                                                 <?php endif; ?>
