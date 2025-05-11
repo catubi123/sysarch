@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Manila'); // Add this line for Philippine timezo
 include('db.php');
 
 // Add user data fetch for notifications
-$user_id = $_SESSION['id'];
+$user_id = $_SESSION['id_number'] ?? null;
 $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
 $notif_stmt = $con->prepare($notif_query);
 $notif_stmt->bind_param("i", $user_id);

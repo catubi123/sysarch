@@ -86,8 +86,17 @@ $username = $_SESSION['username'];
                 <i class="fas fa-home"></i> Home
             </a>
             <?php
+            // Get user ID from database
+            $get_user_id_query = "SELECT id FROM user WHERE username = ?";
+            $user_stmt = $con->prepare($get_user_id_query);
+            $user_stmt->bind_param("s", $username);
+            $user_stmt->execute();
+            $user_result = $user_stmt->get_result();
+            $user_data = $user_result->fetch_assoc();
+            $_SESSION['user_id'] = $user_data['id'];
+            $user_id = $_SESSION['user_id'];
+
             // Add notification count query
-            $user_id = $_SESSION['id'];
             $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
             $notif_stmt = $con->prepare($notif_query);
             $notif_stmt->bind_param("i", $user_id);
@@ -111,7 +120,6 @@ $username = $_SESSION['username'];
             </a>
             <a href="lab_materials.php" class="nav-link text-white">
                 <i class="fa-solid fa-book"></i> Lab Materials
-            </a>
             </a>
             <a href="view_schedules.php" class="nav-link text-white">
                <i class="fas fa-calendar-alt"></i> Lab Schedules
@@ -214,7 +222,7 @@ $username = $_SESSION['username'];
                                        ORDER BY s.sit_date DESC, s.sit_id DESC";
                         
                         $sit_stmt = $con->prepare($sit_in_query);
-                        $sit_stmt->bind_param("si", $username, $user_id);
+                        $sit_stmt->bind_param("ss", $username, $username); // Changed to use string type for both parameters
                         $sit_stmt->execute();
                         $result = $sit_stmt->get_result();
 
