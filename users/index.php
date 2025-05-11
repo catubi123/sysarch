@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($user_data['role'] === 'admin' && $password === $user_data['password']) {
                 $_SESSION['username'] = $username;
                 $_SESSION['role'] = 'admin';
+                $_SESSION['admin_id'] = $user_data['id']; // Add this line
 
                 echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
                 echo "<script>
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             timer: 2000,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '../admin/admin_Dashboard.php';
+                            window.location.replace('../admin/admin_Dashboard.php');
                         });
                     });
                 </script>";

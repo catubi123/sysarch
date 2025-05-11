@@ -127,7 +127,7 @@ $username = $_SESSION['username'];
             <a href="reservation.php" class="nav-link text-white">
                 <i class="fas fa-calendar-check"></i> Reservation
             </a>
-            <a href="index.php" class="btn btn-danger ms-lg-3">Log out</a>
+            <a href="logout.php" class="btn btn-danger ms-lg-3">Log out</a>
         </div>
     </div>
 </nav>

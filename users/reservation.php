@@ -1,18 +1,19 @@
 <?php
 session_start();
-require_once('db.php'); // Change include to require_once
+require_once('db.php');
 
-// Add user data fetch for notifications like in home.php
-$user_id = $_SESSION['id'];
-$notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
-$notif_stmt = $con->prepare($notif_query);
-$notif_stmt->bind_param("i", $user_id);
-$notif_stmt->execute();
-$notif_result = $notif_stmt->get_result();
-$notif_count = $notif_result->fetch_assoc()['count'];
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
 
-// Check if user is logged in and has necessary session data
-if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
+// Get user data from database
+$conn = openConnection();
+$query = "SELECT id, fname, lname FROM user WHERE username = ?";
+$stmt = $conn->prepare($query);
+
+if ($stmt) {
     $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -20,49 +21,53 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['studentName'])) {
     if ($row = $result->fetch_assoc()) {
         $_SESSION['id'] = $row['id'];
         $_SESSION['studentName'] = $row['fname'] . ' ' . $row['lname'];
-    } else {
-        // Redirect to login if user data can't be found
-        header("Location: index.php");
-        exit();
     }
+    $stmt->close();
+}
+
+// Get notification count
+$user_id = $_SESSION['id'];
+$notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
+$notif_stmt = $conn->prepare($notif_query);
+$notif_stmt->bind_param("i", $user_id);
+$notif_stmt->execute();
+$notif_result = $notif_stmt->get_result();
+$notif_count = $notif_result->fetch_assoc()['count'];
+
+// Check for existing reservation
+$check_pending = "SELECT COUNT(*) as pending_count FROM reservation WHERE id_number = ? AND status = 'pending'";
+$stmt = $conn->prepare($check_pending);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$pending = $result->fetch_assoc();
+
+if ($pending['pending_count'] > 0) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Active Reservation Found',
+                text: 'You already have a pending reservation. Please wait for it to be processed before making a new one.',
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Return to Dashboard',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'home.php';
+                }
+            });
+        });
+    </script>";
 }
 
 // Verify database connection
-if (!isset($con) || $con->connect_error) {
-    die("Database connection failed: " . ($con->connect_error ?? "Connection not established"));
+if (!isset($conn) || $conn->connect_error) {
+    die("Database connection failed: " . ($conn->connect_error ?? "Connection not established"));
 }
 
 $id = $_SESSION['id'];
 $studentName = $_SESSION['studentName'];
-
-// Check for existing reservation first
-if ($id) {
-    $check_pending = "SELECT COUNT(*) as pending_count FROM reservation WHERE id_number = ? AND status = 'pending'";
-    $stmt = $con->prepare($check_pending);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $pending = $result->fetch_assoc();
-
-    if ($pending['pending_count'] > 0) {
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Active Reservation Found',
-                    text: 'You already have a pending reservation. Please wait for it to be processed before making a new one.',
-                    icon: 'warning',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'Return to Dashboard',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'home.php';
-                    }
-                });
-            });
-        </script>";
-    }
-}
 
 // Define selected_lab before using it
 $selected_lab = $_POST['lab'] ?? null;
@@ -76,7 +81,7 @@ if ($selected_lab) {
               WHERE (ps.is_active IS NULL OR ps.is_active = 1) 
               AND pn.lab_number = ?";
 
-    $stmt = $con->prepare($query);
+    $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $selected_lab);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -254,7 +259,7 @@ if (isset($_SESSION['swal_error'])) {
       <div class="modal-body">
         <?php
         $notifications_query = "SELECT notification_id, message FROM notification WHERE id_number = ? ORDER BY notification_id DESC";
-        $notifications_stmt = $con->prepare($notifications_query);
+        $notifications_stmt = $conn->prepare($notifications_query);
         $notifications_stmt->bind_param("i", $user_id);
         $notifications_stmt->execute();
         $notifications = $notifications_stmt->get_result();
@@ -474,7 +479,6 @@ function updateComputerControl(lab) {
     });
 }
 
-// Add selectPC function
 function selectPC(element, pcNumber) {
     if (element.classList.contains('unavailable')) {
         Swal.fire({
@@ -513,43 +517,16 @@ function selectPC(element, pcNumber) {
     });
 }
 
-// Update the form submission handler
-document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Check if a PC is selected
-    const pcNumber = document.getElementById('pcNumberInput')?.value;
-    if (!pcNumber) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Please select a PC before submitting',
-            icon: 'error'
-        });
-        return;
-    }
-
-    // Show loading state
-    Swal.fire({
-        title: 'Submitting...',
-        text: 'Please wait while we process your reservation',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // Submit form
-    this.submit();
-});
-
 // Add form validation
 document.getElementById('reservationForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+    if (!this.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
-    // Check if a PC is selected
     const pcNumber = document.getElementById('pcNumberInput')?.value;
     if (!pcNumber) {
+        event.preventDefault();
         Swal.fire({
             title: 'Error!',
             text: 'Please select a PC before submitting',
@@ -557,9 +534,14 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
         });
         return;
     }
+    
+    this.classList.add('was-validated');
+});
 
-    // Continue with form submission if PC is selected
-    this.submit();
+// Set minimum date for date input to today
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
 });
 </script>
 </body>
