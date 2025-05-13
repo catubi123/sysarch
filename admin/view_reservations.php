@@ -146,6 +146,7 @@ include('admin_navbar.php');
                                 $types .= "s";
                             }
 
+                            // Modified query to prioritize pending status
                             $query = "SELECT r.*, u.fname, u.lname 
                                     FROM reservation r 
                                     LEFT JOIN user u ON r.id_number = u.id";
@@ -154,10 +155,16 @@ include('admin_navbar.php');
                                 $query .= " WHERE " . implode(" AND ", $where_conditions);
                             }
 
-                            // Modified ORDER BY to show newest first based on creation date
-                            $query .= " ORDER BY CAST(r.reservation_date as DATE) DESC, 
-                                      STR_TO_DATE(r.reservation_time, '%H:%i') DESC, 
-                                      r.created_at DESC";
+                            // Order by status (pending first), then by date and time
+                            $query .= " ORDER BY 
+                                      CASE r.status 
+                                          WHEN 'pending' THEN 1 
+                                          WHEN 'approved' THEN 2 
+                                          WHEN 'rejected' THEN 3 
+                                          ELSE 4 
+                                      END,
+                                      CAST(r.reservation_date as DATE) DESC, 
+                                      STR_TO_DATE(r.reservation_time, '%H:%i') DESC";
 
                             $stmt = $con->prepare($query);
                             if (!empty($params)) {
@@ -216,20 +223,30 @@ include('admin_navbar.php');
         $(document).ready(function() {
             $('#reservationsTable').DataTable({
                 pageLength: 10,
-                // Set initial sort order to newest first
-                order: [[4, 'desc'], [5, 'desc']],
+                // Set custom ordering that prioritizes pending status
+                order: [[7, 'asc'], [5, 'desc'], [6, 'desc']], // 7 is the status column
                 dom: '<"row"<"col-md-6"l><"col-md-6"f>>rtip',
                 language: {
                     lengthMenu: "Show _MENU_ entries per page",
                     search: "Search reservations:",
                     emptyTable: "No reservations found"
                 },
-                // Ensure newest reservations appear first by default
-                "aaSorting": [[4, 'desc'], [5, 'desc']],
-                // Add created_at as hidden column for proper sorting
                 columnDefs: [
-                    { type: 'date', targets: 4 },
-                    { type: 'time', targets: 5 }
+                    { type: 'date', targets: 5 },
+                    { type: 'time', targets: 6 },
+                    { 
+                        targets: 7, // Status column
+                        type: 'string',
+                        render: function(data, type, row) {
+                            if (type === 'sort') {
+                                // Custom sort values
+                                return data === 'pending' ? 1 : 
+                                       data === 'approved' ? 2 : 
+                                       data === 'rejected' ? 3 : 4;
+                            }
+                            return data;
+                        }
+                    }
                 ]
             });
 
