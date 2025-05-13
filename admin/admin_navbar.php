@@ -51,7 +51,7 @@
 <body class="d-flex flex-column">
 <div class="navbar navbar-expand-lg navbar-dark bg-primary rounded p-3">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="#">
+        <a class="navbar-brand d-flex align-items-center" href="admin_Dashboard.php">
             <h2 class="mb-0 text-white"> Admin</h2>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
