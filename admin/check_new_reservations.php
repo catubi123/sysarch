@@ -36,4 +36,18 @@ try {
     header('Content-Type: application/json');
     echo json_encode(['error' => $e->getMessage()]);
 }
+
+include('db.php');
+
+// Get pending reservations count
+$query = "SELECT * FROM reservations WHERE status = 'pending'";
+$result = mysqli_query($con, $query);
+
+$pendingReservations = array();
+while($row = mysqli_fetch_assoc($result)) {
+    $pendingReservations[] = $row;
+}
+
+header('Content-Type: application/json');
+echo json_encode($pendingReservations);
 ?>

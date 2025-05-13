@@ -95,21 +95,14 @@
                 <li class="nav-item"><a class="nav-link text-white" href="view_feedback.php">Feedbacks</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="top_users.php">Top Users</a></li>
                 
-                <!-- Notifications Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link text-white position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <!-- Notifications Bell -->
+                <li class="nav-item">
+                    <a class="nav-link text-white position-relative" href="view_reservations.php?status=pending">
                         <i class="fas fa-bell fa-lg"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">
                             <span id="notificationCount">0</span>
                         </span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" id="notificationList" style="width: 350px;">
-                        <li><h6 class="dropdown-header"><i class="fas fa-bell me-2"></i>Notifications</h6></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-center" href="view_reservations.php?status=pending">
-                            <i class="fas fa-list-alt me-2"></i>View Pending Reservations
-                        </a></li>
-                    </ul>
                 </li>
 
                 <!-- Log Out Button -->
@@ -150,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
     }
 
-    // Start notification checks
+    // Check notifications on load and every 30 seconds
     checkNewReservations();
     setInterval(checkNewReservations, 30000);
 });
@@ -162,56 +155,18 @@ document.querySelectorAll('.dropdown-menu').forEach(function(element) {
     });
 });
 
-// Update the notification click handler
+// Simplified notification check
 function checkNewReservations() {
     fetch('check_new_reservations.php')
-    .then(response => response.json())
-    .then(data => {
-        const notificationCount = document.getElementById('notificationCount');
-        const notificationList = document.getElementById('notificationList');
-        const divider = notificationList.querySelector('.dropdown-divider');
-        
-        notificationCount.textContent = data.length;
-        
-        // Remove old notifications
-        const oldNotifications = notificationList.querySelectorAll('.notification-item');
-        oldNotifications.forEach(item => item.remove());
-        
-        // Add new notifications
-        if (data.length > 0) {
-            data.forEach(notification => {
-                const li = document.createElement('li');
-                li.className = 'notification-item';
-                li.innerHTML = `
-                    <a class="dropdown-item" href="view_reservations.php?status=pending&id=${notification.id}">
-                        <div class="d-flex align-items-center">
-                            ${getNotificationIcon(notification.type)}
-                            <div class="ms-2">
-                                <div class="small text-muted">${formatDate(notification.created_at)}</div>
-                                <div>${notification.message}</div>
-                                <div class="small text-muted">
-                                    ${notification.student_name ? `From: ${notification.student_name}` : ''}
-                                    ${notification.lab ? `| Lab ${notification.lab}` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </a>`;
-                notificationList.insertBefore(li, divider);
-            });
-        } else {
-            const li = document.createElement('li');
-            li.className = 'notification-item';
-            li.innerHTML = `
-                <div class="dropdown-item text-muted text-center">
-                    <i class="fas fa-bell-slash me-2"></i>No new notifications
-                </div>`;
-            notificationList.insertBefore(li, divider);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('notificationCount').textContent = '!';
-    });
+        .then(response => response.json())
+        .then(data => {
+            const count = Array.isArray(data) ? data.length : 0;
+            document.getElementById('notificationCount').textContent = count;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('notificationCount').textContent = '!';
+        });
 }
 
 // Helper functions
