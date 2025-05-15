@@ -297,7 +297,7 @@ if (isset($_SESSION['swal_error'])) {
         </div>
 
         <!-- Reservation Form -->
-        <form method="POST" action="process_reservation.php" id="reservationForm" class="needs-validation" novalidate>
+        <form method="POST" action="process_reservation.php" id="reservationForm" class="needs-validation" enctype="multipart/form-data" novalidate>
           <div class="row g-3">
             <!-- Left Column -->
             <div class="col-md-6">
@@ -508,6 +508,7 @@ function selectPC(element, pcNumber) {
     }
     pcInput.value = pcNumber;
 
+    // Show success message
     Swal.fire({
         title: 'PC Selected',
         text: `You selected PC ${String(pcNumber).padStart(2, '0')}`,
@@ -530,7 +531,8 @@ document.getElementById('reservationForm').addEventListener('submit', function(e
         Swal.fire({
             title: 'Error!',
             text: 'Please select a PC before submitting',
-            icon: 'error'
+            icon: 'error',
+            confirmButtonColor: '#d33'
         });
         return;
     }
