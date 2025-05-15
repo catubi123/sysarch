@@ -82,127 +82,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="w3-light-grey">
+    <?php include('../includes/navbar.php'); ?>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-    <div class="container-fluid">
-        <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <div class="navbar-nav ms-auto">
-            <a href="home.php" class="nav-link text-white active">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <?php
-            // Fetch notifications count
-            $user_id = $user_data['id'];
-            $notif_query = "SELECT COUNT(*) as count FROM notification WHERE id_number = ?";
-            $notif_stmt = $con->prepare($notif_query);
-            $notif_stmt->bind_param("i", $user_id);
-            $notif_stmt->execute();
-            $notif_result = $notif_stmt->get_result();
-            $notif_count = $notif_result->fetch_assoc()['count'];
-            ?>
-            <a href="#" class="nav-link text-white position-relative" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                <i class="fas fa-bell"></i> Notifications
-                <?php if ($notif_count > 0): ?>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        <?php echo $notif_count; ?>
-                    </span>
-                <?php endif; ?>
-            </a>
+    <div class="container mt-4">
+        <div class="row g-4">
 
-<style>
-.modal-body {
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 15px;
-}
-</style>
-            <a href="history.php" class="nav-link text-white">
-                <i class="fas fa-history"></i> History
-            </a>
-            <a href="edit.php" class="nav-link text-white">
-                <i class="fa-solid fa-pen-to-square"></i> Edit Profile
-            </a>
-            <a href="lab_materials.php" class="nav-link text-white">
-                <i class="fa-solid fa-pen-to-square"></i>Lab Materials
-            </a>
-            <a href="view_schedules.php" class="nav-link text-white">
-               <i class="fas fa-calendar-alt"></i> Lab Schedules
-           </a>
-            <a href="reservation.php" class="nav-link text-white">
-                <i class="fas fa-calendar-check"></i> Reservation
-            </a>
-            <a href="index.php"class="btn btn-danger ms-lg-3">Log out</a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-4">
-    <div class="row g-4">
-
-        <!-- Profile Section -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <i class="fas fa-user-circle"></i> Student Information
-                </div>
-                <div class="card-body text-center">
-                    <img src="<?php echo !empty($user_data['image']) ? htmlspecialchars($user_data['image']) : 'PERSON.png'; ?>" 
-                         class="rounded-circle border border-3 border-primary mb-3" 
-                         style="width: 120px; height: 120px;">
-                    <table class="table table-striped">
-                        <tr><th>ID:</th><td><?php echo htmlspecialchars($user_data['id']); ?></td></tr>
-                        <tr><th>Name:</th><td><?php echo htmlspecialchars($user_data['lname']) . ', ' . htmlspecialchars($user_data['fname']) . ' ' . htmlspecialchars($user_data['MName']); ?></td></tr>
-                        <tr><th>Course:</th><td><?php echo htmlspecialchars($user_data['course']); ?></td></tr>
-                        <tr><th>Year/Level:</th><td><?php echo htmlspecialchars($user_data['level']); ?></td></tr>
-                        <tr><th>Email:</th><td><?php echo htmlspecialchars($user_data['email']); ?></td></tr>
-                        <tr><th>Address:</th><td><?php echo htmlspecialchars($user_data['address']); ?></td></tr>
-                        <tr><th>Remaining Sessions:</th><td><?php echo htmlspecialchars($user_data['remaining_session']); ?></td></tr>
-                    </table>
+            <!-- Profile Section -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <i class="fas fa-user-circle"></i> Student Information
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="<?php echo !empty($user_data['image']) ? htmlspecialchars($user_data['image']) : 'PERSON.png'; ?>" 
+                             class="rounded-circle border border-3 border-primary mb-3" 
+                             style="width: 120px; height: 120px;">
+                        <table class="table table-striped">
+                            <tr><th>ID:</th><td><?php echo htmlspecialchars($user_data['id']); ?></td></tr>
+                            <tr><th>Name:</th><td><?php echo htmlspecialchars($user_data['lname']) . ', ' . htmlspecialchars($user_data['fname']) . ' ' . htmlspecialchars($user_data['MName']); ?></td></tr>
+                            <tr><th>Course:</th><td><?php echo htmlspecialchars($user_data['course']); ?></td></tr>
+                            <tr><th>Year/Level:</th><td><?php echo htmlspecialchars($user_data['level']); ?></td></tr>
+                            <tr><th>Email:</th><td><?php echo htmlspecialchars($user_data['email']); ?></td></tr>
+                            <tr><th>Address:</th><td><?php echo htmlspecialchars($user_data['address']); ?></td></tr>
+                            <tr><th>Remaining Sessions:</th><td><?php echo htmlspecialchars($user_data['remaining_session']); ?></td></tr>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Middle Column with Announcements and Feedback -->
-        <div class="col-md-4">
-            <!-- Announcements Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white text-center">
-                    <i class="fas fa-bullhorn"></i> Announcements
-                </div>
-                <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
-                    <?php
-                    $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
-                    $announcement_result = $con->query($announcement_query);
+            <!-- Middle Column with Announcements and Feedback -->
+            <div class="col-md-4">
+                <!-- Announcements Card -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white text-center">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </div>
+                    <div class="card-body py-2" style="height: 220px; overflow-y: auto;">
+                        <?php
+                        $announcement_query = "SELECT admin_name, message, date FROM announce ORDER BY date DESC";
+                        $announcement_result = $con->query($announcement_query);
 
-                    if ($announcement_result->num_rows > 0) {
-                        $count = 0;
-                        while ($announcement = $announcement_result->fetch_assoc()) {
-                            $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
-                            echo "<div class='$bgColor p-3 rounded mb-2'>";
-                            echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
-                            echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
-                            echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
-                            echo '</div>';
-                            $count++;
+                        if ($announcement_result->num_rows > 0) {
+                            $count = 0;
+                            while ($announcement = $announcement_result->fetch_assoc()) {
+                                $bgColor = ($count % 2 === 0) ? 'w3-light-grey' : 'w3-white';
+                                echo "<div class='$bgColor p-3 rounded mb-2'>";
+                                echo '<p><i class="fas fa-calendar-alt"></i> <b>' . htmlspecialchars($announcement['date']) . '</b></p>';
+                                echo '<p><i class="fas fa-user"></i> Admin: ' . htmlspecialchars($announcement['admin_name']) . '</p>';
+                                echo '<p>' . htmlspecialchars($announcement['message']) . '</p>';
+                                echo '</div>';
+                                $count++;
+                            }
+                        } else {
+                            echo '<p class="text-center">No announcements available.</p>';
                         }
-                    } else {
-                        echo '<p class="text-center">No announcements available.</p>';
-                    }
-                    ?>
+                        ?>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Rules Section -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark text-center">
-                    <i class="fas fa-gavel"></i> Rules and Regulations
-                </div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                    <p><i class="fas fa-check-circle text-success"></i> Maintain silence, proper decorum, and discipline inside the laboratory.</p>
-                    <p><i class="fas fa-ban text-danger"></i> Games are not allowed inside the lab.</p>                    <p><i class="fas fa-wifi text-primary"></i> Internet use is only allowed with instructor permission.</p>                    <p><i class="fas fa-lock text-secondary"></i> Avoid accessing inappropriate websites.</p>                    <p><i class="fas fa-trash text-danger"></i> Do not delete computer files or change settings.</p>                    <p><i class="fas fa-clock text-info"></i> Observe computer usage time limits.</p>                    <p><i class="fas fa-chair text-dark"></i> Return chairs to their proper place after class.</p>                    <p><i class="fas fa-exclamation-triangle text-warning"></i> For serious offenses, disciplinary action may be taken.</p>                </div>            </div>        </div>    </div></div><!-- Notification Modal --><div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">    <div class="modal-dialog">        <div class="modal-content">            <div class="modal-header bg-primary text-white">                <h5 class="modal-title" id="notificationModalLabel">                    <i class="fas fa-bell"></i> Notifications                </h5>                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>            </div>            <div class="modal-body">
+            <!-- Rules Section -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark text-center">
+                        <i class="fas fa-gavel"></i> Rules and Regulations
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <p><i class="fas fa-check-circle text-success"></i> Maintain silence, proper decorum, and discipline inside the laboratory.</p>
+                        <p><i class="fas fa-ban text-danger"></i> Games are not allowed inside the lab.</p>                    <p><i class="fas fa-wifi text-primary"></i> Internet use is only allowed with instructor permission.</p>                    <p><i class="fas fa-lock text-secondary"></i> Avoid accessing inappropriate websites.</p>                    <p><i class="fas fa-trash text-danger"></i> Do not delete computer files or change settings.</p>                    <p><i class="fas fa-clock text-info"></i> Observe computer usage time limits.</p>                    <p><i class="fas fa-chair text-dark"></i> Return chairs to their proper place after class.</p>                    <p><i class="fas fa-exclamation-triangle text-warning"></i> For serious offenses, disciplinary action may be taken.</p>                </div>            </div>        </div>    </div></div><!-- Notification Modal --><div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">    <div class="modal-dialog">        <div class="modal-content">            <div class="modal-header bg-primary text-white">                <h5 class="modal-title" id="notificationModalLabel">                    <i class="fas fa-bell"></i> Notifications                </h5>                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>            </div>            <div class="modal-body">
                 <?php
                 // Fix notification fetch query
                 try {

@@ -1,0 +1,40 @@
+[15-May-2025 03:27:58 Europe/Berlin] POST data received: Array
+(
+    [idNumber] => 226771156
+    [studentName] => Elizabeth Soberano
+    [purpose] => Database
+    [lab] => 524
+    [date] => 2025-05-15
+    [timeIn] => 09:26
+    [pc_number] => 1
+)
+
+[15-May-2025 03:27:58 Europe/Berlin] Validated data: Array
+(
+    [id] => 226771156
+    [name] => Elizabeth Soberano
+    [lab] => 524
+    [pc] => 1
+)
+
+[15-May-2025 03:27:58 Europe/Berlin] Reservation error: Transaction failed: Unknown column 'student_name' in 'field list'
+[15-May-2025 03:28:15 Europe/Berlin] POST data received: Array
+(
+    [idNumber] => 226771156
+    [studentName] => Elizabeth Soberano
+    [purpose] => PHP
+    [lab] => 526
+    [date] => 2025-05-15
+    [timeIn] => 09:28
+    [pc_number] => 1
+)
+
+[15-May-2025 03:28:15 Europe/Berlin] Validated data: Array
+(
+    [id] => 226771156
+    [name] => Elizabeth Soberano
+    [lab] => 526
+    [pc] => 1
+)
+
+[15-May-2025 03:28:15 Europe/Berlin] Reservation error: Transaction failed: Unknown column 'student_name' in 'field list'

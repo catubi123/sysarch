@@ -49,42 +49,7 @@ $categories = $con->query("SELECT DISTINCT category FROM lab_materials ORDER BY 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <!-- Add Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" href="home.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <div class="navbar-nav ms-auto">
-                <a href="home.php" class="nav-link text-white">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a href="#" class="nav-link text-white position-relative" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                    <i class="fas fa-bell"></i> Notifications
-                    <?php if ($notif_count > 0): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            <?php echo $notif_count; ?>
-                        </span>
-                    <?php endif; ?>
-                </a>
-                <a href="history.php" class="nav-link text-white">
-                    <i class="fas fa-history"></i> History
-                </a>
-                <a href="edit.php" class="nav-link text-white">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit Profile
-                </a>
-                <a href="lab_materials.php" class="nav-link text-white active">
-                    <i class="fa-solid fa-book"></i> Lab Materials
-                </a>
-                </a>
-                <a href="view_schedules.php" class="nav-link text-white">
-                   <i class="fas fa-calendar-alt"></i> Lab Schedules
-               </a>
-                <a href="reservation.php" class="nav-link text-white">
-                    <i class="fas fa-calendar-check"></i> Reservation
-                </a>
-                <a href="index.php" class="btn btn-danger ms-lg-3">Log out</a>
-            </div>
-        </div>
-    </nav>
+    <?php include('../includes/navbar.php'); ?>
 
     <!-- Add Notification Modal -->
     <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
