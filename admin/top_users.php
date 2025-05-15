@@ -64,8 +64,17 @@ $result = $conn->query($query);
                             $rank = 1;
                             while($user = $result->fetch_assoc()): 
                                 $fullName = $user['fname'] . ' ' . $user['MName'] . ' ' . $user['lname'];
-                                // Check for user image in users/uploads folder
-                                $image = !empty($user['image']) ? '../users/uploads/' . $user['image'] : '../assets/PERSON.png';
+                                // Debug: Print actual image value from database
+                                // echo "<!-- Debug: User image from DB: " . $user['image'] . " -->";
+                                
+                                // Construct image path with proper directory structure
+                                $imagePath = '../users/uploads/' . $user['image'];
+                                // Debug: Check if file exists
+                                // echo "<!-- Debug: Image exists: " . (file_exists($imagePath) ? 'Yes' : 'No') . " -->";
+                                
+                                $image = !empty($user['image']) && file_exists($imagePath) 
+                                    ? $imagePath 
+                                    : '../assets/PERSON.png';
                             ?>
                             <tr>
                                 <td class="rank-column">
