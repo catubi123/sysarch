@@ -64,7 +64,8 @@ $result = $conn->query($query);
                             $rank = 1;
                             while($user = $result->fetch_assoc()): 
                                 $fullName = $user['fname'] . ' ' . $user['MName'] . ' ' . $user['lname'];
-                                $image = 'PERSON.png'; // Default image in assets folder
+                                // Check for user image in users/uploads folder
+                                $image = !empty($user['image']) ? '../users/uploads/' . $user['image'] : '../assets/PERSON.png';
                             ?>
                             <tr>
                                 <td class="rank-column">
@@ -77,9 +78,10 @@ $result = $conn->query($query);
                                     <span class="<?php echo $rankClass; ?>">#<?php echo $rank++; ?></span>
                                 </td>
                                 <td>
-                                    <img src="../assets/<?php echo $image; ?>" 
+                                    <img src="<?php echo htmlspecialchars($image); ?>" 
                                          alt="Profile" 
-                                         class="user-image">
+                                         class="user-image"
+                                         onerror="this.src='../assets/PERSON.png'">
                                 </td>
                                 <td><?php echo htmlspecialchars($fullName); ?></td>
                                 <td><?php echo htmlspecialchars($user['Course']); ?></td>
